@@ -1,0 +1,20 @@
+{
+  "name": "chessbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node_modules/.bin/nodemon -w src src/index.js"
+  },
+  "author": "Denis Efremov <efremov.a.denis@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@atomix/eslint-config": "^6.2.0",
+    "chess": "^0.2.8",
+    "dotenv": "^5.0.1",
+    "eslint": "^4.19.1",
+    "nodemon": "^1.17.2",
+    "telegraf": "^3.20.0"
+  }
+}
