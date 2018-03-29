@@ -1,7 +1,39 @@
+const chess = require('chess')
+
+const { debug } = require('../helpers')
 const { board, actions } = require('../keyboards')
 
 
-const game = () => [
+const statusMessage = (status) => `
+${status.isCheck ? '|CHECK|' : ''}
+${status.isCheckmate ? '|CHECKMATE|' : ''}
+${status.isRepetition ? '|REPETITION|' : ''}`
+
+const topMessage = (ctx, status) => `
+${ctx.session.whitesTurn ? '(B)' : '(W)'}${statusMessage(status)}`
+
+const bottomMessage = (ctx, status) => `
+${ctx.session.whitesTurn ? '(W)' : '(B)'}${statusMessage(status)}`
+
+const startHandler = () => [
+  async (ctx) => {
+    debug(ctx.from)
+    ctx.session.chess = chess.create({ PGN: true })
+
+    const status = ctx.session.chess.getStatus()
+
+    ctx.session.mode = 'select'
+    ctx.session.eaten = { white: [], black: [] }
+    ctx.session.moves = []
+    ctx.session.selected = null
+    ctx.session.whitesTurn = true
+
+    ctx.session.board = await ctx.reply('(B)', board(status.board.squares, true))
+    ctx.session.actions = await ctx.reply('(W)', actions())
+  },
+]
+
+const moveHandler = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
     if (!ctx.session.chess) return true
@@ -66,7 +98,7 @@ const game = () => [
           ctx.chat.id,
           ctx.session.board.message_id,
           undefined,
-          `${ctx.session.whitesTurn ? '(B)' : '(W)'}`,
+          topMessage(ctx, status),
           board(status.board.squares, ctx.session.whitesTurn)
         )
 
@@ -74,10 +106,7 @@ const game = () => [
           ctx.chat.id,
           ctx.session.actions.message_id,
           undefined,
-          `${ctx.session.whitesTurn ? '(W)' : '(B)'}`
-          + `${status.isCheck ? '\n|CHECK|' : ''}`
-          + `${status.isCheckmate ? '\n|CHECKMATE|' : ''}`
-          + `${status.isRepetition ? '\n|REPETITION|' : ''}`,
+          bottomMessage(ctx, status),
           actions()
         )
 
@@ -91,5 +120,6 @@ const game = () => [
 ]
 
 module.exports = {
-  game,
+  moveHandler,
+  startHandler,
 }
