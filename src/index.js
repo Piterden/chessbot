@@ -3,7 +3,8 @@ require('dotenv').load()
 const Telegraf = require('telegraf')
 // const Stage = require('telegraf/stage')
 
-const { moveHandler, startHandler } = require('./actions')
+// const { debug } = require('./helpers')
+const { moveHandler, startHandler } = require('./handlers')
 
 
 const { session } = Telegraf
@@ -18,6 +19,14 @@ const bot = new Telegraf(BOT_TOKEN, {
 
 bot.use(session())
 // bot.use(stage.middleware())
+
+// bot.start((ctx) => {
+//   debug(ctx.contextState)
+//   ctx.replyWithMarkdown(
+//     `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.`,
+
+//   )
+// })
 
 bot.start(...startHandler())
 bot.action(...moveHandler())

@@ -68,7 +68,7 @@ const moveHandler = () => [
             return move ? { ...sqr, destination: move } : sqr
           }),
           ctx.session.whitesTurn
-        ).reply_markup)
+        ))
 
         ctx.session.mode = 'move'
         ctx.session.moves = moves
