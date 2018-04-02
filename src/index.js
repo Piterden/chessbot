@@ -4,7 +4,7 @@ const Telegraf = require('telegraf')
 // const Stage = require('telegraf/stage')
 
 // const { debug } = require('./helpers')
-const { moveHandler, startHandler, actionsHandler } = require('./handlers')
+const { movesHandler, startHandler, actionsHandler } = require('./handlers')
 
 
 const { session } = Telegraf
@@ -29,7 +29,7 @@ bot.use(session())
 // })
 
 bot.start(...startHandler())
-bot.action(...moveHandler())
+bot.action(...movesHandler())
 bot.action(...actionsHandler())
 
 bot.startPolling()
