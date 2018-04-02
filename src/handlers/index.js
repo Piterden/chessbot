@@ -104,21 +104,26 @@ const moveHandler = () => [
         ctx.session.moves = null
         ctx.session.selected = null
 
-        ctx.tg.editMessageText(
-          ctx.chat.id,
-          ctx.session.board.message_id,
-          undefined,
-          topMessage(ctx, status),
-          board(status.board.squares, ctx.session.whitesTurn)
-        )
+        try {
+          ctx.tg.editMessageText(
+            ctx.chat.id,
+            ctx.session.board.message_id,
+            undefined,
+            topMessage(ctx, status),
+            board(status.board.squares, ctx.session.whitesTurn)
+          )
 
-        ctx.tg.editMessageText(
-          ctx.chat.id,
-          ctx.session.actions.message_id,
-          undefined,
-          bottomMessage(ctx, status),
-          actions()
-        )
+          ctx.tg.editMessageText(
+            ctx.chat.id,
+            ctx.session.actions.message_id,
+            undefined,
+            bottomMessage(ctx, status),
+            actions()
+          )
+        }
+        catch (error) {
+          debug(error)
+        }
 
         break
 
