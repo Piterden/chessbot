@@ -134,7 +134,15 @@ const moveHandler = () => [
   },
 ]
 
+const actionsHandler = () => [
+  /^reverse|index$/,
+  (ctx) => {
+    ctx.answerCbQuery()
+  },
+]
+
 module.exports = {
   moveHandler,
   startHandler,
+  actionsHandler,
 }
