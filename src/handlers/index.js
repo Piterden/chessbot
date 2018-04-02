@@ -28,8 +28,13 @@ const startHandler = () => [
     ctx.session.selected = null
     ctx.session.whitesTurn = true
 
-    ctx.session.board = await ctx.reply('(B)', board(status.board.squares, true))
-    ctx.session.actions = await ctx.reply('(W)', actions())
+    try {
+      ctx.session.board = await ctx.reply('(B)', board(status.board.squares, true))
+      ctx.session.actions = await ctx.reply('(W)', actions())
+    }
+    catch (error) {
+      debug(error)
+    }
   },
 ]
 
@@ -59,16 +64,21 @@ const moveHandler = () => [
           .filter((key) => status.notatedMoves[key].src === square)
           .map((key) => ({ ...status.notatedMoves[key], key }))
 
-        ctx.editMessageReplyMarkup(board(
-          status.board.squares.map((sqr) => {
-            const move = moves
-              .find((({ file, rank }) => ({ dest }) => dest.file === file
-                && dest.rank === rank)(sqr))
+        try {
+          ctx.editMessageReplyMarkup(board(
+            status.board.squares.map((sqr) => {
+              const move = moves
+                .find((({ file, rank }) => ({ dest }) => dest.file === file
+                  && dest.rank === rank)(sqr))
 
-            return move ? { ...sqr, destination: move } : sqr
-          }),
-          ctx.session.whitesTurn
-        ))
+              return move ? { ...sqr, destination: move } : sqr
+            }),
+            ctx.session.whitesTurn
+          ))
+        }
+        catch (error) {
+          debug(error)
+        }
 
         ctx.session.mode = 'move'
         ctx.session.moves = moves
