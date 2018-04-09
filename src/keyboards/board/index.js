@@ -29,7 +29,7 @@ const result = (board, isWhite) => {
 
     return square.destination
       ? { text: 'O', callback_data: `${col}${row}` }
-      : { text: '_', callback_data: `${col}${row}` }
+      : { text: 'ᅠ', callback_data: `${col}${row}` }
   }))
 
   return Markup.inlineKeyboard(isWhite ? reversed(boardMarkup) : boardMarkup)
