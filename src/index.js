@@ -2,7 +2,6 @@ require('dotenv').load()
 
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
-const lobbyController = require('lobby-controller')
 
 // const { debug } = require('./helpers')
 const { newRoom, joinRoom } = require('./scenes')
@@ -20,7 +19,6 @@ const bot = new Telegraf(BOT_TOKEN, {
 
 bot.use(session())
 bot.use(stage.middleware())
-bot.context.lobbyController = lobbyController()
 
 bot.start(async (ctx) => {
   // debug(ctx.contextState)
