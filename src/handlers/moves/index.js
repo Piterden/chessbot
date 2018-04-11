@@ -2,10 +2,10 @@ const { debug } = require('../../helpers')
 const { board, actions } = require('../../keyboards')
 
 
-const statusMessage = (status) => `
-${status.isCheck ? '|CHECK|' : ''}
-${status.isCheckmate ? '|CHECKMATE|' : ''}
-${status.isRepetition ? '|REPETITION|' : ''}`
+const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
+${isCheck ? '|CHECK|' : ''}
+${isCheckmate ? '|CHECKMATE|' : ''}
+${isRepetition ? '|REPETITION|' : ''}`
 
 const topMessage = (ctx, status) => `
 ${ctx.session.whitesTurn ? '(B)' : '(W)'}${statusMessage(status)}`
