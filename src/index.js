@@ -14,7 +14,7 @@ const {
   BOT_NAME, BOT_TOKEN, DB_CLIENT, DB_DATABASE, DB_USERNAME, DB_PASSWORD,
   DB_CHARSET,
 } = process.env
-const COLS = 2
+// const COLS = 2
 
 const stage = new Stage([newRoom, joinRoom, gameScene], { ttl: 120 })
 
@@ -38,7 +38,7 @@ bot.use(session())
 bot.use(stage.middleware())
 
 bot.start(async (ctx) => {
-  const games = await ctx.db.from('games').whereNull('user_b')
+  // const games = await ctx.db.from('games').whereNull('user_b')
 
   ctx.replyWithMarkdown(
     `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
