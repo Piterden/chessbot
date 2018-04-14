@@ -5,9 +5,11 @@ exports.up = async (knex, Promise) => await knex.schema.hasTable('moves')
   ? null
   : knex.schema.createTable('moves', (table) => {
     table.increments('id')
-    table.integer('game_id').unsigned().notNullable()
+    table.integer('game_id').unsigned().notNullable().index()
     table.string('move')
-    table.timestamp('created_at')
+    table.timestamp('created_at').defaultTo(knex.fn.now())
+
+    table.foreign('game_id').references('id')
   })
 
 exports.down = async (knex, Promise) => await knex.schema.hasTable('moves')
