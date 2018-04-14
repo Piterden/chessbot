@@ -6,7 +6,7 @@ const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
 // const { debug } = require('./helpers')
-const { newRoom, joinRoom, gameScene } = require('./scenes')
+const { gameScene } = require('./scenes')
 
 
 const { session } = Telegraf
@@ -16,7 +16,7 @@ const {
 } = process.env
 // const COLS = 2
 
-const stage = new Stage([newRoom, joinRoom, gameScene], { ttl: 120 })
+const stage = new Stage([gameScene], { ttl: 120 })
 
 const bot = new Telegraf(BOT_TOKEN, {
   telegram: { webhookReply: false },
