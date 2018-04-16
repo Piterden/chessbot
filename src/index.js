@@ -42,7 +42,12 @@ bot.use(session())
 bot.use(stage.middleware())
 
 bot.start(async (ctx) => {
-  const games = await ctx.db.from('games').select()
+  const games = await ctx.db.from('games')
+    .whereNull('user_b')
+    .orWhere('user_b', ctx.from.id)
+    .orWhere('user_w', ctx.from.id)
+    .select()
+
   const inlineKeyboard = games.reduce((acc, game) => {
     if (acc.length === 0 || acc[acc.length - 1].length === COLS) {
       acc.push([gameButton(game)])
