@@ -1,25 +1,30 @@
 const chess = require('chess')
 
 const { debug } = require('../../helpers')
-const { board } = require('../../keyboards')
+const { board, actions } = require('../../keyboards')
 
+
+// eslint-disable-next-line no-magic-numbers
+const isWhiteTurn = (moves) => !(moves.length % 2)
 
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
 ${isCheck ? '|CHECK|' : ''}
 ${isCheckmate ? '|CHECKMATE|' : ''}
 ${isRepetition ? '|REPETITION|' : ''}`
 
-const topMessage = (status, isWhiteSide) => `
-${isWhiteSide ? '(BLACK)' : '(WHITE)'}${statusMessage(status)}`
+const topMessage = (moves, game, isWhiteSide) => isWhiteSide
+  ? `${isWhiteTurn(moves) ? '*' : ''} (BLACK) User ${game.user_b || 'waiting...'}`
+  : `${!isWhiteTurn(moves) ? '*' : ''} (WHITE) ${game.user_w}`
+
+const bottomMessage = (moves, game, isWhiteSide) => isWhiteSide
+  ? `${!isWhiteTurn(moves) ? '*' : ''} (WHITE) YOU`
+  : `${isWhiteTurn(moves) ? '*' : ''} (BLACK) YOU`
 
 const isReady = (game) => !!(
   game.board_w && game.board_b
   && game.actions_w && game.actions_b
   && game.user_w && game.user_b
 )
-
-// eslint-disable-next-line no-magic-numbers
-const isWhiteTurn = (moves) => !(moves.length % 2)
 
 module.exports = () => [
   /^([a-h])([1-8])$/,
@@ -56,7 +61,6 @@ module.exports = () => [
     const square = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-    // debug(status)
     switch (ctx.session.mode) {
       case 'select':
         if (
@@ -64,7 +68,7 @@ module.exports = () => [
           || (square.piece.side.name === 'black' && isWhiteTurn(movesState))
           || (square.piece.side.name === 'white' && !isWhiteTurn(movesState))
         ) {
-          return ctx.answerCbQuery()
+          return ctx.answerCbQuery('Please, move your pieces!')
         }
 
         moves = Object.keys(status.notatedMoves)
@@ -97,13 +101,14 @@ module.exports = () => [
         moving = ctx.session.moves.find(({ dest: { file, rank } }) => file === square.file
           && rank === square.rank)
 
-        if (moving) {
-          if (moving.dest.piece) {
-            ctx.session.eaten[moving.dest.piece.side.name]
-              .push(moving.dest.piece)
+        if (moving && !movesState.find((move) => move.move === moving.key)) {
+          try {
+            gameClient.move(moving.key)
+          }
+          catch (error) {
+            debug(error)
           }
 
-          gameClient.move(moving.key)
           status = gameClient.getStatus()
 
           await ctx.db('moves').insert({
@@ -118,10 +123,10 @@ module.exports = () => [
 
         try {
           await ctx.tg.editMessageText(
-            gameState.chat_w,
+            gameState.user_w,
             gameState.board_w,
             undefined,
-            topMessage(status, true),
+            topMessage(movesState, gameState, true) + statusMessage(status),
             board(status.board.squares, true)
           )
         }
@@ -131,11 +136,37 @@ module.exports = () => [
 
         try {
           await ctx.tg.editMessageText(
-            gameState.chat_b,
+            gameState.user_w,
+            gameState.actions_w,
+            undefined,
+            bottomMessage(movesState, gameState, true),
+            actions()
+          )
+        }
+        catch (error) {
+          debug(error)
+        }
+
+        try {
+          await ctx.tg.editMessageText(
+            gameState.user_b,
             gameState.board_b,
             undefined,
-            topMessage(status, false),
+            topMessage(movesState, gameState, false) + statusMessage(status),
             board(status.board.squares, false)
+          )
+        }
+        catch (error) {
+          debug(error)
+        }
+
+        try {
+          await ctx.tg.editMessageText(
+            gameState.user_b,
+            gameState.actions_b,
+            undefined,
+            bottomMessage(movesState, gameState, false),
+            actions()
           )
         }
         catch (error) {

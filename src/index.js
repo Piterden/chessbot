@@ -4,7 +4,7 @@ const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-// const { debug } = require('./helpers')
+const { debug } = require('./helpers')
 const { gameScene } = require('./scenes')
 
 
@@ -77,7 +77,7 @@ bot.action(
   /^new$/,
   async (ctx) => {
     const gameId = await ctx.db('games')
-      .insert({ user_w: ctx.from.id, chat_w: ctx.chat.id })
+      .insert({ user_w: ctx.from.id })
 
     ctx.session.gameId = gameId
     ctx.scene.enter('game')
@@ -96,11 +96,16 @@ bot.action(
     if (!gameState.user_b && gameState.user_w !== ctx.from.id) {
       await ctx.db('games')
         .where({ id: gameState.id })
-        .update({ user_b: ctx.from.id, chat_b: ctx.chat.id })
+        .update({ user_b: ctx.from.id })
     }
 
     ctx.session.gameId = gameState.id
-    ctx.scene.enter('game')
+    try {
+      await ctx.scene.enter('game')
+    }
+    catch (error) {
+      debug(error)
+    }
 
     return ctx.answerCbQuery()
   }
