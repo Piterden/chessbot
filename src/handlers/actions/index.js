@@ -1,6 +1,14 @@
 module.exports = () => [
-  /^reverse|index$/,
+  /^back|reverse|index$/,
   async (ctx) => {
-    ctx.answerCbQuery()
+    switch (ctx.match[0]) {
+      case 'back':
+        ctx.scene.leave()
+        break
+
+      default:
+        break
+    }
+    return ctx.answerCbQuery()
   },
 ]
