@@ -1,6 +1,6 @@
 module.exports = () => [
   /^reverse|index$/,
-  (ctx) => {
+  async (ctx) => {
     ctx.answerCbQuery()
   },
 ]

@@ -11,12 +11,15 @@
   "author": "Denis Efremov <efremov.a.denis@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@atomix/eslint-config": "^6.3.0",
     "chess": "^0.2.8",
     "dotenv": "^5.0.1",
-    "eslint": "^4.19.1",
-    "lobby-controller": "^1.0.0",
+    "knex": "^0.14.5",
+    "mysql": "^2.15.0",
     "nodemon": "^1.17.3",
     "telegraf": "^3.20.0"
+  },
+  "devDependencies": {
+    "@atomix/eslint-config": "^6.4.0",
+    "eslint": "^4.19.1"
   }
 }
