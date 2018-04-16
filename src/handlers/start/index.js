@@ -25,8 +25,8 @@ module.exports = () => [
         gameClient.move(move.move)
       }
       catch (error) {
+        debug(`::${move}::`)
         debug(error)
-        debug(move)
       }
     })
 
@@ -47,6 +47,7 @@ module.exports = () => [
         )
       }
       catch (error) {
+        debug('::whiteBoardMsg::')
         debug(error)
       }
 
@@ -57,6 +58,7 @@ module.exports = () => [
         )
       }
       catch (error) {
+        debug('::whiteActionsMsg::')
         debug(error)
       }
 
@@ -71,6 +73,7 @@ module.exports = () => [
           })
         }
         catch (error) {
+          debug('::whiteDBUPD::')
           debug(error)
         }
       }
@@ -87,6 +90,7 @@ module.exports = () => [
         )
       }
       catch (error) {
+        debug('::blackBoardMsg::')
         debug(error)
       }
 
@@ -97,6 +101,7 @@ module.exports = () => [
         )
       }
       catch (error) {
+        debug('::blackActionsMsg::')
         debug(error)
       }
 
@@ -111,11 +116,12 @@ module.exports = () => [
           })
         }
         catch (error) {
+          debug('::blackDBUPD::')
           debug(error)
         }
       }
     }
 
-    return ctx.answerCbQuery()
+    return ctx.answerCbQuery(isWhiteTurn(movesState) ? 'White' : 'Black')
   },
 ]

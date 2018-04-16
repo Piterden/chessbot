@@ -4,14 +4,18 @@
 
 A simple implementation of a chess game, based on editing a reply markup represetation of a chess board. Bot uses the `node-chess` package, which is driven by the algebraic notation of moves.
 
+### **Features:**
+
+- Multiplayer
+- Multiroom
+
 ## Usage
 
 [Demo](https://t.me/chessy_bot) (WIP version).
 
-It is planned to make a multiplayer chess game inside a bot context.
-Look at the example of a code should be handled by the bot:
-
 ### Commands
+
+/start
 
 ## Install and run own instance
 

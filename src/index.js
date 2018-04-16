@@ -4,7 +4,7 @@ const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-const { debug } = require('./helpers')
+// const { debug } = require('./helpers')
 const { gameScene } = require('./scenes')
 
 
@@ -100,12 +100,7 @@ bot.action(
     }
 
     ctx.session.gameId = gameState.id
-    try {
-      await ctx.scene.enter('game')
-    }
-    catch (error) {
-      debug(error)
-    }
+    ctx.scene.enter('game')
 
     return ctx.answerCbQuery()
   }
