@@ -9,11 +9,8 @@ ${isCheck ? '|CHECK|' : ''}
 ${isCheckmate ? '|CHECKMATE|' : ''}
 ${isRepetition ? '|REPETITION|' : ''}`
 
-const topMessage = (isWhiteTurn, status) => `
-${isWhiteTurn ? '(BLACK)' : '(WHITE)'}${statusMessage(status)}`
-
-const bottomMessage = (isWhiteTurn, status) => `
-${isWhiteTurn ? '(WHITE)' : '(BLACK)'}${statusMessage(status)}`
+const topMessage = (status, isWhiteSide) => `
+${isWhiteSide ? '(BLACK)' : '(WHITE)'}${statusMessage(status)}`
 
 const isReady = (game) => !!(
   game.board_w && game.board_b
@@ -120,37 +117,26 @@ module.exports = () => [
         ctx.session.selected = null
 
         try {
-          ctx.tg.editMessageText(
+          await ctx.tg.editMessageText(
             gameState.chat_w,
             gameState.board_w,
             undefined,
-            topMessage(isWhiteTurn(movesState), status),
+            topMessage(status, true),
             board(status.board.squares, true)
           )
+        }
+        catch (error) {
+          debug(error)
+        }
 
-          // ctx.tg.editMessageText(
-          //   gameState.chat_w,
-          //   gameState.actions_w,
-          //   undefined,
-          //   bottomMessage(isWhiteTurn(movesState), status),
-          //   actions()
-          // )
-
-          ctx.tg.editMessageText(
+        try {
+          await ctx.tg.editMessageText(
             gameState.chat_b,
             gameState.board_b,
             undefined,
-            topMessage(isWhiteTurn(movesState), status),
+            topMessage(status, false),
             board(status.board.squares, false)
           )
-
-          // ctx.tg.editMessageText(
-          //   gameState.chat_b,
-          //   gameState.actions_b,
-          //   undefined,
-          //   topMessage(isWhiteTurn(movesState), status),
-          //   actions()
-          // )
         }
         catch (error) {
           debug(error)
