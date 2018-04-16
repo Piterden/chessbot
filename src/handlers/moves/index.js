@@ -9,11 +9,11 @@ ${isCheck ? '|CHECK|' : ''}
 ${isCheckmate ? '|CHECKMATE|' : ''}
 ${isRepetition ? '|REPETITION|' : ''}`
 
-const topMessage = (ctx, status) => `
-${ctx.session.whitesTurn ? '(BLACK)' : '(WHITE)'}${statusMessage(status)}`
+const topMessage = (isWhiteTurn, status) => `
+${isWhiteTurn ? '(BLACK)' : '(WHITE)'}${statusMessage(status)}`
 
-const bottomMessage = (ctx, status) => `
-${ctx.session.whitesTurn ? '(WHITE)' : '(BLACK)'}${statusMessage(status)}`
+const bottomMessage = (isWhiteTurn, status) => `
+${isWhiteTurn ? '(WHITE)' : '(BLACK)'}${statusMessage(status)}`
 
 const isReady = (game) => !!(
   game.board_w && game.board_b
@@ -41,8 +41,8 @@ module.exports = () => [
       .select()
 
     if (
-      (isWhiteTurn(gameState) && ctx.from.id === gameState.user_b)
-      || (!isWhiteTurn(gameState) && ctx.from.id === gameState.user_w)
+      (isWhiteTurn(movesState) && ctx.from.id === gameState.user_b)
+      || (!isWhiteTurn(movesState) && ctx.from.id === gameState.user_w)
     ) {
       return ctx.answerCbQuery('Not your turn! Please wait...')
     }
@@ -75,7 +75,7 @@ module.exports = () => [
           .map((key) => ({ ...status.notatedMoves[key], key }))
 
         try {
-          ctx.editMessageReplyMarkup(board(
+          await ctx.editMessageReplyMarkup(board(
             status.board.squares.map((sqr) => {
               const move = moves
                 .find((({ file, rank }) => ({ dest }) => dest.file === file
@@ -84,7 +84,7 @@ module.exports = () => [
               return move ? { ...sqr, destination: move } : sqr
             }),
             isWhiteTurn(movesState)
-          ))
+          ).reply_markup)
         }
         catch (error) {
           debug(error)
@@ -97,7 +97,8 @@ module.exports = () => [
         break
 
       case 'move':
-        moving = ctx.session.moves.find((move) => move.dest === square)
+        moving = ctx.session.moves.find(({ dest: { file, rank } }) => file === square.file
+          && rank === square.rank)
 
         if (moving) {
           if (moving.dest.piece) {
@@ -105,8 +106,8 @@ module.exports = () => [
               .push(moving.dest.piece)
           }
 
-          ctx.session.chess.move(moving.key)
-          status = ctx.session.chess.getStatus()
+          gameClient.move(moving.key)
+          status = gameClient.getStatus()
 
           await ctx.db('moves').insert({
             game_id: ctx.session.gameId,
@@ -120,36 +121,36 @@ module.exports = () => [
 
         try {
           ctx.tg.editMessageText(
-            ctx.chat.id,
+            gameState.chat_w,
             gameState.board_w,
             undefined,
-            topMessage(ctx, status),
+            topMessage(isWhiteTurn(movesState), status),
             board(status.board.squares, true)
           )
 
-          ctx.tg.editMessageText(
-            ctx.chat.id,
-            gameState.actions_w,
-            undefined,
-            bottomMessage(ctx, status),
-            actions()
-          )
+          // ctx.tg.editMessageText(
+          //   gameState.chat_w,
+          //   gameState.actions_w,
+          //   undefined,
+          //   bottomMessage(isWhiteTurn(movesState), status),
+          //   actions()
+          // )
 
           ctx.tg.editMessageText(
-            ctx.chat.id,
+            gameState.chat_b,
             gameState.board_b,
             undefined,
-            bottomMessage(ctx, status),
+            topMessage(isWhiteTurn(movesState), status),
             board(status.board.squares, false)
           )
 
-          ctx.tg.editMessageText(
-            ctx.chat.id,
-            gameState.actions_b,
-            undefined,
-            topMessage(ctx, status),
-            actions()
-          )
+          // ctx.tg.editMessageText(
+          //   gameState.chat_b,
+          //   gameState.actions_b,
+          //   undefined,
+          //   topMessage(isWhiteTurn(movesState), status),
+          //   actions()
+          // )
         }
         catch (error) {
           debug(error)

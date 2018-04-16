@@ -72,7 +72,8 @@ ${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
 bot.action(
   /^new$/,
   async (ctx) => {
-    const gameId = await ctx.db('games').insert({ user_w: ctx.from.id })
+    const gameId = await ctx.db('games')
+      .insert({ user_w: ctx.from.id, chat_w: ctx.chat.id })
 
     ctx.session.gameId = gameId
     ctx.scene.enter('game')
@@ -91,7 +92,7 @@ bot.action(
     if (!gameState.user_b && gameState.user_w !== ctx.from.id) {
       await ctx.db('games')
         .where({ id: gameState.id })
-        .update({ user_b: ctx.from.id })
+        .update({ user_b: ctx.from.id, chat_b: ctx.chat.id })
     }
 
     ctx.session.gameId = gameState.id
