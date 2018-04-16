@@ -17,8 +17,19 @@ const COLS = 2
 
 const stage = new Stage([gameScene], { ttl: 120 })
 
-const gameButton = (game) => ({
-  text: `${game.user_w} / ${game.user_b ? game.user_b : 'Waiting...'}`,
+const whiteUserName = (ctx, game) => game.user_w === ctx.from.id
+  ? 'YOU'
+  : game.user_w
+
+const blackUserName = (ctx, game) => {
+  if (ctx.from.id === game.user_b) {
+    return 'YOU'
+  }
+  return game.user_b ? game.user_b : 'Waiting...'
+}
+
+const gameButton = (ctx, game) => ({
+  text: `${whiteUserName(ctx, game)} / ${blackUserName(ctx, game)}`,
   callback_data: `join/${game.id}`,
 })
 
@@ -50,10 +61,10 @@ bot.start(async (ctx) => {
 
   const inlineKeyboard = games.reduce((acc, game) => {
     if (acc.length === 0 || acc[acc.length - 1].length === COLS) {
-      acc.push([gameButton(game)])
+      acc.push([gameButton(ctx, game)])
     }
     else {
-      acc[acc.length - 1].push(gameButton(game))
+      acc[acc.length - 1].push(gameButton(ctx, game))
     }
     return acc
   }, [])

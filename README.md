@@ -36,8 +36,8 @@ editor .env
 
 ## Built With
 
-* [Telegraf.js](https://github.com/telegraf/telegraf) - The bot framework.
-* [Node-Chess](https://github.com/brozeph/node-chess) - A simple node.js library for parsing and validating chess board position with an algebraic move parser
+- [Telegraf.js](https://github.com/telegraf/telegraf) - The bot framework.
+- [Node-Chess](https://github.com/brozeph/node-chess) - A simple node.js library for parsing and validating chess board position with an algebraic move parser
 
 ## Contributing
 
@@ -45,7 +45,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Authors
 
-* **Denis Efremov** - *Code* - [Piterden](https://github.com/Piterden)
+- **Denis Efremov** - *Code* - [Piterden](https://github.com/Piterden)
 
 ## License
 
