@@ -1,4 +1,4 @@
-const { loadHandler } = require('../../handlers')
+const loadHandler = require('../load')
 
 
 module.exports = () => [
