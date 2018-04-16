@@ -73,7 +73,7 @@ bot.start(async (ctx) => {
     { text: 'Create a new game', callback_data: 'new' },
   ])
 
-  ctx.replyWithMarkdown(
+  const listMessage = await ctx.replyWithMarkdown(
     `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
 ${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
     {
@@ -82,6 +82,8 @@ ${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
       },
     }
   )
+
+  ctx.session.listMessage = listMessage
 })
 
 bot.action(
@@ -91,6 +93,7 @@ bot.action(
       .insert({ user_w: ctx.from.id })
 
     ctx.session.gameId = gameId
+    ctx.deleteMessage(ctx.session.listMessage.message_id)
     ctx.scene.enter('game')
 
     return ctx.answerCbQuery()
@@ -111,6 +114,7 @@ bot.action(
     }
 
     ctx.session.gameId = gameState.id
+    ctx.deleteMessage(ctx.session.listMessage.message_id)
     ctx.scene.enter('game')
 
     return ctx.answerCbQuery()

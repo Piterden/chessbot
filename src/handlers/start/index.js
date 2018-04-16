@@ -77,6 +77,9 @@ module.exports = () => [
           debug(error)
         }
       }
+
+      ctx.session.board = whiteBoardMsg.message_id
+      ctx.session.actions = whiteActionsMsg.message_id
     }
 
     if (ctx.from.id === gameState.user_b) {
@@ -120,6 +123,9 @@ module.exports = () => [
           debug(error)
         }
       }
+
+      ctx.session.board = blackBoardMsg.message_id
+      ctx.session.actions = blackActionsMsg.message_id
     }
 
     return ctx.answerCbQuery(isWhiteTurn(movesState) ? 'White' : 'Black')
