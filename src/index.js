@@ -1,18 +1,17 @@
 require('dotenv').load()
 
 const knex = require('knex')
-// const chess = require('chess')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-const { debug } = require('./helpers')
+// const { debug } = require('./helpers')
 const { gameScene } = require('./scenes')
 
 
 const { session } = Telegraf
 const {
-  BOT_NAME, BOT_TOKEN, DB_CLIENT, DB_DATABASE, DB_USERNAME, DB_PASSWORD,
-  DB_CHARSET,
+  BOT_NAME, BOT_TOKEN, DB_CLIENT, DB_HOST, DB_DATABASE, DB_USERNAME,
+  DB_PASSWORD, DB_CHARSET,
 } = process.env
 const COLS = 2
 
@@ -31,7 +30,7 @@ const bot = new Telegraf(BOT_TOKEN, {
 bot.context.db = knex({
   client: DB_CLIENT,
   connection: {
-    host: '127.0.0.1',
+    host: DB_HOST,
     user: DB_USERNAME,
     password: DB_PASSWORD,
     database: DB_DATABASE,

@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { debug } = require('../../helpers')
-const { board, actions } = require('../../keyboards')
+const { board } = require('../../keyboards')
 
 
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
