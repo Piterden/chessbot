@@ -1,3 +1,5 @@
+const chess = require('chess')
+
 const { debug } = require('../../helpers')
 const { board, actions } = require('../../keyboards')
 
@@ -8,29 +10,62 @@ ${isCheckmate ? '|CHECKMATE|' : ''}
 ${isRepetition ? '|REPETITION|' : ''}`
 
 const topMessage = (ctx, status) => `
-${ctx.session.whitesTurn ? '(B)' : '(W)'}${statusMessage(status)}`
+${ctx.session.whitesTurn ? '(BLACK)' : '(WHITE)'}${statusMessage(status)}`
 
 const bottomMessage = (ctx, status) => `
-${ctx.session.whitesTurn ? '(W)' : '(B)'}${statusMessage(status)}`
+${ctx.session.whitesTurn ? '(WHITE)' : '(BLACK)'}${statusMessage(status)}`
+
+const isReady = (game) => !!(
+  game.board_w && game.board_b
+  && game.actions_w && game.actions_b
+  && game.user_w && game.user_b
+)
+
+// eslint-disable-next-line no-magic-numbers
+const isWhiteTurn = (moves) => !(moves.length % 2)
 
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
-    if (!ctx.session.chess) return true
+    const gameState = await ctx.db('games')
+      .where({ id: ctx.session.gameId })
+      .first()
 
-    let status = ctx.session.chess.getStatus()
+    if (!isReady(gameState)) {
+      return ctx.answerCbQuery('Waiting for 2 players...')
+    }
+
+    const movesState = await ctx.db('moves')
+      .where({ game_id: ctx.session.gameId })
+      .orderBy('created_at', 'asc')
+      .select()
+
+    if (
+      (isWhiteTurn(gameState) && ctx.from.id === gameState.user_b)
+      || (!isWhiteTurn(gameState) && ctx.from.id === gameState.user_w)
+    ) {
+      return ctx.answerCbQuery('Not your turn! Please wait...')
+    }
+
+    const gameClient = chess.create({ PGN: true })
+
+    movesState.forEach(({ move }) => {
+      gameClient.move(move)
+    })
+
+    let moving
+    let moves = []
+    let status = gameClient.getStatus()
     const square = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
-    let moves = []
-    let moving
 
     // debug(status)
     switch (ctx.session.mode) {
       case 'select':
         if (
           !square || !square.piece
-          || (square.piece.side.name === 'black' && ctx.session.whitesTurn)
-          || (square.piece.side.name === 'white' && !ctx.session.whitesTurn)
+          || (square.piece.side.name === 'black' && isWhiteTurn(movesState))
+          || (square.piece.side.name === 'white' && !isWhiteTurn(movesState))
         ) {
           return ctx.answerCbQuery()
         }
@@ -48,7 +83,7 @@ module.exports = () => [
 
               return move ? { ...sqr, destination: move } : sqr
             }),
-            ctx.session.whitesTurn
+            isWhiteTurn(movesState)
           ))
         }
         catch (error) {
@@ -72,7 +107,11 @@ module.exports = () => [
 
           ctx.session.chess.move(moving.key)
           status = ctx.session.chess.getStatus()
-          ctx.session.whitesTurn = !ctx.session.whitesTurn
+
+          await ctx.db('moves').insert({
+            game_id: ctx.session.gameId,
+            move: moving.key,
+          })
         }
 
         ctx.session.mode = 'select'
@@ -82,17 +121,33 @@ module.exports = () => [
         try {
           ctx.tg.editMessageText(
             ctx.chat.id,
-            ctx.session.board.message_id,
+            gameState.board_w,
             undefined,
             topMessage(ctx, status),
-            board(status.board.squares, ctx.session.whitesTurn)
+            board(status.board.squares, true)
           )
 
           ctx.tg.editMessageText(
             ctx.chat.id,
-            ctx.session.actions.message_id,
+            gameState.actions_w,
             undefined,
             bottomMessage(ctx, status),
+            actions()
+          )
+
+          ctx.tg.editMessageText(
+            ctx.chat.id,
+            gameState.board_b,
+            undefined,
+            bottomMessage(ctx, status),
+            board(status.board.squares, false)
+          )
+
+          ctx.tg.editMessageText(
+            ctx.chat.id,
+            gameState.actions_b,
+            undefined,
+            topMessage(ctx, status),
             actions()
           )
         }

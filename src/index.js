@@ -5,7 +5,7 @@ const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-// const { debug } = require('./helpers')
+const { debug } = require('./helpers')
 const { gameScene } = require('./scenes')
 
 
@@ -14,9 +14,14 @@ const {
   BOT_NAME, BOT_TOKEN, DB_CLIENT, DB_DATABASE, DB_USERNAME, DB_PASSWORD,
   DB_CHARSET,
 } = process.env
-// const COLS = 2
+const COLS = 2
 
 const stage = new Stage([gameScene], { ttl: 120 })
+
+const gameButton = (game) => ({
+  text: `${game.user_w} / ${game.user_b ? game.user_b : 'Waiting...'}`,
+  callback_data: `join/${game.id}`,
+})
 
 const bot = new Telegraf(BOT_TOKEN, {
   telegram: { webhookReply: false },
@@ -38,28 +43,27 @@ bot.use(session())
 bot.use(stage.middleware())
 
 bot.start(async (ctx) => {
-  // const games = await ctx.db.from('games').whereNull('user_b')
+  const games = await ctx.db.from('games').select()
+  const inlineKeyboard = games.reduce((acc, game) => {
+    if (acc.length === 0 || acc[acc.length - 1].length === COLS) {
+      acc.push([gameButton(game)])
+    }
+    else {
+      acc[acc.length - 1].push(gameButton(game))
+    }
+    return acc
+  }, [])
+
+  inlineKeyboard.push([
+    { text: 'Create a new game', callback_data: 'new' },
+  ])
 
   ctx.replyWithMarkdown(
     `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
-
-*Available games:*`,
+${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
     {
       reply_markup: {
-        inline_keyboard: [
-          // ...games.reduce((acc, game) => {
-          //   if (acc.length === 0 || acc[acc.length - 1].length === COLS) {
-          //     acc.push([{ text: game.white, callback_data: `join/${game.id}` }])
-          //   }
-          //   else {
-          //     acc[acc.length - 1].push({ text: game.white, callback_data: `join/${game.id}` })
-          //   }
-          //   return acc
-          // }, []),
-          [
-            { text: 'Create a new game', callback_data: 'new' },
-          ],
-        ],
+        inline_keyboard: inlineKeyboard,
       },
     }
   )
@@ -68,8 +72,7 @@ bot.start(async (ctx) => {
 bot.action(
   /^new$/,
   async (ctx) => {
-    const gameId = await ctx.db('games')
-      .insert({ user_w: ctx.from.id })
+    const gameId = await ctx.db('games').insert({ user_w: ctx.from.id })
 
     ctx.session.gameId = gameId
     ctx.scene.enter('game')
@@ -85,16 +88,13 @@ bot.action(
       .where({ id: Number(ctx.match[1]) })
       .first()
 
-    if (gameState.user_w === ctx.from.id) {
-      return ctx.answerCbQuery()
+    if (!gameState.user_b && gameState.user_w !== ctx.from.id) {
+      await ctx.db('games')
+        .where({ id: gameState.id })
+        .update({ user_b: ctx.from.id })
     }
 
     ctx.session.gameId = gameState.id
-
-    await ctx.db('games')
-      .where({ id: ctx.session.gameId })
-      .update({ user_b: ctx.from.id })
-
     ctx.scene.enter('game')
 
     return ctx.answerCbQuery()
