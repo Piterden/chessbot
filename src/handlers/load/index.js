@@ -37,9 +37,9 @@ module.exports = () => [
       .orWhere('user_w', ctx.from.id)
       .select()
 
-    games = await Promise.all(games.map(async (g) => Object.assign(g, {
+    games = await Promise.all(games.map(async (game) => Object.assign(game, {
       moves: await ctx.db('moves')
-        .where('game_id', g.id)
+        .where('game_id', game.id)
         .orderBy('created_at', 'asc')
         .select(),
     })))
