@@ -44,8 +44,12 @@ bot.action(
     const gameId = await ctx.db('games')
       .insert({ user_w: ctx.from.id })
 
+    if (ctx.session.listMessage) {
+      await ctx.deleteMessage(ctx.session.listMessage.message_id)
+      ctx.session.listMessage = null
+    }
+
     ctx.session.gameId = gameId
-    ctx.deleteMessage(ctx.session.listMessage.message_id)
     ctx.scene.enter('game')
 
     return ctx.answerCbQuery()
