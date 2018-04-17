@@ -31,12 +31,18 @@ const gameButton = (ctx, game) => ({
 
 module.exports = () => [
   async (ctx) => {
-    const games = await ctx.db.from('games')
+    let games = await ctx.db('games')
       .whereNull('user_b')
       .orWhere('user_b', ctx.from.id)
       .orWhere('user_w', ctx.from.id)
-      .leftJoin('moves', 'games.id', 'moves.game_id')
       .select()
+
+    games = await Promise.all(games.map(async (g) => Object.assign(g, {
+      moves: await ctx.db('moves')
+        .where('game_id', g.id)
+        .orderBy('created_at', 'asc')
+        .select(),
+    })))
 
     debug(games)
 
