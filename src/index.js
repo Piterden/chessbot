@@ -18,7 +18,10 @@ const {
 const stage = new Stage([gameScene], { ttl: 120 })
 
 const bot = new Telegraf(BOT_TOKEN, {
-  telegram: { webhookReply: false },
+  telegram: {
+    webhookReply: false,
+    apiRoot: 'https://api.telegram.org',
+  },
   username: BOT_NAME,
 })
 
