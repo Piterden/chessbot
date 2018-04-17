@@ -1,4 +1,10 @@
+const { debug } = require('../../helpers')
+
+
 const COLS = 2
+
+// eslint-disable-next-line no-magic-numbers
+const isWhiteTurn = (moves) => !(moves.length % 2)
 
 const whiteUserName = (ctx, game) => game.user_w === ctx.from.id
   ? 'YOU'
@@ -11,8 +17,15 @@ const blackUserName = (ctx, game) => {
   return game.user_b ? game.user_b : 'Waiting...'
 }
 
+const yourTurn = (ctx, game) => {
+  if (isWhiteTurn(game.moves)) {
+    return true
+  }
+  return false
+}
+
 const gameButton = (ctx, game) => ({
-  text: `${whiteUserName(ctx, game)} / ${blackUserName(ctx, game)}`,
+  text: `${yourTurn(ctx, game) ? '!!!' : ''}${whiteUserName(ctx, game)} / ${blackUserName(ctx, game)}`,
   callback_data: `join/${game.id}`,
 })
 
@@ -22,7 +35,10 @@ module.exports = () => [
       .whereNull('user_b')
       .orWhere('user_b', ctx.from.id)
       .orWhere('user_w', ctx.from.id)
+      .leftJoin('moves', 'games.id', 'moves.game_id')
       .select()
+
+    debug(games)
 
     const inlineKeyboard = games.reduce((acc, game) => {
       if (acc.length === 0 || acc[acc.length - 1].length === COLS) {
