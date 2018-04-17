@@ -7,25 +7,18 @@ const COLS = 2
 const isWhiteTurn = (moves) => !(moves.length % 2)
 
 const whiteUserName = (ctx, game) => game.user_w === ctx.from.id
-  ? 'YOU'
+  ? `${isWhiteTurn(game.moves) ? '!!! ' : ''}YOU`
   : game.user_w
 
 const blackUserName = (ctx, game) => {
   if (ctx.from.id === game.user_b) {
-    return 'YOU'
+    return `YOU${!isWhiteTurn(game.moves) ? ' !!!' : ''}`
   }
   return game.user_b ? game.user_b : 'Waiting...'
 }
 
-const yourTurn = (ctx, game) => {
-  if (isWhiteTurn(game.moves)) {
-    return true
-  }
-  return false
-}
-
 const gameButton = (ctx, game) => ({
-  text: `${yourTurn(ctx, game) ? '!!!' : ''}${whiteUserName(ctx, game)} / ${blackUserName(ctx, game)}`,
+  text: `${whiteUserName(ctx, game)} / ${blackUserName(ctx, game)} | ${game.moves.length} moves`,
   callback_data: `join/${game.id}`,
 })
 
@@ -37,24 +30,14 @@ module.exports = () => [
       .orWhere('user_w', ctx.from.id)
       .select()
 
-    games = await Promise.all(games.map(async (game) => Object.assign(game, {
+    games = await Promise.all(games.map(async (game) => ({ ...game,
       moves: await ctx.db('moves')
         .where('game_id', game.id)
         .orderBy('created_at', 'asc')
         .select(),
     })))
 
-    debug(games)
-
-    const inlineKeyboard = games.reduce((acc, game) => {
-      if (acc.length === 0 || acc[acc.length - 1].length === COLS) {
-        acc.push([gameButton(ctx, game)])
-      }
-      else {
-        acc[acc.length - 1].push(gameButton(ctx, game))
-      }
-      return acc
-    }, [])
+    const inlineKeyboard = games.map((game) => [gameButton(ctx, game)])
 
     inlineKeyboard.push([
       { text: 'Create a new game', callback_data: 'new' },

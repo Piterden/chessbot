@@ -121,56 +121,64 @@ module.exports = () => [
         ctx.session.moves = null
         ctx.session.selected = null
 
-        try {
-          await ctx.tg.editMessageText(
-            gameState.user_w,
-            gameState.board_w,
-            undefined,
-            topMessage(movesState, gameState, true) + statusMessage(status),
-            board(status.board.squares, true)
-          )
-        }
-        catch (error) {
-          debug(error)
-        }
-
-        try {
-          await ctx.tg.editMessageText(
-            gameState.user_w,
-            gameState.actions_w,
-            undefined,
-            bottomMessage(movesState, gameState, true),
-            actions()
-          )
-        }
-        catch (error) {
-          debug(error)
+        if (ctx.session.board) {
+          try {
+            await ctx.tg.editMessageText(
+              gameState.user_w,
+              gameState.board_w,
+              undefined,
+              topMessage(movesState, gameState, true) + statusMessage(status),
+              board(status.board.squares, true)
+            )
+          }
+          catch (error) {
+            debug(error)
+          }
         }
 
-        try {
-          await ctx.tg.editMessageText(
-            gameState.user_b,
-            gameState.board_b,
-            undefined,
-            topMessage(movesState, gameState, false) + statusMessage(status),
-            board(status.board.squares, false)
-          )
-        }
-        catch (error) {
-          debug(error)
+        if (ctx.session.actions) {
+          try {
+            await ctx.tg.editMessageText(
+              gameState.user_w,
+              gameState.actions_w,
+              undefined,
+              bottomMessage(movesState, gameState, true),
+              actions()
+            )
+          }
+          catch (error) {
+            debug(error)
+          }
         }
 
-        try {
-          await ctx.tg.editMessageText(
-            gameState.user_b,
-            gameState.actions_b,
-            undefined,
-            bottomMessage(movesState, gameState, false),
-            actions()
-          )
+        if (ctx.session.board) {
+          try {
+            await ctx.tg.editMessageText(
+              gameState.user_b,
+              gameState.board_b,
+              undefined,
+              topMessage(movesState, gameState, false) + statusMessage(status),
+              board(status.board.squares, false)
+            )
+          }
+          catch (error) {
+            debug(error)
+          }
         }
-        catch (error) {
-          debug(error)
+
+        if (ctx.session.actions) {
+          try {
+            await ctx.tg.editMessageText(
+              gameState.user_b,
+              gameState.actions_b,
+              undefined,
+              bottomMessage(movesState, gameState, false),
+              actions()
+            )
+          }
+          catch (error) {
+            debug(error)
+          }
         }
 
         break
