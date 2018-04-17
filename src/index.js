@@ -65,8 +65,12 @@ bot.action(
         .update({ user_b: ctx.from.id })
     }
 
+    if (ctx.session.listMessage) {
+      await ctx.deleteMessage(ctx.session.listMessage.message_id)
+      ctx.session.listMessage = null
+    }
+
     ctx.session.gameId = gameState.id
-    ctx.deleteMessage(ctx.session.listMessage.message_id)
     ctx.scene.enter('game')
 
     return ctx.answerCbQuery()
