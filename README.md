@@ -1,13 +1,14 @@
-# The chess bot for Telegram messenger
+# The PvP chess bot for the Telegram
 
 ## Overview
 
-A simple implementation of a chess game, based on editing a reply markup represetation of a chess board. Bot uses the `node-chess` package, which is driven by the algebraic notation of moves.
+A simple PvP chess game based on editing a reply markup of a chess board. The board built with callback buttons of an inline-keyboard. Bot uses the [`node-chess`](https://github.com/brozeph/node-chess) package, which is driven by the algebraic notation of moves.
 
-### **Features:**
+#### Features:
 
-- Multiplayer
-- Multiroom
+- The chess board based on inline keyboard buttons and editing of reply markup.
+- PvP - play with friends.
+- All moves stored in the DB, so you can play a few games simultaneously.
 
 ## Usage
 
@@ -15,11 +16,27 @@ A simple implementation of a chess game, based on editing a reply markup represe
 
 ### Commands
 
-/start
+- `/start` - shows a list of available for join games and the `Create new game` button. *It is the default state.* 
 
-## Install and run own instance
 
-First of all clone this repository and install dependencies. Run in the terminal:
+
+Each list item contains id's of players and completed moves count. The first id is always for a white player. If it is your id, then there will be **`YOU`** word, instead of id. Your turn marker will be shown if the game needs your attention (your turn now).
+
+Select the game you need now:
+
+
+
+All buttons are clickable and boards will be updated right after you or your opponent had made a turn. The star near a player's id means it is a turn of a side where it placed now.
+
+#### Buttons:
+
+- **Back** - return to the list of games
+- **Reverse** - *NOT IMPLEMENTED YET*
+- **Index** - *NOT IMPLEMENTED YET*
+
+## Install and run own bot instance
+
+First clone this repository and install dependencies. Run in the terminal:
 
 ```bash
 git clone git@github.com:Piterden/chessbot.git
@@ -34,10 +51,23 @@ cp .env.example .env
 editor .env
 ```
 
+Next migrate the DB:
+
+```bash
+node_modules/.bin/knex migrate:latest
+```
+
+Then run the dev mode:
+
+```bash
+npm run dev
+```
+
 ## Built With
 
-- [Telegraf.js](https://github.com/telegraf/telegraf) - The bot framework.
-- [Node-Chess](https://github.com/brozeph/node-chess) - A simple node.js library for parsing and validating chess board position with an algebraic move parser
+- [Telegraf.js](https://github.com/telegraf/telegraf) - Telegram bot framework for Node.js.
+- [Node-Chess](https://github.com/brozeph/node-chess) - A simple node.js library for parsing and validating chess board position with an algebraic move parser.
+- [Knex](https://github.com/tgriesser/knex) - A query builder for PostgreSQL, MySQL and SQLite3, designed to be flexible, portable, and fun to use.
 
 ## Contributing
 
@@ -45,7 +75,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Authors
 
-- **Denis Efremov** - *Code* - [Piterden](https://github.com/Piterden)
+- **Denis Efremov** - *Code|Idea* - [Piterden](https://github.com/Piterden)
 
 ## License
 
