@@ -9,12 +9,14 @@ const isWhiteTurn = (moves) => !(moves.length % 2)
 
 module.exports = () => [
   async (ctx) => {
-    const gameState = await ctx.db('games')
-      .where({ id: ctx.session.gameId })
-      .first()
+    const games = await ctx.db('games')
+      .where('id', ctx.session.gameId)
+      .select()
+      
+    const gameState = games[0]
 
     const movesState = await ctx.db('moves')
-      .where({ game_id: ctx.session.gameId })
+      .where('game_id', ctx.session.gameId)
       .orderBy('created_at', 'asc')
       .select()
 
@@ -36,7 +38,7 @@ module.exports = () => [
     ctx.session.selected = null
     ctx.session.mode = 'select'
 
-    if (ctx.from.id === gameState.user_w) {
+    if (ctx.from.id === Number(gameState.user_w)) {
       let whiteBoardMsg
       let whiteActionsMsg
 
@@ -67,7 +69,7 @@ module.exports = () => [
         || whiteActionsMsg.message_id !== gameState.actions_w
       ) {
         try {
-          await ctx.db('games').where({ id: gameState.id }).update({
+          await ctx.db('games').where('id', gameState.id).update({
             board_w: whiteBoardMsg.message_id,
             actions_w: whiteActionsMsg.message_id,
           })
@@ -82,7 +84,7 @@ module.exports = () => [
       ctx.session.actions = whiteActionsMsg.message_id
     }
 
-    if (ctx.from.id === gameState.user_b) {
+    if (ctx.from.id === Number(gameState.user_b)) {
       let blackBoardMsg
       let blackActionsMsg
 
@@ -113,7 +115,7 @@ module.exports = () => [
         || blackActionsMsg.message_id !== gameState.actions_b
       ) {
         try {
-          await ctx.db('games').where({ id: gameState.id }).update({
+          await ctx.db('games').where('id', gameState.id).update({
             board_b: blackBoardMsg.message_id,
             actions_b: blackActionsMsg.message_id,
           })

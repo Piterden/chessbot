@@ -14,8 +14,8 @@
     "chess": "^0.2.8",
     "dotenv": "^5.0.1",
     "knex": "^0.14.6",
-    "mysql": "^2.15.0",
     "nodemon": "^1.17.3",
+    "pg": "^7.4.1",
     "telegraf": "^3.20.0"
   },
   "devDependencies": {
