@@ -56,7 +56,7 @@ bot.action(
   /^join\/(\d+)$/,
   async (ctx) => {
     const gameState = await ctx.db('games')
-      .where({ id: Number(ctx.match[1]) })
+      .where('id', Number(ctx.match[1]))
       .first()
 
     if (!gameState.user_b && gameState.user_w !== ctx.from.id) {
