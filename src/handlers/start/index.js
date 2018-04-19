@@ -12,7 +12,7 @@ module.exports = () => [
     const games = await ctx.db('games')
       .where('id', ctx.session.gameId)
       .select()
-      
+
     const gameState = games[0]
 
     const movesState = await ctx.db('moves')

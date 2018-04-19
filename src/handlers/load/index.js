@@ -1,7 +1,7 @@
-const { debug } = require('../../helpers')
+// const { debug } = require('../../helpers')
 
 
-const COLS = 2
+// const COLS = 2
 
 // eslint-disable-next-line no-magic-numbers
 const isWhiteTurn = (moves) => !(moves.length % 2)
@@ -30,7 +30,8 @@ module.exports = () => [
       .orWhere('user_w', ctx.from.id)
       .select()
 
-    games = await Promise.all(games.map(async (game) => ({ ...game,
+    games = await Promise.all(games.map(async (game) => ({
+      ...game,
       moves: await ctx.db('moves')
         .where('game_id', game.id)
         .orderBy('created_at', 'asc')

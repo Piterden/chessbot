@@ -4,7 +4,7 @@ const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-const { debug } = require('./helpers')
+// const { debug } = require('./helpers')
 const { gameScene } = require('./scenes')
 const { loadHandler } = require('./handlers')
 
@@ -43,7 +43,7 @@ bot.start(...loadHandler())
 bot.action(
   /^new$/,
   async (ctx) => {
-    const gameIds = await ctx.db('games')
+    const [gameId] = await ctx.db('games')
       .returning('id')
       .insert({ user_w: ctx.from.id })
 
@@ -52,7 +52,7 @@ bot.action(
       ctx.session.listMessage = null
     }
 
-    ctx.session.gameId = gameIds[0]
+    ctx.session.gameId = gameId
     ctx.scene.enter('game')
 
     return ctx.answerCbQuery()
@@ -65,7 +65,7 @@ bot.action(
     const games = await ctx.db('games')
       .where('id', Number(ctx.match[1]))
       .select()
-      
+
     const gameState = games[0]
 
     if (!gameState.user_b && Number(gameState.user_w) !== ctx.from.id) {
