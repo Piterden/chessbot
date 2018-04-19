@@ -18,13 +18,13 @@ A simple PvP chess game based on editing a reply markup of a chess board. The bo
 
 - `/start` - shows a list of available for join games and the `Create new game` button. *It is the default state.* 
 
-
+![](img/1.png)
 
 Each list item contains id's of players and completed moves count. The first id is always for a white player. If it is your id, then there will be **`YOU`** word, instead of id. Your turn marker will be shown if the game needs your attention (your turn now).
 
 Select the game you need now:
 
-
+![](img/2.png)
 
 All buttons are clickable and boards will be updated right after you or your opponent had made a turn. The star near a player's id means it is a turn of a side where it placed now.
 
