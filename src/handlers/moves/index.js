@@ -118,10 +118,15 @@ module.exports = () => [
 
           status = gameClient.getStatus()
 
-          await ctx.db('moves').insert({
-            game_id: ctx.session.gameId,
-            move: moving.key,
-          })
+          try {
+            await ctx.db('moves').insert({
+              game_id: ctx.session.gameId,
+              move: moving.key,
+            })
+          }
+          catch (error) {
+            debug(error)
+          }
         }
 
         ctx.session.mode = 'select'

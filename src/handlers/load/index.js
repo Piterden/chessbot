@@ -1,8 +1,6 @@
 // const { debug } = require('../../helpers')
 
 
-// const COLS = 2
-
 // eslint-disable-next-line no-magic-numbers
 const isWhiteTurn = (moves) => !(moves.length % 2)
 
@@ -28,6 +26,7 @@ module.exports = () => [
       .whereNull('user_b')
       .orWhere('user_b', ctx.from.id)
       .orWhere('user_w', ctx.from.id)
+      .orderBy('created_at', 'asc')
       .select()
 
     games = await Promise.all(games.map(async (game) => ({
@@ -46,7 +45,7 @@ module.exports = () => [
 
     const listMessage = await ctx.replyWithMarkdown(
       `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
-  ${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
+${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
       {
         reply_markup: {
           inline_keyboard: inlineKeyboard,

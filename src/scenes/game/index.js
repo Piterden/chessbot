@@ -1,5 +1,3 @@
-// const Stage = require('telegraf/stage')
-// const Markup = require('telegraf/markup')
 const Scene = require('telegraf/scenes/base')
 
 const {

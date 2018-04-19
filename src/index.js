@@ -4,7 +4,7 @@ const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-// const { debug } = require('./helpers')
+const { debug } = require('./helpers')
 const { gameScene } = require('./scenes')
 const { loadHandler } = require('./handlers')
 
@@ -48,7 +48,12 @@ bot.action(
       .insert({ user_w: ctx.from.id })
 
     if (ctx.session.listMessage) {
-      await ctx.deleteMessage(ctx.session.listMessage.message_id)
+      try {
+        await ctx.deleteMessage(ctx.session.listMessage.message_id)
+      }
+      catch (error) {
+        debug(error)
+      }
       ctx.session.listMessage = null
     }
 
@@ -75,7 +80,12 @@ bot.action(
     }
 
     if (ctx.session.listMessage) {
-      await ctx.deleteMessage(ctx.session.listMessage.message_id)
+      try {
+        await ctx.deleteMessage(ctx.session.listMessage.message_id)
+      }
+      catch (error) {
+        debug(error)
+      }
       ctx.session.listMessage = null
     }
 
