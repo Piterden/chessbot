@@ -65,8 +65,8 @@ module.exports = () => [
       }
 
       if (
-        whiteBoardMsg.message_id !== gameState.board_w
-        || whiteActionsMsg.message_id !== gameState.actions_w
+        whiteBoardMsg.message_id !== Number(gameState.board_w)
+        || whiteActionsMsg.message_id !== Number(gameState.actions_w)
       ) {
         try {
           await ctx.db('games').where('id', gameState.id).update({
@@ -111,8 +111,8 @@ module.exports = () => [
       }
 
       if (
-        blackBoardMsg.message_id !== gameState.board_b
-        || blackActionsMsg.message_id !== gameState.actions_b
+        blackBoardMsg.message_id !== Number(gameState.board_b)
+        || blackActionsMsg.message_id !== Number(gameState.actions_b)
       ) {
         try {
           await ctx.db('games').where('id', gameState.id).update({
@@ -130,6 +130,6 @@ module.exports = () => [
       ctx.session.actions = blackActionsMsg.message_id
     }
 
-    return ctx.answerCbQuery(isWhiteTurn(movesState) ? 'White' : 'Black')
+    return ctx.answerCbQuery()
   },
 ]
