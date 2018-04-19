@@ -6,12 +6,12 @@
 // eslint-disable-next-line no-magic-numbers
 const isWhiteTurn = (moves) => !(moves.length % 2)
 
-const whiteUserName = (ctx, game) => game.user_w === ctx.from.id
+const whiteUserName = (ctx, game) => Number(game.user_w) === ctx.from.id
   ? `${isWhiteTurn(game.moves) ? '!!! ' : ''}YOU`
   : game.user_w
 
 const blackUserName = (ctx, game) => {
-  if (ctx.from.id === game.user_b) {
+  if (ctx.from.id === Number(game.user_b)) {
     return `YOU${!isWhiteTurn(game.moves) ? ' !!!' : ''}`
   }
   return game.user_b ? game.user_b : 'Waiting...'
