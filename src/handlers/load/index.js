@@ -1,4 +1,4 @@
-// const { debug } = require('../../helpers')
+const { debug } = require('../../helpers')
 
 
 // eslint-disable-next-line no-magic-numbers
@@ -22,6 +22,14 @@ const gameButton = (ctx, game) => ({
 
 module.exports = () => [
   async (ctx) => {
+    const [user] = await ctx.db('users')
+      .where('id', ctx.from.id)
+      .select()
+      
+    // const user = users[0]
+                
+    debug(user)
+                    
     let games = await ctx.db('games')
       .whereNull('user_b')
       .orWhere('user_b', ctx.from.id)

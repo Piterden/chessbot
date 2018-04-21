@@ -9,12 +9,6 @@ const isWhiteTurn = (moves) => !(moves.length % 2)
 
 module.exports = () => [
   async (ctx) => {
-    const user = await ctx.db('users')
-      .where('id', ctx.from.id)
-      .first()
-
-    debug(user)
-
     const games = await ctx.db('games')
       .where('id', ctx.session.gameId)
       .select()
