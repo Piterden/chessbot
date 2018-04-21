@@ -3,10 +3,10 @@ require('dotenv').load()
 
 const {
   DB_CLIENT, DB_DATABASE, DB_USERNAME, DB_PASSWORD, DB_CHARSET,
-  DB_MIGRATIONS_TABLE,
-} = process.env
+  DB_MIGRATIONS_TABLE, NODE_ENV,
+} = process.env 
 
-module.exports = {
+const config = {
   development: {
     client: DB_CLIENT,
     connection: {
@@ -58,3 +58,6 @@ module.exports = {
     },
   },
 }
+
+module.exports = config[NODE_ENV]
+

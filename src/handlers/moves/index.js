@@ -29,22 +29,24 @@ const isReady = (game) => !!(
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
-    const gameState = await ctx.db('games')
-      .where({ id: ctx.session.gameId })
-      .first()
+    const games = await ctx.db('games')
+      .where('id', ctx.session.gameId)
+      .select()
+
+    const gameState = games[0]
 
     if (!isReady(gameState)) {
-      return ctx.answerCbQuery('Waiting for 2 players...')
+      return ctx.answerCbQuery('Wait for second player...')
     }
 
     const movesState = await ctx.db('moves')
-      .where({ game_id: ctx.session.gameId })
+      .where('game_id', ctx.session.gameId)
       .orderBy('created_at', 'asc')
       .select()
 
     if (
-      (isWhiteTurn(movesState) && ctx.from.id === gameState.user_b)
-      || (!isWhiteTurn(movesState) && ctx.from.id === gameState.user_w)
+      (isWhiteTurn(movesState) && ctx.from.id === Number(gameState.user_b))
+      || (!isWhiteTurn(movesState) && ctx.from.id === Number(gameState.user_w))
     ) {
       return ctx.answerCbQuery('Not your turn! Please wait...')
     }
@@ -52,7 +54,12 @@ module.exports = () => [
     const gameClient = chess.create({ PGN: true })
 
     movesState.forEach(({ move }) => {
-      gameClient.move(move)
+      try {
+        gameClient.move(move)
+      }
+      catch (error) {
+        debug(error)
+      }
     })
 
     let moving
@@ -98,8 +105,8 @@ module.exports = () => [
         break
 
       case 'move':
-        moving = ctx.session.moves.find(({ dest: { file, rank } }) => file === square.file
-          && rank === square.rank)
+        moving = ctx.session.moves
+          .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
 
         if (moving && !movesState.find((move) => move.move === moving.key)) {
           try {
@@ -111,10 +118,15 @@ module.exports = () => [
 
           status = gameClient.getStatus()
 
-          await ctx.db('moves').insert({
-            game_id: ctx.session.gameId,
-            move: moving.key,
-          })
+          try {
+            await ctx.db('moves').insert({
+              game_id: ctx.session.gameId,
+              move: moving.key,
+            })
+          }
+          catch (error) {
+            debug(error)
+          }
         }
 
         ctx.session.mode = 'select'
@@ -129,6 +141,19 @@ module.exports = () => [
               undefined,
               topMessage(movesState, gameState, true) + statusMessage(status),
               board(status.board.squares, true)
+            )
+          }
+          catch (error) {
+            debug(error)
+          }
+
+          try {
+            await ctx.tg.editMessageText(
+              gameState.user_b,
+              gameState.board_b,
+              undefined,
+              topMessage(movesState, gameState, false) + statusMessage(status),
+              board(status.board.squares, false)
             )
           }
           catch (error) {
@@ -149,24 +174,7 @@ module.exports = () => [
           catch (error) {
             debug(error)
           }
-        }
 
-        if (ctx.session.board) {
-          try {
-            await ctx.tg.editMessageText(
-              gameState.user_b,
-              gameState.board_b,
-              undefined,
-              topMessage(movesState, gameState, false) + statusMessage(status),
-              board(status.board.squares, false)
-            )
-          }
-          catch (error) {
-            debug(error)
-          }
-        }
-
-        if (ctx.session.actions) {
           try {
             await ctx.tg.editMessageText(
               gameState.user_b,

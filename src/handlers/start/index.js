@@ -9,12 +9,20 @@ const isWhiteTurn = (moves) => !(moves.length % 2)
 
 module.exports = () => [
   async (ctx) => {
-    const gameState = await ctx.db('games')
-      .where({ id: ctx.session.gameId })
+    const user = await ctx.db('users')
+      .where('id', ctx.from.id)
       .first()
 
+    debug(user)
+
+    const games = await ctx.db('games')
+      .where('id', ctx.session.gameId)
+      .select()
+
+    const gameState = games[0]
+
     const movesState = await ctx.db('moves')
-      .where({ game_id: ctx.session.gameId })
+      .where('game_id', ctx.session.gameId)
       .orderBy('created_at', 'asc')
       .select()
 
@@ -36,7 +44,7 @@ module.exports = () => [
     ctx.session.selected = null
     ctx.session.mode = 'select'
 
-    if (ctx.from.id === gameState.user_w) {
+    if (ctx.from.id === Number(gameState.user_w)) {
       let whiteBoardMsg
       let whiteActionsMsg
 
@@ -63,11 +71,11 @@ module.exports = () => [
       }
 
       if (
-        whiteBoardMsg.message_id !== gameState.board_w
-        || whiteActionsMsg.message_id !== gameState.actions_w
+        whiteBoardMsg.message_id !== Number(gameState.board_w)
+        || whiteActionsMsg.message_id !== Number(gameState.actions_w)
       ) {
         try {
-          await ctx.db('games').where({ id: gameState.id }).update({
+          await ctx.db('games').where('id', gameState.id).update({
             board_w: whiteBoardMsg.message_id,
             actions_w: whiteActionsMsg.message_id,
           })
@@ -82,7 +90,7 @@ module.exports = () => [
       ctx.session.actions = whiteActionsMsg.message_id
     }
 
-    if (ctx.from.id === gameState.user_b) {
+    if (ctx.from.id === Number(gameState.user_b)) {
       let blackBoardMsg
       let blackActionsMsg
 
@@ -109,11 +117,11 @@ module.exports = () => [
       }
 
       if (
-        blackBoardMsg.message_id !== gameState.board_b
-        || blackActionsMsg.message_id !== gameState.actions_b
+        blackBoardMsg.message_id !== Number(gameState.board_b)
+        || blackActionsMsg.message_id !== Number(gameState.actions_b)
       ) {
         try {
-          await ctx.db('games').where({ id: gameState.id }).update({
+          await ctx.db('games').where('id', gameState.id).update({
             board_b: blackBoardMsg.message_id,
             actions_b: blackActionsMsg.message_id,
           })
@@ -128,6 +136,6 @@ module.exports = () => [
       ctx.session.actions = blackActionsMsg.message_id
     }
 
-    return ctx.answerCbQuery(isWhiteTurn(movesState) ? 'White' : 'Black')
+    return ctx.answerCbQuery()
   },
 ]

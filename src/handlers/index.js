@@ -1,3 +1,5 @@
+const newHandler = require('./new')
+const joinHandler = require('./join')
 const loadHandler = require('./load')
 const leaveHandler = require('./leave')
 const movesHandler = require('./moves')
@@ -6,6 +8,8 @@ const actionsHandler = require('./actions')
 
 
 module.exports = {
+  newHandler,
+  joinHandler,
   loadHandler,
   leaveHandler,
   movesHandler,

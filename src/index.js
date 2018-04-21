@@ -4,9 +4,8 @@ const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-// const { debug } = require('./helpers')
 const { gameScene } = require('./scenes')
-const { loadHandler } = require('./handlers')
+const { loadHandler, joinHandler, newHandler } = require('./handlers')
 
 
 const { session } = Telegraf
@@ -18,7 +17,9 @@ const {
 const stage = new Stage([gameScene], { ttl: 120 })
 
 const bot = new Telegraf(BOT_TOKEN, {
-  telegram: { webhookReply: false },
+  telegram: {
+    webhookReply: false,
+  },
   username: BOT_NAME,
 })
 
@@ -37,44 +38,7 @@ bot.use(session())
 bot.use(stage.middleware())
 
 bot.start(...loadHandler())
-
-bot.action(
-  /^new$/,
-  async (ctx) => {
-    const gameId = await ctx.db('games')
-      .insert({ user_w: ctx.from.id })
-
-    ctx.session.gameId = gameId
-    ctx.deleteMessage(ctx.session.listMessage.message_id)
-    ctx.scene.enter('game')
-
-    return ctx.answerCbQuery()
-  }
-)
-
-bot.action(
-  /^join\/(\d+)$/,
-  async (ctx) => {
-    const gameState = await ctx.db('games')
-      .where('id', Number(ctx.match[1]))
-      .first()
-
-    if (!gameState.user_b && gameState.user_w !== ctx.from.id) {
-      await ctx.db('games')
-        .where({ id: gameState.id })
-        .update({ user_b: ctx.from.id })
-    }
-
-    if (ctx.session.listMessage) {
-      await ctx.deleteMessage(ctx.session.listMessage.message_id)
-      ctx.session.listMessage = null
-    }
-
-    ctx.session.gameId = gameState.id
-    ctx.scene.enter('game')
-
-    return ctx.answerCbQuery()
-  }
-)
+bot.action(...newHandler())
+bot.action(...joinHandler())
 
 bot.startPolling()
