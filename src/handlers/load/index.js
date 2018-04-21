@@ -43,7 +43,7 @@ module.exports = () => [
       { text: 'Create a new game', callback_data: 'new' },
     ])
 
-    const listMessage = await ctx.replyWithMarkdown(
+    ctx.session.listMessage = await ctx.replyWithMarkdown(
       `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
 ${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
       {
@@ -52,7 +52,5 @@ ${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
         },
       }
     )
-
-    ctx.session.listMessage = listMessage
   },
 ]
