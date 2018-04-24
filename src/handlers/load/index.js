@@ -33,7 +33,7 @@ const unescapeUser = (user) => Object.keys(user).reduce((acc, key) => {
 module.exports = () => [
   async (ctx) => {
     let user = await ctx.db('users').where('id', ctx.from.id).first()
-    
+
     if (typeof user === 'undefined') {
       const users = await ctx.db('users')
         .insert(escapeUser(ctx.from))
@@ -44,9 +44,9 @@ module.exports = () => [
     else {
       await ctx.db('users').where('id', user.id).update(escapeUser(ctx.from))
     }
-                                                      
+
     debug(user)
-                    
+
     let games = await ctx.db('games')
       .whereNull('user_b')
       .orWhere('user_b', ctx.from.id)
