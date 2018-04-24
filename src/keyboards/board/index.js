@@ -5,16 +5,14 @@ const { emodji } = require('../../helpers')
 
 const { Markup } = Telegraf
 
-const reversed = (markup) => markup.map((row) => row.reverse()).reverse()
-
-const result = (board, isWhite) => {
+module.exports = (board, isWhite) => {
   const horizontal = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-  const vertical = [1, 2, 3, 4, 5, 6, 7, 8] // eslint-disable-line no-magic-numbers
+  const vertical = [8, 7, 6, 5, 4, 3, 2, 1] // eslint-disable-line no-magic-numbers
 
-  const boardMarkup = vertical.map((row) => horizontal.map((col) => {
+  const boardMarkup = vertical.map((row, rowIdx) => horizontal.map((col) => {
     const square = board
       .find(({ file, rank }) => file === col && rank === row)
-
+      
     if (square && square.piece) {
       return square.destination
         ? {
@@ -29,11 +27,12 @@ const result = (board, isWhite) => {
 
     return square.destination
       ? { text: 'O', callback_data: `${col}${row}` }
-      : { text: 'ᅠ', callback_data: `${col}${row}` }
+      : { text: unescape('%u1160'), callback_data: `${col}${row}` }
   }))
 
-  return Markup.inlineKeyboard(isWhite ? reversed(boardMarkup) : boardMarkup)
-    .extra()
+  return Markup.inlineKeyboard(
+    isWhite
+      ? boardMarkup
+      : boardMarkup.map((row) => row.reverse()).reverse()
+  ).extra()
 }
-
-module.exports = result

@@ -14,7 +14,7 @@ const {
   DB_PASSWORD, DB_CHARSET,
 } = process.env
 
-const stage = new Stage([gameScene], { ttl: 120 })
+const stage = new Stage([gameScene])
 
 const bot = new Telegraf(BOT_TOKEN, {
   telegram: {
