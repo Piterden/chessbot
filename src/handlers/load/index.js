@@ -20,14 +20,31 @@ const gameButton = (ctx, game) => ({
   callback_data: `join/${game.id}`,
 })
 
+const escapeUser = (user) => Object.keys(user).reduce((acc, key) => {
+  acc[key] = escape(user[key])
+  return acc
+}, {})
+
+const unescapeUser = (user) => Object.keys(user).reduce((acc, key) => {
+  acc[key] = unescape(user[key])
+  return acc
+}, {})
+
 module.exports = () => [
   async (ctx) => {
-    const [user] = await ctx.db('users')
-      .where('id', ctx.from.id)
-      .select()
-      
-    // const user = users[0]
-                
+    let user = await ctx.db('users').where('id', ctx.from.id).first()
+    
+    if (typeof user === 'undefined') {
+      const users = await ctx.db('users')
+        .insert(escapeUser(ctx.from))
+        .returning(Object.keys(ctx.from))
+
+      user = unescapeUser(users[0]) // eslint-disable-line prefer-destructuring
+    }
+    else {
+      await ctx.db('users').where('id', user.id).update(escapeUser(ctx.from))
+    }
+                                                      
     debug(user)
                     
     let games = await ctx.db('games')
@@ -51,7 +68,7 @@ module.exports = () => [
       { text: 'Create a new game', callback_data: 'new' },
     ])
 
-    const listMessage = await ctx.replyWithMarkdown(
+    ctx.session.listMessage = await ctx.replyWithMarkdown(
       `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
 ${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
       {
@@ -60,7 +77,5 @@ ${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
         },
       }
     )
-
-    ctx.session.listMessage = listMessage
   },
 ]
