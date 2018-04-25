@@ -10,18 +10,13 @@ const { loadHandler, joinHandler, newHandler } = require('./handlers')
 
 const { session } = Telegraf
 const {
-  BOT_NAME, BOT_TOKEN, DB_CLIENT, DB_HOST, DB_DATABASE, DB_USERNAME,
-  DB_PASSWORD, DB_CHARSET,
+  BOT_NAME, BOT_TOKEN,
+  DB_CLIENT, DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD, DB_CHARSET,
 } = process.env
 
 const stage = new Stage([gameScene])
 
-const bot = new Telegraf(BOT_TOKEN, {
-  telegram: {
-    webhookReply: false,
-  },
-  username: BOT_NAME,
-})
+const bot = new Telegraf(BOT_TOKEN, { username: BOT_NAME })
 
 bot.context.db = knex({
   client: DB_CLIENT,

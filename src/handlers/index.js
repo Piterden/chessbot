@@ -5,6 +5,7 @@ const leaveHandler = require('./leave')
 const movesHandler = require('./moves')
 const startHandler = require('./start')
 const actionsHandler = require('./actions')
+const optionsHandler = require('./options')
 
 
 module.exports = {
@@ -15,4 +16,5 @@ module.exports = {
   movesHandler,
   startHandler,
   actionsHandler,
+  optionsHandler,
 }

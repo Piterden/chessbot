@@ -3,10 +3,14 @@ const Telegraf = require('telegraf')
 
 const { Markup } = Telegraf
 
-module.exports = () => Markup.inlineKeyboard([
+module.exports = (open = false) => Markup.inlineKeyboard([
   [
-    { text: 'Back', callback_data: 'back' },
-    { text: 'Reverse', callback_data: 'reverse' },
-    { text: 'Index', callback_data: 'index' },
+    Markup.callbackButton('◀️ Back to Games List', 'back'),
+    Markup.callbackButton('Game Options 🔽', 'options/show', open),
+    Markup.callbackButton('Game Options 🔼', 'options/hide', !open),
+  ],
+  [
+    Markup.callbackButton('Rename Game', 'reverse', !open),
+    Markup.callbackButton('Index', 'index', !open),
   ],
 ]).extra()
