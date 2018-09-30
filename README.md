@@ -1,5 +1,7 @@
 # The PvP chess bot for the Telegram
 
+[![Join the chat at https://gitter.im/tg-chessbot/Lobby](https://badges.gitter.im/tg-chessbot/Lobby.svg)](https://gitter.im/tg-chessbot/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Overview
 
 A simple PvP chess game based on editing a reply markup of a chess board. The board built with callback buttons of an inline-keyboard. Bot uses the [`node-chess`](https://github.com/brozeph/node-chess) package, which is driven by the algebraic notation of moves.
