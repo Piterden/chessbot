@@ -1,5 +1,5 @@
 extends: '@atomix/eslint-config'
-parser: babel-eslint
+# parser: babel-eslint
 rules:
   no-console: 0
   unicorn/filename-case: 0

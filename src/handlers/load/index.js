@@ -32,7 +32,9 @@ const unescapeUser = (user) => Object.keys(user).reduce((acc, key) => {
 
 module.exports = () => [
   async (ctx) => {
-    let user = await ctx.db('users').where('id', ctx.from.id).first()
+    let user = await ctx.db('users')
+      .where('id', ctx.from.id)
+      .first()
 
     if (typeof user === 'undefined') {
       const users = await ctx.db('users')
@@ -42,7 +44,9 @@ module.exports = () => [
       user = unescapeUser(users[0]) // eslint-disable-line prefer-destructuring
     }
     else {
-      await ctx.db('users').where('id', user.id).update(escapeUser(ctx.from))
+      await ctx.db('users')
+        .where('id', user.id)
+        .update(escapeUser(ctx.from))
     }
 
     debug(user)
@@ -62,20 +66,24 @@ module.exports = () => [
         .select(),
     })))
 
-    const inlineKeyboard = games.map((game) => [gameButton(ctx, game)])
+    const keyboard = [
+      ...games.map((game) => [gameButton(ctx, game)]),
+      [{ text: 'Create a new game', callback_data: 'new' }],
+    ]
 
-    inlineKeyboard.push([
-      { text: 'Create a new game', callback_data: 'new' },
-    ])
-
-    ctx.session.listMessage = await ctx.replyWithMarkdown(
-      `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
-${inlineKeyboard.length > 1 ? '\n*Available games:*' : ''}`,
-      {
-        reply_markup: {
-          inline_keyboard: inlineKeyboard,
-        },
-      }
-    )
+    try {
+      ctx.session.listMessage = await ctx.replyWithMarkdown(
+        `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
+  ${keyboard.length > 1 ? '\n*Available games:*' : ''}`,
+        {
+          reply_markup: {
+            inline_keyboard: keyboard,
+          },
+        }
+      )
+    }
+    catch (error) {
+      debug(error)
+    }
   },
 ]

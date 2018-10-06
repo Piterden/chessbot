@@ -20,6 +20,16 @@ module.exports = () => [
       .orderBy('created_at', 'asc')
       .select()
 
+    const whiteUsers = await ctx.db('users')
+      .where('id', Number(gameState.user_w))
+      .select()
+    const whiteUser = whiteUsers[0]
+
+    const blackUsers = await ctx.db('users')
+      .where('id', Number(gameState.user_b))
+      .select()
+    const blackUser = blackUsers[0]
+
     const gameClient = chess.create({ PGN: true })
 
     movesState.forEach((move) => {
@@ -44,7 +54,7 @@ module.exports = () => [
 
       try {
         whiteBoardMsg = await ctx.reply(
-          `${!isWhiteTurn(movesState) ? '*' : ''} (BLACK) User ${gameState.user_b || 'waiting...'}`,
+          `${!isWhiteTurn(movesState) ? '*' : ''} (BLACK) User ${unescape(blackUser.first_name) || 'waiting...'}`,
           board(status.board.squares, true)
         )
       }
@@ -90,7 +100,7 @@ module.exports = () => [
 
       try {
         blackBoardMsg = await ctx.reply(
-          `${isWhiteTurn(movesState) ? '*' : ''} (WHITE) User ${gameState.user_w}`,
+          `${isWhiteTurn(movesState) ? '*' : ''} (WHITE) User ${unescape(whiteUser.first_name)}`,
           board(status.board.squares, false)
         )
       }

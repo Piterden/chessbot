@@ -6,8 +6,14 @@ const { emodji } = require('../../helpers')
 const { Markup } = Telegraf
 
 module.exports = (board, isWhite) => {
-  const horizontal = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-  const vertical = [8, 7, 6, 5, 4, 3, 2, 1] // eslint-disable-line no-magic-numbers
+  const horizontal = 'abcdefgh'.split('')
+  const vertical = new Array(8) // eslint-disable-line no-magic-numbers
+    .fill(0)
+    .reduce((a) => {
+      a.push(a.length + 1)
+      return a
+    }, [])
+    .reverse()
 
   const boardMarkup = vertical.map((row) => horizontal.map((col) => {
     const square = board

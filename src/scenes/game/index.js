@@ -1,7 +1,12 @@
 const Scene = require('telegraf/scenes/base')
 
 const {
-  movesHandler, startHandler, actionsHandler, leaveHandler, optionsHandler,
+  leaveHandler,
+  movesHandler,
+  startHandler,
+  actionsHandler,
+  messageHandler,
+  optionsHandler,
 } = require('../../handlers')
 
 
@@ -11,3 +16,4 @@ module.exports = new Scene('game')
   .action(...optionsHandler())
   .action(...movesHandler())
   .action(...actionsHandler())
+  .on(...messageHandler())

@@ -82,6 +82,8 @@ module.exports = () => [
           .filter((key) => status.notatedMoves[key].src === square)
           .map((key) => ({ ...status.notatedMoves[key], key }))
 
+
+
         try {
           await ctx.editMessageReplyMarkup(board(
             status.board.squares.map((sqr) => {

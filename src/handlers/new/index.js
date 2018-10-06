@@ -11,16 +11,16 @@ module.exports = () => [
     if (ctx.session.listMessage) {
       try {
         await ctx.deleteMessage(ctx.session.listMessage.message_id)
+
+        ctx.session.gameId = gameId
+        ctx.scene.enter('game')
+
+        return ctx.answerCbQuery()
       }
       catch (error) {
         debug(error)
+        ctx.session.listMessage = null
       }
-      ctx.session.listMessage = null
     }
-
-    ctx.session.gameId = gameId
-    ctx.scene.enter('game')
-
-    return ctx.answerCbQuery()
   },
 ]
