@@ -14,13 +14,13 @@ module.exports = () => [
 
         ctx.session.gameId = gameId
         ctx.scene.enter('game')
-
-        return ctx.answerCbQuery()
       }
       catch (error) {
         debug(error)
         ctx.session.listMessage = null
       }
     }
+
+    return ctx.answerCbQuery()
   },
 ]

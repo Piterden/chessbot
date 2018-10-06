@@ -3,7 +3,6 @@ const chess = require('chess')
 const { debug } = require('../../helpers')
 const { board, actions } = require('../../keyboards')
 
-
 // eslint-disable-next-line no-magic-numbers
 const isWhiteTurn = (moves) => !(moves.length % 2)
 
@@ -81,8 +80,6 @@ module.exports = () => [
         moves = Object.keys(status.notatedMoves)
           .filter((key) => status.notatedMoves[key].src === square)
           .map((key) => ({ ...status.notatedMoves[key], key }))
-
-
 
         try {
           await ctx.editMessageReplyMarkup(board(
