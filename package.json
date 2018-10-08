@@ -19,5 +19,8 @@
     "nodemon": "^1.18.4",
     "pg": "^7.5.0",
     "telegraf": "^3.24.1"
+  },
+  "devDependencies": {
+    "aliasify": "^2.1.0"
   }
 }
