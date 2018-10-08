@@ -1,21 +1,20 @@
 module.exports = () => [
-  'message',
+  'text',
   async (ctx) => {
-    const games = await ctx.db('games')
-      .orWhere({ user_b: ctx.from.id, user_w: ctx.from.id })
-      .select()
+    const gameState = await ctx.db('games')
+      .where('id', ctx.session.gameId)
+      .first()
 
-    if (games.length === 0) {
+    if (!gameState) {
       return true
     }
 
-    const gameState = games[0]
-    const to = gameState.user_w === ctx.chat.id
-      ? gameState.user_b
-      : gameState.user_w
+    const to = Number(gameState.user_w) === ctx.from.id
+      ? Number(gameState.user_b)
+      : Number(gameState.user_w)
 
-    ctx.tg.sendMessage(to, `Message from ${ctx.from.first_name}
-
+    await ctx.tg.sendMessage(to, `${ctx.from.first_name}
+-----------------------------
 ${ctx.message.text}`)
 
     return true

@@ -4,19 +4,36 @@ const { debug } = require('../../helpers')
 // eslint-disable-next-line no-magic-numbers
 const isWhiteTurn = (moves) => !(moves.length % 2)
 
-const whiteUserName = (ctx, game) => Number(game.user_w) === ctx.from.id
-  ? `${isWhiteTurn(game.moves) ? '!!! ' : ''}YOU`
-  : game.user_w
+const whiteUserName = async (ctx, game) => {
+  if (Number(game.user_w) === ctx.from.id) {
+    return `${isWhiteTurn(game.moves) ? '!!! ' : ''}YOU`
+  }
 
-const blackUserName = (ctx, game) => {
+  if (game.user_w) {
+    const user = await ctx.db('users').where('id', Number(game.user_w)).first()
+
+    return user ? unescape(user.first_name) : 'No player'
+  }
+
+  return 'No player'
+}
+
+const blackUserName = async (ctx, game) => {
   if (ctx.from.id === Number(game.user_b)) {
     return `YOU${!isWhiteTurn(game.moves) ? ' !!!' : ''}`
   }
-  return game.user_b ? game.user_b : 'Waiting...'
+
+  if (game.user_b) {
+    const user = await ctx.db('users').where('id', Number(game.user_b)).first()
+
+    return user ? unescape(user.first_name) : 'Waiting...'
+  }
+
+  return 'Waiting...'
 }
 
-const gameButton = (ctx, game) => ({
-  text: `${whiteUserName(ctx, game)} / ${blackUserName(ctx, game)} | ${game.moves.length} moves`,
+const gameButton = async (ctx, game) => ({
+  text: `${await whiteUserName(ctx, game)} / ${await blackUserName(ctx, game)} | ${game.moves.length} moves`,
   callback_data: `join/${game.id}`,
 })
 
@@ -67,7 +84,7 @@ module.exports = () => [
     })))
 
     const keyboard = [
-      ...games.map((game) => [gameButton(ctx, game)]),
+      ...(await Promise.all(games.map(async (game) => [await gameButton(ctx, game)]))),
       [{ text: 'Create a new game', callback_data: 'new' }],
     ]
 
