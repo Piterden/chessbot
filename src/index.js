@@ -1,11 +1,12 @@
 require('dotenv').load()
+require('module-alias/register')
 
 const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-const { gameScene } = require('./scenes')
-const { loadHandler, joinHandler, newHandler } = require('./handlers')
+const { gameScene } = require('@/scenes')
+const { loadHandler, joinHandler, newHandler } = require('@/handlers')
 
 
 const { session } = Telegraf

@@ -1,6 +1,6 @@
 const Telegraf = require('telegraf')
 
-const { emodji } = require('../../helpers')
+const { emodji } = require('@/helpers')
 
 
 const { Markup } = Telegraf

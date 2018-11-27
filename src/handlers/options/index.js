@@ -1,4 +1,4 @@
-const { actions } = require('../../keyboards')
+const { actions } = require('@/keyboards')
 
 
 module.exports = () => [

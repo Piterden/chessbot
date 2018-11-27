@@ -1,4 +1,4 @@
-const { debug } = require('../../helpers')
+const { debug } = require('@/helpers')
 
 
 // eslint-disable-next-line no-magic-numbers

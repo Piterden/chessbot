@@ -7,7 +7,7 @@ const {
   actionsHandler,
   messageHandler,
   optionsHandler,
-} = require('../../handlers')
+} = require('@/handlers')
 
 
 module.exports = new Scene('game')

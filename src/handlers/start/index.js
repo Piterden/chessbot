@@ -1,7 +1,7 @@
 const chess = require('chess')
 
-const { debug } = require('../../helpers')
-const { board, actions } = require('../../keyboards')
+const { debug } = require('@/helpers')
+const { board, actions } = require('@/keyboards')
 
 
 // eslint-disable-next-line no-magic-numbers
