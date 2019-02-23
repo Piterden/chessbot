@@ -89,7 +89,7 @@ module.exports = () => [
     ]
 
     try {
-      ctx.session.listMessage = await ctx.replyWithMarkdown(
+      ctx.session.listMessage = await ctx.reply(
         `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
   ${keyboard.length > 1 ? '\n*Available games:*' : ''}`,
         {

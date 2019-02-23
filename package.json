@@ -20,10 +20,10 @@
     "dotenv": "^5.0.1",
     "eslint": "^4.19.1",
     "knex": "^0.14.6",
-    "module-alias": "^2.1.0",
-    "nodemon": "^1.18.7",
-    "pg": "^7.6.1",
-    "telegraf": "^3.25.0"
+    "module-alias": "^2.2.0",
+    "nodemon": "^1.18.10",
+    "pg": "^7.8.1",
+    "telegraf": "^3.27.1"
   },
   "_moduleAliases": {
     "@": "./src"

@@ -13,4 +13,8 @@ module.exports = (open = false) => Markup.inlineKeyboard([
     Markup.callbackButton('Rename Game', 'reverse', !open),
     Markup.callbackButton('Index', 'index', !open),
   ],
+  [
+    Markup.callbackButton('Game History', 'history', !open),
+    Markup.callbackButton('Show Last Move', 'last', !open),
+  ],
 ]).extra()

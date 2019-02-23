@@ -33,7 +33,7 @@ module.exports = (board, isWhite) => {
 
     return square.destination
       ? { text: 'O', callback_data: `${col}${row}` }
-      : { text: unescape('%u1160'), callback_data: `${col}${row}` }
+      : { text: unescape('%u0020'), callback_data: `${col}${row}` }
   }))
 
   return Markup.inlineKeyboard(isWhite
