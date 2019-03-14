@@ -15,15 +15,17 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@atomix/eslint-config": "^6.4.0",
     "chess": "^0.2.8",
     "dotenv": "^5.0.1",
-    "eslint": "^4.19.1",
     "knex": "^0.14.6",
     "module-alias": "^2.2.0",
     "nodemon": "^1.18.10",
     "pg": "^7.8.1",
     "telegraf": "^3.27.1"
+  },
+  "devDependencies": {
+    "@atomix/eslint-config": "^6.4.0",
+    "eslint": "^4.19.1",
   },
   "_moduleAliases": {
     "@": "./src"
