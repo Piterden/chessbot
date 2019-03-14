@@ -60,3 +60,5 @@ typings/
 
 *.traineddata
 files/
+
+package-lock.json
