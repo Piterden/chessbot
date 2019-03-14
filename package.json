@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@atomix/eslint-config": "^6.4.0",
-    "eslint": "^4.19.1",
+    "eslint": "^4.19.1"
   },
   "_moduleAliases": {
     "@": "./src"
