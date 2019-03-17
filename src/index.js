@@ -37,4 +37,8 @@ bot.start(...loadHandler())
 bot.action(...newHandler())
 bot.action(...joinHandler())
 
+bot.on('game', async (ctx) => {
+  console.log(ctx)
+})
+
 bot.startPolling()

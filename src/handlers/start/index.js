@@ -49,49 +49,38 @@ module.exports = () => [
     ctx.session.mode = 'select'
 
     if (ctx.from.id === Number(gameState.user_w)) {
-      let whiteBoardMsg
-      let whiteActionsMsg
+      const whiteBoardMsg = await ctx.reply(
+        `${!isWhiteTurn(movesState) ? '*' : ''} (BLACK) User ${blackUser ? unescape(blackUser.first_name) : 'waiting...'}`,
+        board(status.board.squares, true)
+      ).catch(debug)
 
-      try {
-        whiteBoardMsg = await ctx.reply(
-          `${!isWhiteTurn(movesState) ? '*' : ''} (BLACK) User ${unescape(blackUser.first_name) || 'waiting...'}`,
-          board(status.board.squares, true)
-        )
-      }
-      catch (error) {
-        debug('::whiteBoardMsg::')
-        debug(error)
-      }
+      const whiteActionsMsg = await ctx.reply(
+        `${isWhiteTurn(movesState) ? '*' : ''} (WHITE) YOU`,
+        actions()
+      ).catch(debug)
 
-      try {
-        whiteActionsMsg = await ctx.reply(
-          `${isWhiteTurn(movesState) ? '*' : ''} (WHITE) YOU`,
-          actions()
-        )
-      }
-      catch (error) {
-        debug('::whiteActionsMsg::')
-        debug(error)
-      }
-
-      if (
-        whiteBoardMsg.message_id !== Number(gameState.board_w)
-        || whiteActionsMsg.message_id !== Number(gameState.actions_w)
-      ) {
-        try {
-          await ctx.db('games').where('id', gameState.id).update({
-            board_w: whiteBoardMsg.message_id,
-            actions_w: whiteActionsMsg.message_id,
-          })
-        }
-        catch (error) {
-          debug('::whiteDBUPD::')
-          debug(error)
-        }
+      if (whiteBoardMsg.message_id !== Number(gameState.board_w)
+        || whiteActionsMsg.message_id !== Number(gameState.actions_w)) {
+        await ctx.db('games').where('id', gameState.id).update({
+          board_w: whiteBoardMsg.message_id,
+          actions_w: whiteActionsMsg.message_id,
+        }).catch(debug)
       }
 
       ctx.session.board = whiteBoardMsg.message_id
       ctx.session.actions = whiteActionsMsg.message_id
+
+      await ctx.replyWithGame('pvp', { reply_markup: {
+        inline_keyboard: [
+          [{
+            text: 'Test 1',
+            callback_game: 'pvp',
+          }, {
+            text: 'Test 2',
+            url: 'https://t.me/chessy_bot?game=pvp',
+          }]
+        ]
+      }}).catch(debug)
     }
 
     if (ctx.from.id === Number(gameState.user_b)) {
