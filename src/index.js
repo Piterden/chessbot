@@ -7,6 +7,7 @@ const Stage = require('telegraf/stage')
 
 const { gameScene } = require('@/scenes')
 const { loadHandler, joinHandler, newHandler } = require('@/handlers')
+const knexConfig = require('@/knex_config')
 
 
 const { session } = Telegraf
@@ -19,16 +20,7 @@ const stage = new Stage([gameScene])
 
 const bot = new Telegraf(BOT_TOKEN, { username: BOT_NAME })
 
-bot.context.db = knex({
-  client: DB_CLIENT,
-  connection: {
-    host: DB_HOST,
-    user: DB_USERNAME,
-    password: DB_PASSWORD,
-    database: DB_DATABASE,
-    charset: DB_CHARSET,
-  },
-})
+bot.context.db = knex(knexConfig)
 
 bot.use(session())
 bot.use(stage.middleware())
