@@ -7,13 +7,12 @@ const Stage = require('telegraf/stage')
 
 const { gameScene } = require('@/scenes')
 const { loadHandler, joinHandler, newHandler } = require('@/handlers')
-const knexConfig = require('@/knex_config')
+const knexConfig = require('@/knex-config')
 
 
 const { session } = Telegraf
 const {
   BOT_NAME, BOT_TOKEN,
-  DB_CLIENT, DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD, DB_CHARSET,
 } = process.env
 
 const stage = new Stage([gameScene])
