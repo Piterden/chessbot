@@ -86,45 +86,33 @@ module.exports = () => [
     }
 
     if (ctx.from.id === Number(gameState.user_b)) {
-      let blackBoardMsg
-      let blackActionsMsg
-
-      try {
-        blackBoardMsg = await ctx.reply(
-          `${isWhiteTurn(movesState) ? '*' : ''} (WHITE) User ${unescape(whiteUser.first_name)}`,
-          board(status.board.squares, false)
-        )
-      }
-      catch (error) {
+      const blackBoardMsg = await ctx.reply(
+        `${isWhiteTurn(movesState) ? '*' : ''} (WHITE) User ${unescape(whiteUser.first_name)}`,
+        board(status.board.squares, false)
+      ).catch((error) => {
         debug('::blackBoardMsg::')
         debug(error)
-      }
+      })
 
-      try {
-        blackActionsMsg = await ctx.reply(
-          `${!isWhiteTurn(movesState) ? '*' : ''} (BLACK) YOU`,
-          actions()
-        )
-      }
-      catch (error) {
+      const blackActionsMsg = await ctx.reply(
+        `${!isWhiteTurn(movesState) ? '*' : ''} (BLACK) YOU`,
+        actions()
+      ).catch((error) => {
         debug('::blackActionsMsg::')
         debug(error)
-      }
+      })
 
       if (
         blackBoardMsg.message_id !== Number(gameState.board_b)
         || blackActionsMsg.message_id !== Number(gameState.actions_b)
       ) {
-        try {
-          await ctx.db('games').where('id', gameState.id).update({
-            board_b: blackBoardMsg.message_id,
-            actions_b: blackActionsMsg.message_id,
-          })
-        }
-        catch (error) {
+        await ctx.db('games').where('id', gameState.id).update({
+          board_b: blackBoardMsg.message_id,
+          actions_b: blackActionsMsg.message_id,
+        }).catch((error) => {
           debug('::blackDBUPD::')
           debug(error)
-        }
+        })
       }
 
       ctx.session.board = blackBoardMsg.message_id
