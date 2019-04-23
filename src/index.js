@@ -6,7 +6,7 @@ const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
 const { gameScene } = require('@/scenes')
-const { loadHandler, joinHandler, newHandler } = require('@/handlers')
+const { inlineHandler, loadHandler, joinHandler, newHandler } = require('@/handlers')
 const knexConfig = require('@/knex-config')
 
 
@@ -24,6 +24,7 @@ bot.context.db = knex(knexConfig)
 bot.use(session())
 bot.use(stage.middleware())
 
+bot.on(...inlineHandler)
 bot.start(...loadHandler())
 bot.action(...newHandler())
 bot.action(...joinHandler())

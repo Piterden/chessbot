@@ -7,6 +7,7 @@ const startHandler = require('./start')
 const actionsHandler = require('./actions')
 const messageHandler = require('./message')
 const optionsHandler = require('./options')
+const inlineHandler = require('./inline')
 
 
 module.exports = {
@@ -19,4 +20,5 @@ module.exports = {
   actionsHandler,
   messageHandler,
   optionsHandler,
+  inlineHandler,
 }
