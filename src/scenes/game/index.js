@@ -9,7 +9,6 @@ const {
   optionsHandler,
 } = require('@/handlers')
 
-
 module.exports = new Scene('game')
   .leave(...leaveHandler())
   .enter(...startHandler())

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-exports.up = async (knex, Promise) => await knex.schema.hasTable('users')
+exports.up = async (knex, Promise) => (await knex.schema.hasTable('users'))
   ? null
   : knex.schema.createTable('users', (table) => {
     table.integer('id')
@@ -14,6 +14,6 @@ exports.up = async (knex, Promise) => await knex.schema.hasTable('users')
     table.primary('id')
   })
 
-exports.down = async (knex, Promise) => await knex.schema.hasTable('users')
+exports.down = async (knex, Promise) => (await knex.schema.hasTable('users'))
   ? knex.schema.dropTable('users')
   : null

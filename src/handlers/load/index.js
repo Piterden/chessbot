@@ -1,6 +1,5 @@
 const { debug } = require('@/helpers')
 
-
 // eslint-disable-next-line no-magic-numbers
 const isWhiteTurn = (moves) => !(moves.length % 2)
 
@@ -59,8 +58,7 @@ module.exports = () => [
         .returning(Object.keys(ctx.from))
 
       user = unescapeUser(users[0]) // eslint-disable-line prefer-destructuring
-    }
-    else {
+    } else {
       await ctx.db('users')
         .where('id', user.id)
         .update(escapeUser(ctx.from))
@@ -98,8 +96,7 @@ module.exports = () => [
           },
         }
       )
-    }
-    catch (error) {
+    } catch (error) {
       debug(error)
     }
   },

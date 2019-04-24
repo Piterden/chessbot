@@ -1,6 +1,5 @@
 const { debug } = require('@/helpers')
 
-
 module.exports = () => [
   /^new$/,
   async (ctx) => {
@@ -14,8 +13,7 @@ module.exports = () => [
 
         ctx.session.gameId = gameId
         ctx.scene.enter('game')
-      }
-      catch (error) {
+      } catch (error) {
         debug(error)
         ctx.session.listMessage = null
       }
