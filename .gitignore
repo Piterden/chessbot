@@ -61,4 +61,7 @@ typings/
 *.traineddata
 files/
 
-*-lock.json
+db.sqlite3
+
+package-lock.json
+yarn.lock

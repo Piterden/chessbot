@@ -67,20 +67,6 @@ module.exports = () => [
 
       ctx.session.board = whiteBoardMsg.message_id
       ctx.session.actions = whiteActionsMsg.message_id
-
-      await ctx.replyWithGame('pvp', {
-        reply_markup: {
-          inline_keyboard: [
-            [{
-              text: 'Test 1',
-              callback_game: 'pvp',
-            }, {
-              text: 'Test 2',
-              url: 'https://t.me/chessy_bot?game=pvp',
-            }],
-          ],
-        },
-      }).catch(debug)
     }
 
     if (ctx.from.id === Number(gameState.user_b)) {
