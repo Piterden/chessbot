@@ -38,7 +38,8 @@ module.exports = () => [
         sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
         input_message_content: {
           message_text: `Black (top): ?
-White (bottom): ${user.first_name}`,
+White (bottom): ${user.first_name}
+Waiting for a black side`,
         },
         ...board(status.board.squares, true, [{
           text: 'Join the game',
@@ -51,7 +52,8 @@ White (bottom): ${user.first_name}`,
         sticker_file_id: 'CAADAgADMwADX5T2DqhR9w5HSpCZAg',
         input_message_content: {
           message_text: `White (top): ?
-Black (bottom): ${user.first_name}`,
+Black (bottom): ${user.first_name}
+Waiting for a white side`,
         },
         ...board(status.board.squares, false, [{
           text: 'Join the game',
