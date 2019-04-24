@@ -1,20 +1,10 @@
 const chess = require('chess')
 
-const { debug } = require('@/helpers')
 const { board } = require('@/keyboards')
+const { debug, unescapeUser, escapeUser } = require('@/helpers')
 
 const gameClient = chess.create({ PGN: true })
 const status = gameClient.getStatus()
-
-const escapeUser = (user) => Object.keys(user).reduce((acc, key) => {
-  acc[key] = typeof user[key] === 'string' ? escape(user[key]) : user[key]
-  return acc
-}, {})
-
-const unescapeUser = (user) => Object.keys(user).reduce((acc, key) => {
-  acc[key] = typeof user[key] === 'string' ? unescape(user[key]) : user[key]
-  return acc
-}, {})
 
 module.exports = () => [
   'inline_query',

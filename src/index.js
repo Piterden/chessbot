@@ -5,7 +5,7 @@ const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
-const { debug } = require('@/helpers')
+const { debug, unescapeUser } = require('@/helpers')
 const { gameScene } = require('@/scenes')
 const knexConfig = require('@/../knexfile')
 const { inlineHandler, loadHandler, joinHandler, newHandler } = require('@/handlers')
@@ -49,8 +49,8 @@ bot.action(/^join::(\w)::(\d+)/, async (ctx) => {
   await ctx.editMessageText(
     !iAmWhite()
       ? `Black (top): ${ctx.from.first_name}
-White (bottom): ${enemy.first_name}`
-      : `Black (top): ${enemy.first_name}
+White (bottom): ${unescapeUser(enemy).first_name}`
+      : `Black (top): ${unescapeUser(enemy).first_name}
 White (bottom): ${ctx.from.first_name}`
   )
 
