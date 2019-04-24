@@ -12,7 +12,7 @@ const markup = {
 module.exports = () => [
   'inline_query',
   async (ctx) => {
-    debug(ctx.from)
+    debug(ctx.update)
     await ctx.answerInlineQuery([
       {
         id: 1,
@@ -21,7 +21,7 @@ module.exports = () => [
         photo_url: 'https://crossword.live/img/w.png',
         title: 'Play with white pieces',
         input_message_content: {
-          message_text: `${ctx.from.first_name} is white side.`,
+          message_text: `${ctx.update.inline_query.from.first_name} is white side.`,
         },
         reply_markup: markup,
       },
@@ -32,10 +32,13 @@ module.exports = () => [
         photo_url: 'https://crossword.live/img/b.png',
         title: 'Play with black pieces',
         input_message_content: {
-          message_text: `${ctx.from.first_name} is black side.`,
+          message_text: `${ctx.update.inline_query.from.first_name} is black side.`,
         },
         reply_markup: markup,
       },
-    ])
+    ], {
+      is_personal: true,
+      cache_time: 0,      
+    })
   },
 ]
