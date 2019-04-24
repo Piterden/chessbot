@@ -3,7 +3,6 @@ const chess = require('chess')
 const { debug } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
 
-
 // eslint-disable-next-line no-magic-numbers
 const isWhiteTurn = (moves) => !(moves.length % 2)
 
@@ -35,8 +34,7 @@ module.exports = () => [
     movesState.forEach((move) => {
       try {
         gameClient.move(move.move)
-      }
-      catch (error) {
+      } catch (error) {
         debug(`::${move}::`)
         debug(error)
       }
@@ -57,8 +55,7 @@ module.exports = () => [
           `${!isWhiteTurn(movesState) ? '*' : ''} (BLACK) User ${unescape(blackUser.first_name) || 'waiting...'}`,
           board(status.board.squares, true)
         )
-      }
-      catch (error) {
+      } catch (error) {
         debug('::whiteBoardMsg::')
         debug(error)
       }
@@ -68,23 +65,21 @@ module.exports = () => [
           `${isWhiteTurn(movesState) ? '*' : ''} (WHITE) YOU`,
           actions()
         )
-      }
-      catch (error) {
+      } catch (error) {
         debug('::whiteActionsMsg::')
         debug(error)
       }
 
       if (
-        whiteBoardMsg.message_id !== Number(gameState.board_w)
-        || whiteActionsMsg.message_id !== Number(gameState.actions_w)
+        whiteBoardMsg.message_id !== Number(gameState.board_w) ||
+        whiteActionsMsg.message_id !== Number(gameState.actions_w)
       ) {
         try {
           await ctx.db('games').where('id', gameState.id).update({
             board_w: whiteBoardMsg.message_id,
             actions_w: whiteActionsMsg.message_id,
           })
-        }
-        catch (error) {
+        } catch (error) {
           debug('::whiteDBUPD::')
           debug(error)
         }
@@ -103,8 +98,7 @@ module.exports = () => [
           `${isWhiteTurn(movesState) ? '*' : ''} (WHITE) User ${unescape(whiteUser.first_name)}`,
           board(status.board.squares, false)
         )
-      }
-      catch (error) {
+      } catch (error) {
         debug('::blackBoardMsg::')
         debug(error)
       }
@@ -114,23 +108,21 @@ module.exports = () => [
           `${!isWhiteTurn(movesState) ? '*' : ''} (BLACK) YOU`,
           actions()
         )
-      }
-      catch (error) {
+      } catch (error) {
         debug('::blackActionsMsg::')
         debug(error)
       }
 
       if (
-        blackBoardMsg.message_id !== Number(gameState.board_b)
-        || blackActionsMsg.message_id !== Number(gameState.actions_b)
+        blackBoardMsg.message_id !== Number(gameState.board_b) ||
+        blackActionsMsg.message_id !== Number(gameState.actions_b)
       ) {
         try {
           await ctx.db('games').where('id', gameState.id).update({
             board_b: blackBoardMsg.message_id,
             actions_b: blackActionsMsg.message_id,
           })
-        }
-        catch (error) {
+        } catch (error) {
           debug('::blackDBUPD::')
           debug(error)
         }

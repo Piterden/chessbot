@@ -20,9 +20,9 @@ const bottomMessage = (moves, game, isWhiteSide) => isWhiteSide
   : `${isWhiteTurn(moves) ? '*' : ''} (BLACK) YOU`
 
 const isReady = (game) => !!(
-  game.board_w && game.board_b
-  && game.actions_w && game.actions_b
-  && game.user_w && game.user_b
+  game.board_w && game.board_b &&
+  game.actions_w && game.actions_b &&
+  game.user_w && game.user_b
 )
 
 module.exports = () => [
@@ -44,8 +44,8 @@ module.exports = () => [
       .select()
 
     if (
-      (isWhiteTurn(movesState) && ctx.from.id === Number(gameState.user_b))
-      || (!isWhiteTurn(movesState) && ctx.from.id === Number(gameState.user_w))
+      (isWhiteTurn(movesState) && ctx.from.id === Number(gameState.user_b)) ||
+      (!isWhiteTurn(movesState) && ctx.from.id === Number(gameState.user_w))
     ) {
       return ctx.answerCbQuery('Not your turn! Please wait...')
     }
@@ -55,8 +55,7 @@ module.exports = () => [
     movesState.forEach(({ move }) => {
       try {
         gameClient.move(move)
-      }
-      catch (error) {
+      } catch (error) {
         debug(error)
       }
     })
@@ -70,9 +69,9 @@ module.exports = () => [
     switch (ctx.session.mode) {
       case 'select':
         if (
-          !square || !square.piece
-          || (square.piece.side.name === 'black' && isWhiteTurn(movesState))
-          || (square.piece.side.name === 'white' && !isWhiteTurn(movesState))
+          !square || !square.piece ||
+          (square.piece.side.name === 'black' && isWhiteTurn(movesState)) ||
+          (square.piece.side.name === 'white' && !isWhiteTurn(movesState))
         ) {
           return ctx.answerCbQuery('Please, move your pieces!')
         }
@@ -85,15 +84,14 @@ module.exports = () => [
           await ctx.editMessageReplyMarkup(board(
             status.board.squares.map((sqr) => {
               const move = moves
-                .find((({ file, rank }) => ({ dest }) => dest.file === file
-                  && dest.rank === rank)(sqr))
+                .find((({ file, rank }) => ({ dest }) => dest.file === file &&
+                  dest.rank === rank)(sqr))
 
               return move ? { ...sqr, destination: move } : sqr
             }),
             isWhiteTurn(movesState)
           ).reply_markup)
-        }
-        catch (error) {
+        } catch (error) {
           debug(error)
         }
 
@@ -110,8 +108,7 @@ module.exports = () => [
         if (moving && !movesState.find((move) => move.move === moving.key)) {
           try {
             gameClient.move(moving.key)
-          }
-          catch (error) {
+          } catch (error) {
             debug(error)
           }
 
@@ -122,8 +119,7 @@ module.exports = () => [
               game_id: ctx.session.gameId,
               move: moving.key,
             })
-          }
-          catch (error) {
+          } catch (error) {
             debug(error)
           }
         }
@@ -141,8 +137,7 @@ module.exports = () => [
               topMessage(movesState, gameState, true) + statusMessage(status),
               board(status.board.squares, true)
             )
-          }
-          catch (error) {
+          } catch (error) {
             debug(error)
           }
 
@@ -154,8 +149,7 @@ module.exports = () => [
               topMessage(movesState, gameState, false) + statusMessage(status),
               board(status.board.squares, false)
             )
-          }
-          catch (error) {
+          } catch (error) {
             debug(error)
           }
         }
@@ -169,8 +163,7 @@ module.exports = () => [
               bottomMessage(movesState, gameState, true),
               actions()
             )
-          }
-          catch (error) {
+          } catch (error) {
             debug(error)
           }
 
@@ -182,8 +175,7 @@ module.exports = () => [
               bottomMessage(movesState, gameState, false),
               actions()
             )
-          }
-          catch (error) {
+          } catch (error) {
             debug(error)
           }
         }

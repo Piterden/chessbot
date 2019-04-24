@@ -9,7 +9,6 @@ const messageHandler = require('./message')
 const optionsHandler = require('./options')
 const inlineHandler = require('./inline')
 
-
 module.exports = {
   newHandler,
   joinHandler,

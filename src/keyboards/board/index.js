@@ -2,16 +2,15 @@ const Telegraf = require('telegraf')
 
 const { emodji } = require('@/helpers')
 
-
 const { Markup } = Telegraf
 
 module.exports = (board, isWhite) => {
   const horizontal = 'abcdefgh'.split('')
   const vertical = new Array(8) // eslint-disable-line no-magic-numbers
     .fill(0)
-    .reduce((a) => {
-      a.push(a.length + 1)
-      return a
+    .reduce((acc) => {
+      acc.push(acc.length + 1)
+      return acc
     }, [])
     .reverse()
 
