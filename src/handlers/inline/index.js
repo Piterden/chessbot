@@ -17,6 +17,7 @@ module.exports = () => [
       {
         id: 1,
         type: 'photo',
+        thumb_url: 'https://crossword.live/img/w.png',
         photo_url: 'https://crossword.live/img/w.png',
         title: 'Play with white pieces',
         input_message_content: {
@@ -27,6 +28,7 @@ module.exports = () => [
       {
         id: 2,
         type: 'photo',
+        thumb_url: 'https://crossword.live/img/b.png',
         photo_url: 'https://crossword.live/img/b.png',
         title: 'Play with black pieces',
         input_message_content: {
