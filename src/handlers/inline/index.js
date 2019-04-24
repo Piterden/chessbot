@@ -18,7 +18,7 @@ module.exports = () => [
         id: 1,
         type: 'photo',
         photo_url: 'https://crossword.live/img/w.png',
-        title: 'Play',
+        title: 'Play with white pieces',
         input_message_content: {
           message_text: `${ctx.from.first_name} is white side.`,
         },
@@ -28,7 +28,7 @@ module.exports = () => [
         id: 2,
         type: 'photo',
         photo_url: 'https://crossword.live/img/b.png',
-        title: 'Play',
+        title: 'Play with black pieces',
         input_message_content: {
           message_text: `${ctx.from.first_name} is black side.`,
         },
