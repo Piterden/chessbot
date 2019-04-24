@@ -23,7 +23,7 @@ White (bottom): ${ctx.update.inline_query.from.first_name}`,
         },
         ...board(status.board.squares, true, [{
           text: 'Join the game',
-          callback_data: 'join',
+          callback_data: `join::${ctx.update.inline_query.from.id}`,
         }]),
       },
       {
@@ -38,7 +38,7 @@ Black (bottom): ${ctx.update.inline_query.from.first_name}`,
         },
         ...board(status.board.squares, false, [{
           text: 'Join the game',
-          callback_data: 'join',
+          callback_data: `join::${ctx.update.inline_query.from.id}`,
         }]),
       },
     ], {

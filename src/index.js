@@ -5,6 +5,7 @@ const knex = require('knex')
 const Telegraf = require('telegraf')
 const Stage = require('telegraf/stage')
 
+const { debug } = require('@/helpers')
 const { gameScene } = require('@/scenes')
 const knexConfig = require('@/../knexfile')
 const { inlineHandler, loadHandler, joinHandler, newHandler } = require('@/handlers')
@@ -28,12 +29,13 @@ bot.start(...loadHandler())
 bot.action(...newHandler())
 bot.action(...joinHandler())
 
-bot.on('chosen_inline_result', async (ctx) => {
-  console.log(ctx)
-})
+bot.action(/^join::(\d+)/, async (ctx) => {
+  debug(ctx.update)
+  debug(ctx.match)
 
-bot.action(/join/, async (ctx) => {
-  console.log(ctx.update)
+  if (Number(ctx.from.id) === Number(ctx.match[1])) {
+    return ctx.answerCbQuery('You can\'t join yourself!')
+  }
 })
 
 bot.startPolling()
