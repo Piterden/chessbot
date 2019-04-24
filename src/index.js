@@ -31,7 +31,6 @@ bot.action(...joinHandler())
 
 bot.action(/^join::(\d+)/, async (ctx) => {
   debug(ctx.update)
-  debug(ctx.match)
 
   if (Number(ctx.from.id) === Number(ctx.match[1])) {
     return ctx.answerCbQuery('You can\'t join yourself!')
