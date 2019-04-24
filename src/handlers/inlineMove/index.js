@@ -29,7 +29,10 @@ module.exports = () => [
 
     debug(gameState)
 
-    if (![gameState.user_w, gameState.user_b].includes(ctx.update.callback_query.from.id)) {
+    if (![
+      Number(gameState.user_w),
+      Number(gameState.user_b),
+    ].includes(ctx.update.callback_query.from.id)) {
       return ctx.answerCbQuery('This board is full, please start a new one.')
     }
 
