@@ -4,10 +4,11 @@ const loadHandler = require('./load')
 const leaveHandler = require('./leave')
 const movesHandler = require('./moves')
 const startHandler = require('./start')
+const inlineHandler = require('./inline')
 const actionsHandler = require('./actions')
 const messageHandler = require('./message')
 const optionsHandler = require('./options')
-const inlineHandler = require('./inline')
+const inlineJoinHandler = require('./inlineJoin')
 
 module.exports = {
   newHandler,
@@ -16,8 +17,9 @@ module.exports = {
   leaveHandler,
   movesHandler,
   startHandler,
+  inlineHandler,
   actionsHandler,
   messageHandler,
   optionsHandler,
-  inlineHandler,
+  inlineJoinHandler,
 }
