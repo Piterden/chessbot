@@ -21,7 +21,10 @@ module.exports = () => [
           message_text: `Black (top): ?
 White (bottom): ${ctx.update.inline_query.from.first_name}`,
         },
-        ...board(status.board.squares, true),
+        ...board(status.board.squares, true, [{
+          text: 'Join the game',
+          callback_data: 'join',
+        }]),
       },
       {
         id: 2,
@@ -33,7 +36,10 @@ White (bottom): ${ctx.update.inline_query.from.first_name}`,
           message_text: `White (top): ?
 Black (bottom): ${ctx.update.inline_query.from.first_name}`,
         },
-        ...board(status.board.squares, false),
+        ...board(status.board.squares, false, [{
+          text: 'Join the game',
+          callback_data: 'join',
+        }]),
       },
     ], {
       is_personal: true,
