@@ -29,10 +29,13 @@ module.exports = (board, isWhite, actions) => {
       : { text: unescape('%u0020'), callback_data: `${col}${row}` }
   }))
 
-  return Markup.inlineKeyboard([
-    ...(isWhite
-      ? boardMarkup
-      : boardMarkup.map((row) => row.reverse()).reverse()),
-    actions,
-  ]).extra()
+  const keyboard = isWhite
+    ? boardMarkup
+    : boardMarkup.map((row) => row.reverse()).reverse()
+
+  if (actions) {
+    keyboard.push(actions)
+  }
+
+  return Markup.inlineKeyboard(keyboard).extra()
 }
