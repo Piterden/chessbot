@@ -27,9 +27,9 @@ module.exports = () => [
     await ctx.editMessageText(
       !iAmWhite()
         ? `Black (top): ${ctx.from.first_name}
-  White (bottom): ${unescapeUser(enemy).first_name}`
+White (bottom): ${unescapeUser(enemy).first_name}`
         : `Black (top): ${unescapeUser(enemy).first_name}
-  White (bottom): ${ctx.from.first_name}`,
+White (bottom): ${ctx.from.first_name}`,
       board(status.board.squares, true)
     )
 
