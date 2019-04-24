@@ -21,7 +21,7 @@ module.exports = () => [
           message_text: `Black (top): ?
 White (bottom): ${ctx.update.inline_query.from.first_name}`,
         },
-        reply_markup: board(status.board.squares, true),
+        ...board(status.board.squares, true),
       },
       {
         id: 2,
@@ -33,7 +33,7 @@ White (bottom): ${ctx.update.inline_query.from.first_name}`,
           message_text: `White (top): ?
 Black (bottom): ${ctx.update.inline_query.from.first_name}`,
         },
-        reply_markup: board(status.board.squares, false),
+        ...board(status.board.squares, false),
       },
     ], {
       is_personal: true,
