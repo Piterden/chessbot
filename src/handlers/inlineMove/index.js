@@ -27,6 +27,8 @@ module.exports = () => [
       .where('inline_id', ctx.update.callback_query.inline_message_id)
       .first()
 
+    debug(gameState)
+
     if (![gameState.user_w, gameState.user_b].includes(ctx.update.callback_query.from.id)) {
       return ctx.answerCbQuery('This board is full, please start a new one.')
     }
