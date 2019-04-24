@@ -40,7 +40,7 @@ module.exports = () => [
         title: 'Play with white pieces',
         input_message_content: {
           message_text: `Black (top): ?
-White (bottom): ${ctx.update.inline_query.from.first_name}`,
+White (bottom): ${user.first_name}`,
         },
         ...board(status.board.squares, true, [{
           text: 'Join the game',
@@ -55,7 +55,7 @@ White (bottom): ${ctx.update.inline_query.from.first_name}`,
         title: 'Play with black pieces',
         input_message_content: {
           message_text: `White (top): ?
-Black (bottom): ${ctx.update.inline_query.from.first_name}`,
+Black (bottom): ${user.first_name}`,
         },
         ...board(status.board.squares, false, [{
           text: 'Join the game',
