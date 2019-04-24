@@ -28,6 +28,10 @@ bot.start(...loadHandler())
 bot.action(...newHandler())
 bot.action(...joinHandler())
 
+bot.action(/hi/, async (ctx) => {
+  console.log(ctx)
+})
+
 bot.on('game', async (ctx) => {
   console.log(ctx)
 })
