@@ -4,7 +4,7 @@ module.exports = () => [
   'inline_query',
   async (ctx) => {
     console.log(ctx.from)
-    return ctx.answerInlineQuery([
+    await ctx.answerInlineQuery([
       {
         id: 1,
         type: 'article',

@@ -7,7 +7,7 @@ const Stage = require('telegraf/stage')
 
 const { gameScene } = require('@/scenes')
 const { inlineHandler, loadHandler, joinHandler, newHandler } = require('@/handlers')
-const knexConfig = require('@/knex-config')
+const knexConfig = require('@/../knexfile')
 
 const { session } = Telegraf
 const {
