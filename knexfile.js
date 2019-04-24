@@ -9,12 +9,20 @@ const {
   DB_MIGRATIONS_TABLE,
 } = process.env
 
-module.exports = {
-  client: DB_CLIENT,
-  connection: {
+const params = DB_CLIENT === 'sqlite3'
+  ? {
+    filename: DB_DATABASE,
+  }
+  : {
     database: DB_DATABASE,
     user: DB_USERNAME,
     password: DB_PASSWORD,
+  }
+
+module.exports = {
+  client: DB_CLIENT,
+  connection: {
+    ...params,
     charset: DB_CHARSET,
   },
   pool: {
