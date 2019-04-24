@@ -8,7 +8,6 @@ const actionsHandler = require('./actions')
 const messageHandler = require('./message')
 const optionsHandler = require('./options')
 
-
 module.exports = {
   newHandler,
   joinHandler,

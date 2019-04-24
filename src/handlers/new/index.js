@@ -1,6 +1,5 @@
 const { debug } = require('@/helpers')
 
-
 module.exports = () => [
   /^new$/,
   async (ctx) => {

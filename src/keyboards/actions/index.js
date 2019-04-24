@@ -1,6 +1,5 @@
 const Telegraf = require('telegraf')
 
-
 const { Markup } = Telegraf
 
 module.exports = (open = false) => Markup.inlineKeyboard([

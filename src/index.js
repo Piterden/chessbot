@@ -8,7 +8,6 @@ const Stage = require('telegraf/stage')
 const { gameScene } = require('@/scenes')
 const { loadHandler, joinHandler, newHandler } = require('@/handlers')
 
-
 const { session } = Telegraf
 const {
   BOT_NAME, BOT_TOKEN,

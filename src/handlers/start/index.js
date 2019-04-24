@@ -3,7 +3,6 @@ const chess = require('chess')
 const { debug } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
 
-
 // eslint-disable-next-line no-magic-numbers
 const isWhiteTurn = (moves) => !(moves.length % 2)
 
@@ -35,8 +34,7 @@ module.exports = () => [
     movesState.forEach((move) => {
       try {
         gameClient.move(move.move)
-      }
-      catch (error) {
+      } catch (error) {
         debug(`::${move}::`)
         debug(error)
       }
@@ -59,8 +57,8 @@ module.exports = () => [
         actions()
       ).catch(debug)
 
-      if (whiteBoardMsg.message_id !== Number(gameState.board_w)
-        || whiteActionsMsg.message_id !== Number(gameState.actions_w)) {
+      if (whiteBoardMsg.message_id !== Number(gameState.board_w) ||
+        whiteActionsMsg.message_id !== Number(gameState.actions_w)) {
         await ctx.db('games').where('id', gameState.id).update({
           board_w: whiteBoardMsg.message_id,
           actions_w: whiteActionsMsg.message_id,
@@ -103,8 +101,8 @@ module.exports = () => [
       })
 
       if (
-        blackBoardMsg.message_id !== Number(gameState.board_b)
-        || blackActionsMsg.message_id !== Number(gameState.actions_b)
+        blackBoardMsg.message_id !== Number(gameState.board_b) ||
+        blackActionsMsg.message_id !== Number(gameState.actions_b)
       ) {
         await ctx.db('games').where('id', gameState.id).update({
           board_b: blackBoardMsg.message_id,
