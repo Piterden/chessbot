@@ -35,7 +35,7 @@ module.exports = () => [
       {
         id: 1,
         type: 'sticker',
-        sticker_file_id: 'CAADAgAD-wADe0iRBVUqQY7O3p9SAg',
+        sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
         input_message_content: {
           message_text: `Black (top): ?
 White (bottom): ${user.first_name}`,
@@ -48,7 +48,7 @@ White (bottom): ${user.first_name}`,
       {
         id: 2,
         type: 'sticker',
-        sticker_file_id: 'CAADAgAD_AADe0iRBbZltOuZOHrNAg',
+        sticker_file_id: 'CAADAgADMwADX5T2DqhR9w5HSpCZAg',
         input_message_content: {
           message_text: `White (top): ?
 Black (bottom): ${user.first_name}`,
