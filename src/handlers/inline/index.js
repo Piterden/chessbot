@@ -35,9 +35,7 @@ module.exports = () => [
       {
         id: 1,
         type: 'sticker',
-        // thumb_url: 'https://crossword.live/img/w.png',
-        sticker_file_id: 'CAADAgAD3AADWQMDAAH0zFgaGiqNBgI',
-        // title: 'Play with white pieces',
+        sticker_file_id: 'CAADAgAD-wADe0iRBVUqQY7O3p9SAg',
         input_message_content: {
           message_text: `Black (top): ?
 White (bottom): ${user.first_name}`,
@@ -50,9 +48,7 @@ White (bottom): ${user.first_name}`,
       {
         id: 2,
         type: 'sticker',
-        // thumb_url: 'https://crossword.live/img/b.png',
-        sticker_file_id: 'CAADAgADGQEAAtLdaQVS6DvPqWaenwI',
-        // title: 'Play with black pieces',
+        sticker_file_id: 'CAADAgAD_AADe0iRBbZltOuZOHrNAg',
         input_message_content: {
           message_text: `White (top): ?
 Black (bottom): ${user.first_name}`,

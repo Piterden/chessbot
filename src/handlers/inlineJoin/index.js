@@ -1,4 +1,4 @@
-// const chess = require('chess')
+const chess = require('chess')
 
 const { board } = require('@/keyboards')
 const { debug, unescapeUser } = require('@/helpers')
@@ -21,15 +21,18 @@ module.exports = () => [
       inline_id: ctx.update.callback_query.inline_message_id,
     }).catch(debug)
 
+    const gameClient = chess.create({ PGN: true })
+    const status = gameClient.getStatus()
+
     await ctx.editMessageText(
       !iAmWhite()
         ? `Black (top): ${ctx.from.first_name}
   White (bottom): ${unescapeUser(enemy).first_name}`
         : `Black (top): ${unescapeUser(enemy).first_name}
   White (bottom): ${ctx.from.first_name}`,
-      board()
+      board(status.board.squares, true)
     )
 
-    return ctx.answerCbQuery()
+    return ctx.answerCbQuery('Now play!')
   },
 ]
