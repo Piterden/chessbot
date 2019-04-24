@@ -4,15 +4,9 @@ const { emodji } = require('@/helpers')
 
 const { Markup } = Telegraf
 
-module.exports = (board, isWhite) => {
+module.exports = (board, isWhite, actions) => {
   const horizontal = 'abcdefgh'.split('')
-  const vertical = new Array(8) // eslint-disable-line no-magic-numbers
-    .fill(0)
-    .reduce((acc) => {
-      acc.push(acc.length + 1)
-      return acc
-    }, [])
-    .reverse()
+  const vertical = Array.from({ length: 8 }).map((item, idx) => idx + 1).reverse()
 
   const boardMarkup = vertical.map((row) => horizontal.map((col) => {
     const square = board
@@ -35,7 +29,10 @@ module.exports = (board, isWhite) => {
       : { text: unescape('%u0020'), callback_data: `${col}${row}` }
   }))
 
-  return Markup.inlineKeyboard(isWhite
-    ? boardMarkup
-    : boardMarkup.map((row) => row.reverse()).reverse()).extra()
+  return Markup.inlineKeyboard([
+    ...(isWhite
+      ? boardMarkup
+      : boardMarkup.map((row) => row.reverse()).reverse()),
+    actions,
+  ]).extra()
 }
