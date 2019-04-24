@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-exports.up = async (knex, Promise) => await knex.schema.hasTable('games')
+exports.up = async (knex, Promise) => (await knex.schema.hasTable('games'))
   ? null
   : knex.schema.createTable('games', (table) => {
     table.increments('id')
@@ -14,6 +14,6 @@ exports.up = async (knex, Promise) => await knex.schema.hasTable('games')
     table.bigInteger('actions_b').unsigned().nullable().unique()
   })
 
-exports.down = async (knex, Promise) => await knex.schema.hasTable('games')
+exports.down = async (knex, Promise) => (await knex.schema.hasTable('games'))
   ? knex.schema.dropTable('games')
   : null
