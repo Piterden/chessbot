@@ -28,6 +28,10 @@ bot.start(...loadHandler())
 bot.action(...newHandler())
 bot.action(...joinHandler())
 
+bot.on('chosen_inline_result', async (ctx) => {
+  console.log(ctx)
+})
+
 bot.action(/hi/, async (ctx) => {
   console.log(ctx)
 })
