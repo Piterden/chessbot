@@ -32,8 +32,8 @@ bot.on('chosen_inline_result', async (ctx) => {
   console.log(ctx)
 })
 
-bot.action(/hi/, async (ctx) => {
-  console.log(ctx)
+bot.action(/join/, async (ctx) => {
+  console.log(ctx.update)
 })
 
 bot.startPolling()

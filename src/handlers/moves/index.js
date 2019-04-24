@@ -28,6 +28,7 @@ const isReady = (game) => !!(
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
+    debug(ctx.update)
     const games = await ctx.db('games')
       .where('id', ctx.session.gameId)
       .select()
