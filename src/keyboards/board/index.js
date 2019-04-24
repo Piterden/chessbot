@@ -25,8 +25,8 @@ module.exports = (board, isWhite, actions) => {
     }
 
     return square.destination
-      ? { text: 'O', callback_data: `${col}${row}` }
-      : { text: unescape('%u0020'), callback_data: `${col}${row}` }
+      ? { text: 'O', callback_data: `${prefix}${col}${row}` }
+      : { text: unescape('%u0020'), callback_data: `${prefix}${col}${row}` }
   }))
 
   const keyboard = isWhite

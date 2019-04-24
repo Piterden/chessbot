@@ -4,7 +4,8 @@ const { board } = require('@/keyboards')
 const { debug, unescapeUser } = require('@/helpers')
 
 module.exports = () => [
-  /^join::(\w)::(\d+)/, async (ctx) => {
+  /^join::([wb])::(\d+)/,
+  async (ctx) => {
     debug(ctx.update)
     const userId = Number(ctx.match[2])
     const iAmWhite = () => ctx.match[1] !== 'w'

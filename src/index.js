@@ -7,7 +7,14 @@ const Stage = require('telegraf/stage')
 
 const { gameScene } = require('@/scenes')
 const knexConfig = require('@/../knexfile')
-const { inlineHandler, loadHandler, joinHandler, newHandler, inlineJoinHandler } = require('@/handlers')
+const {
+  newHandler,
+  joinHandler,
+  loadHandler,
+  inlineHandler,
+  inlineJoinHandler,
+  inlineMoveHandler,
+} = require('@/handlers')
 
 const { session } = Telegraf
 const {
@@ -28,5 +35,6 @@ bot.start(...loadHandler())
 bot.action(...newHandler())
 bot.action(...joinHandler())
 bot.action(...inlineJoinHandler())
+bot.action(...inlineMoveHandler())
 
 bot.startPolling()
