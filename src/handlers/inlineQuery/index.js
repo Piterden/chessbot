@@ -10,21 +10,23 @@ module.exports = () => async (ctx) => {
   debug(ctx.update)
 
   let user = await ctx.db('users')
-    .where('id', ctx.update.inline_query.from.id)
+    .where('id', Number(ctx.from.id))
     .first()
 
   if (user) {
     user = unescapeUser(user)
 
-    if (JSON.stringify(user) !== JSON.stringify(ctx.update.inline_query.from)) {
+    if (JSON.stringify(user) !== JSON.stringify(ctx.from)) {
       await ctx.db('users')
-        .where('id', user.id)
-        .update(escapeUser(ctx.update.inline_query.from))
+        .where('id', Number(user.id))
+        .update(escapeUser(ctx.from))
+        .catch(debug)
     }
   } else {
     const users = await ctx.db('users')
-      .insert(escapeUser(ctx.update.inline_query.from))
-      .returning(Object.keys(ctx.update.inline_query.from))
+      .insert(escapeUser(ctx.from))
+      .returning(Object.keys(ctx.from))
+      .catch(debug)
 
     user = unescapeUser(users[0])
   }
