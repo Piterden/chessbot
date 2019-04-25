@@ -6,7 +6,8 @@ const { Markup } = Telegraf
 
 module.exports = (board, isWhite, actions) => {
   const horizontal = 'abcdefgh'.split('')
-  const vertical = Array.from({ length: 8 }).map((item, idx) => idx + 1).reverse()
+  const vertical = Array.from({ length: 8 })
+    .map((item, idx) => idx + 1).reverse()
 
   const boardMarkup = vertical.map((row) => horizontal.map((col) => {
     const square = board
