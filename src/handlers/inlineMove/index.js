@@ -23,12 +23,13 @@ White's turn`
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
+    ctx.state[ctx.update.callback_query.inline_message_id] = ctx.state[ctx.update.callback_query.inline_message_id] || {}
+
     const gameState = await ctx.db('games')
       .where('inline_id', ctx.update.callback_query.inline_message_id)
       .first()
 
     debug(ctx.update)
-    debug(Object.keys(ctx))
 
     if (![
       Number(gameState.user_w),
@@ -62,7 +63,7 @@ module.exports = () => [
     const square = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-    if (ctx.session.moving) {
+    if (ctx.state[ctx.update.callback_query.inline_message_id].moving) {
       if (
         !square ||
         !square.piece ||
@@ -88,11 +89,11 @@ module.exports = () => [
       ).reply_markup)
         .catch(debug)
 
-      ctx.session.moving = true
-      ctx.session.moves = moves
-      ctx.session.selected = square
+      ctx.state[ctx.update.callback_query.inline_message_id].moving = true
+      ctx.state[ctx.update.callback_query.inline_message_id].moves = moves
+      ctx.state[ctx.update.callback_query.inline_message_id].selected = square
     } else {
-      const moving = ctx.session.moves
+      const moving = ctx.state[ctx.update.callback_query.inline_message_id].moves
         .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
 
       if (moving && !movesState.find(({ move }) => move === moving.key)) {
@@ -107,9 +108,9 @@ module.exports = () => [
         await ctx.db('moves').insert({ game_id: gameState.id, move: moving.key })
           .catch(debug)
 
-        ctx.session.moves = null
-        ctx.session.moving = false
-        ctx.session.selected = null
+        ctx.state[ctx.update.callback_query.inline_message_id].moves = null
+        ctx.state[ctx.update.callback_query.inline_message_id].moving = false
+        ctx.state[ctx.update.callback_query.inline_message_id].selected = null
       }
 
       const enemy = await ctx.db('users')
