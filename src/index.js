@@ -1,4 +1,4 @@
-require('dotenv').load()
+require('dotenv').config()
 require('module-alias/register')
 
 const knex = require('knex')
