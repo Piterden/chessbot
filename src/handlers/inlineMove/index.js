@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, unescapeUser } = require('@/helpers')
+const { debug, escapeUser, unescapeUser } = require('@/helpers')
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isWhiteUser = (game, ctx) => game.user_w === ctx.update.callback_query.from.id
@@ -114,12 +114,24 @@ module.exports = () => [
         ctx.session.moving = false
         ctx.session.selected = null
 
-        const enemy = await ctx.db('users')
+        let enemy = await ctx.db('users')
           .where('id', isWhiteTurn(movesState)
             ? Number(gameState.user_w)
             : Number(gameState.user_b))
           .first()
           .catch(debug)
+
+        if (enemy) {
+          enemy = unescapeUser(enemy)
+        } else {
+          enemy = ctx.tg.getChatMember(
+            ctx.callbackQuery.chat_instance,
+            isWhiteTurn(movesState)
+              ? Number(gameState.user_w)
+              : Number(gameState.user_b)
+          )
+          await ctx.db('users').insert(escapeUser(enemy)).catch(debug)
+        }
 
         debug(enemy)
 
@@ -127,7 +139,7 @@ module.exports = () => [
           topMessage(
             movesState,
             ctx.update.callback_query.from,
-            unescapeUser(enemy)
+            enemy
           ) + statusMessage(status),
           board(status.board.squares, !isWhiteTurn(movesState))
         )
