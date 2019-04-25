@@ -23,13 +23,14 @@ White's turn`
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
-    ctx.state[ctx.update.callback_query.inline_message_id] = ctx.state[ctx.update.callback_query.inline_message_id] || {}
+    ctx.state[ctx.update.callback_query.inline_message_id] = ctx.state[ctx.update.callback_query.inline_message_id] ||
+      { moves: [], moving: false, selected: null }
 
     const gameState = await ctx.db('games')
       .where('inline_id', ctx.update.callback_query.inline_message_id)
       .first()
 
-    debug(ctx.update)
+    debug(ctx.state)
 
     if (![
       Number(gameState.user_w),
@@ -63,7 +64,7 @@ module.exports = () => [
     const square = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-    if (ctx.state[ctx.update.callback_query.inline_message_id].moving) {
+    if (!ctx.state[ctx.update.callback_query.inline_message_id].moving) {
       if (
         !square ||
         !square.piece ||
