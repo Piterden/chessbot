@@ -30,7 +30,7 @@ module.exports = () => [
       .where('inline_id', ctx.update.callback_query.inline_message_id)
       .first()
 
-    debug(ctx.update)
+    debug(ctx.state)
 
     if (![
       Number(gameState.user_w),
