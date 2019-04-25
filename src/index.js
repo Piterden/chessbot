@@ -27,7 +27,17 @@ const bot = new Telegraf(BOT_TOKEN, { username: BOT_NAME })
 
 bot.context.db = knex(knexConfig)
 
-bot.use(session())
+bot.use(session({
+  getSessionKey: (ctx) => {
+    const key = ctx.from && ctx.chat && `${ctx.from.id}:${ctx.chat.id}`
+
+    if (!key) {
+      return ctx.from && ctx.callback_query &&
+        `${ctx.from.id}:${ctx.callback_query.chat_instance}`
+    }
+    return key
+  },
+}))
 bot.use(stage.middleware())
 
 bot.on(...inlineHandler())
