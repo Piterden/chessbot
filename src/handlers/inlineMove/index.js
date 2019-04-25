@@ -25,10 +25,9 @@ const isReady = (game) => !!(game.user_w && game.user_b)
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
-    debug(ctx.state)
+    debug(ctx.session)
 
-    ctx.state[ctx.update.callback_query.inline_message_id] = ctx.state[ctx.update.callback_query.inline_message_id] ||
-      { moves: [], moving: false, selected: null }
+    // ctx.state = ctx.state || { moves: null, moving: false, selected: null }
 
     const gameState = await ctx.db('games')
       .where('inline_id', ctx.update.callback_query.inline_message_id)
@@ -94,11 +93,11 @@ module.exports = () => [
       ).reply_markup)
         .catch(debug)
 
-      ctx.state[ctx.update.callback_query.inline_message_id].moving = true
-      ctx.state[ctx.update.callback_query.inline_message_id].moves = moves
-      ctx.state[ctx.update.callback_query.inline_message_id].selected = square
+      // ctx.state[ctx.update.callback_query.inline_message_id].moving = true
+      // ctx.state[ctx.update.callback_query.inline_message_id].moves = moves
+      // ctx.state[ctx.update.callback_query.inline_message_id].selected = square
     } else {
-      const moving = ctx.state[ctx.update.callback_query.inline_message_id].moves
+      const moving = ctx.session.moves
         .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
 
       if (moving && !movesState.find(({ move }) => move === moving.key)) {
@@ -113,9 +112,9 @@ module.exports = () => [
         await ctx.db('moves').insert({ game_id: gameState.id, move: moving.key })
           .catch(debug)
 
-        ctx.state[ctx.update.callback_query.inline_message_id].moves = null
-        ctx.state[ctx.update.callback_query.inline_message_id].moving = false
-        ctx.state[ctx.update.callback_query.inline_message_id].selected = null
+        // ctx.state[ctx.update.callback_query.inline_message_id].moves = null
+        // ctx.state[ctx.update.callback_query.inline_message_id].moving = false
+        // ctx.state[ctx.update.callback_query.inline_message_id].selected = null
       }
 
       const enemy = await ctx.db('users')
