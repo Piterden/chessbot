@@ -27,8 +27,6 @@ module.exports = () => [
   async (ctx) => {
     debug(ctx.session)
 
-    // ctx.state = ctx.state || { moves: null, moving: false, selected: null }
-
     const gameState = await ctx.db('games')
       .where('inline_id', ctx.update.callback_query.inline_message_id)
       .first()
@@ -67,7 +65,7 @@ module.exports = () => [
     const square = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-    if (!ctx.state[ctx.update.callback_query.inline_message_id].moving) {
+    if (!ctx.session.moving) {
       if (
         !square ||
         !square.piece ||
@@ -93,9 +91,9 @@ module.exports = () => [
       ).reply_markup)
         .catch(debug)
 
-      // ctx.state[ctx.update.callback_query.inline_message_id].moving = true
-      // ctx.state[ctx.update.callback_query.inline_message_id].moves = moves
-      // ctx.state[ctx.update.callback_query.inline_message_id].selected = square
+      ctx.session.moves = moves
+      ctx.session.moving = true
+      ctx.session.selected = square
     } else {
       const moving = ctx.session.moves
         .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
@@ -112,25 +110,25 @@ module.exports = () => [
         await ctx.db('moves').insert({ game_id: gameState.id, move: moving.key })
           .catch(debug)
 
-        // ctx.state[ctx.update.callback_query.inline_message_id].moves = null
-        // ctx.state[ctx.update.callback_query.inline_message_id].moving = false
-        // ctx.state[ctx.update.callback_query.inline_message_id].selected = null
+        ctx.session.moves = null
+        ctx.session.moving = false
+        ctx.session.selected = null
+
+        const enemy = await ctx.db('users')
+          .where('id', isWhiteTurn(movesState) ? gameState.user_b : gameState.user_w)
+          .first()
+          .catch(debug)
+
+        await ctx.editMessageText(
+          topMessage(
+            movesState,
+            ctx.update.callback_query.from,
+            unescapeUser(enemy)
+          ) + statusMessage(status),
+          board(status.board.squares, !isWhiteTurn(movesState))
+        )
+          .catch(debug)
       }
-
-      const enemy = await ctx.db('users')
-        .where('id', isWhiteTurn(movesState) ? gameState.user_b : gameState.user_w)
-        .first()
-        .catch(debug)
-
-      await ctx.editMessageText(
-        topMessage(
-          movesState,
-          ctx.update.callback_query.from,
-          unescapeUser(enemy)
-        ) + statusMessage(status),
-        board(status.board.squares, !isWhiteTurn(movesState))
-      )
-        .catch(debug)
     }
 
     return ctx.answerCbQuery()
