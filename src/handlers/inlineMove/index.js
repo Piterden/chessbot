@@ -20,9 +20,13 @@ Black's turn`
 White (bottom): ${enemy.first_name}
 White's turn`
 
+const isReady = (game) => !!(game.user_w && game.user_b)
+
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
+    debug(ctx.state)
+
     ctx.state[ctx.update.callback_query.inline_message_id] = ctx.state[ctx.update.callback_query.inline_message_id] ||
       { moves: [], moving: false, selected: null }
 
@@ -30,12 +34,12 @@ module.exports = () => [
       .where('inline_id', ctx.update.callback_query.inline_message_id)
       .first()
 
-    debug(ctx.state)
+    if (!isReady(gameState)) {
+      return ctx.answerCbQuery('Join the game to move pieces!')
+    }
 
-    if (![
-      Number(gameState.user_w),
-      Number(gameState.user_b),
-    ].includes(ctx.update.callback_query.from.id)) {
+    if (![Number(gameState.user_w), Number(gameState.user_b)]
+      .includes(ctx.update.callback_query.from.id)) {
       return ctx.answerCbQuery('This board is full, please start a new one.')
     }
 
