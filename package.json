@@ -20,6 +20,7 @@
     "knex": "^0.16.5",
     "module-alias": "^2.2.0",
     "pg": "^7.10.0",
+    "sequelize": "^5.7.5",
     "telegraf": "^3.29.0"
   },
   "devDependencies": {
