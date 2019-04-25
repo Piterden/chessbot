@@ -25,11 +25,11 @@ const isReady = (game) => !!(game.user_w && game.user_b)
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
-    debug(ctx.session)
-
     const gameState = await ctx.db('games')
-      .where('inline_id', ctx.update.callback_query.inline_message_id)
+      .where('id', ctx.session.gameId)
       .first()
+
+    debug(gameState)
 
     if (!isReady(gameState)) {
       return ctx.answerCbQuery('Join the game to move pieces!')
@@ -115,9 +115,13 @@ module.exports = () => [
         ctx.session.selected = null
 
         const enemy = await ctx.db('users')
-          .where('id', isWhiteTurn(movesState) ? gameState.user_b : gameState.user_w)
+          .where('id', isWhiteTurn(movesState)
+            ? Number(gameState.user_b)
+            : Number(gameState.user_w))
           .first()
           .catch(debug)
+
+        debug(enemy)
 
         await ctx.editMessageText(
           topMessage(
