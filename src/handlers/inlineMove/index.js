@@ -4,8 +4,8 @@ const { board } = require('@/keyboards')
 const { debug, escapeUser, unescapeUser } = require('@/helpers')
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
-const isWhiteUser = (game, ctx) => game.user_w === ctx.update.callback_query.from.id
-const isBlackUser = (game, ctx) => game.user_b === ctx.update.callback_query.from.id
+const isWhiteUser = (game, ctx) => Number(game.user_w) === ctx.from.id
+const isBlackUser = (game, ctx) => Number(game.user_b) === ctx.from.id
 
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
 ${isCheck ? '|CHECK|' : ''}
@@ -36,7 +36,7 @@ module.exports = () => [
     }
 
     if (![Number(gameState.user_w), Number(gameState.user_b)]
-      .includes(ctx.update.callback_query.from.id)) {
+      .includes(ctx.from.id)) {
       return ctx.answerCbQuery('This board is full, please start a new one.')
     }
 
@@ -65,14 +65,14 @@ module.exports = () => [
     const square = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-    if (!ctx.session.moving) {
+    if (!ctx.session.moves) {
       if (
         !square ||
         !square.piece ||
         (square.piece.side.name === 'black' && isWhiteTurn(movesState)) ||
         (square.piece.side.name === 'white' && !isWhiteTurn(movesState))
       ) {
-        return ctx.answerCbQuery('Please, move your pieces!')
+        return ctx.answerCbQuery()
       }
 
       moves = Object.keys(status.notatedMoves)
@@ -92,7 +92,6 @@ module.exports = () => [
         .catch(debug)
 
       ctx.session.moves = moves
-      ctx.session.moving = true
       ctx.session.selected = square
     } else {
       const moving = ctx.session.moves
@@ -107,44 +106,46 @@ module.exports = () => [
 
         status = gameClient.getStatus()
 
-        await ctx.db('moves').insert({ game_id: gameState.id, move: moving.key })
-          .catch(debug)
-
-        ctx.session.moves = null
-        ctx.session.moving = false
-        ctx.session.selected = null
-
-        let enemy = await ctx.db('users')
-          .where('id', isWhiteTurn(movesState)
-            ? Number(gameState.user_w)
-            : Number(gameState.user_b))
-          .first()
-          .catch(debug)
-
-        if (enemy) {
-          enemy = unescapeUser(enemy)
-        } else {
-          enemy = ctx.tg.getChatMember(
-            ctx.callbackQuery.chat_instance,
-            isWhiteTurn(movesState)
-              ? Number(gameState.user_w)
-              : Number(gameState.user_b)
-          )
-          await ctx.db('users').insert(escapeUser(enemy)).catch(debug)
-        }
-
-        debug(enemy)
-
-        await ctx.editMessageText(
-          topMessage(
-            movesState,
-            ctx.update.callback_query.from,
-            enemy
-          ) + statusMessage(status),
-          board(status.board.squares, !isWhiteTurn(movesState))
-        )
+        await ctx.db('moves').insert({
+          game_id: ctx.session.gameId,
+          move: moving.key,
+        })
           .catch(debug)
       }
+
+      ctx.session.moves = null
+      ctx.session.selected = null
+
+      let enemy = await ctx.db('users')
+        .where('id', isWhiteTurn(movesState)
+          ? Number(gameState.user_w)
+          : Number(gameState.user_b))
+        .first()
+        .catch(debug)
+
+      if (enemy) {
+        enemy = unescapeUser(enemy)
+      } else {
+        enemy = ctx.tg.getChatMember(
+          ctx.callbackQuery.chat_instance,
+          isWhiteTurn(movesState)
+            ? Number(gameState.user_w)
+            : Number(gameState.user_b)
+        )
+        await ctx.db('users').insert(escapeUser(enemy)).catch(debug)
+      }
+
+      debug(enemy)
+
+      await ctx.editMessageText(
+        topMessage(
+          movesState,
+          ctx.update.callback_query.from,
+          enemy
+        ) + statusMessage(status),
+        board(status.board.squares, !isWhiteTurn(movesState))
+      )
+        .catch(debug)
     }
 
     return ctx.answerCbQuery()
