@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, unescapeUser } = require('@/helpers')
+const { debug, escapeUser, unescapeUser } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -14,33 +14,36 @@ module.exports = () => [
       return ctx.answerCbQuery('You can\'t join yourself!')
     }
 
-    let enemy = await ctx.db('users').where('id', userId).first()
+    let enemy = await ctx.db('users').where('id', userId).first().catch(debug)
 
-    if (!enemy) {
+    if (enemy) {
+      enemy = unescapeUser(enemy)
+    } else {
       enemy = ctx.tg.getChatMember(
         ctx.callbackQuery.chat_instance,
         userId
       )
+      await ctx.db('users').insert(escapeUser(enemy)).catch(debug)
     }
 
     const [gameId] = await ctx.db('games').returning('id').insert({
       user_w: !iAmWhite() ? enemy.id : ctx.from.id,
       user_b: !iAmWhite() ? ctx.from.id : enemy.id,
       inline_id: ctx.update.callback_query.inline_message_id,
-    }).catch(debug) || [null]
+    }).catch(debug)
+
+    ctx.session.gameId = gameId
 
     const gameClient = chess.create({ PGN: true })
     const status = gameClient.getStatus()
 
-    ctx.session.gameId = gameId
-
     await ctx.editMessageText(
       iAmWhite()
-        ? `Black (top): ${unescapeUser(enemy).first_name}
+        ? `Black (top): ${enemy.first_name}
 White (bottom): ${ctx.from.first_name}
 White's turn`
         : `Black (top): ${ctx.from.first_name}
-White (bottom): ${unescapeUser(enemy).first_name}
+White (bottom): ${enemy.first_name}
 White's turn`,
       board(status.board.squares, true)
     )

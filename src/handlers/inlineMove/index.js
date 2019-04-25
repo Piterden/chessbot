@@ -116,8 +116,8 @@ module.exports = () => [
 
         const enemy = await ctx.db('users')
           .where('id', isWhiteTurn(movesState)
-            ? Number(gameState.user_b)
-            : Number(gameState.user_w))
+            ? Number(gameState.user_w)
+            : Number(gameState.user_b))
           .first()
           .catch(debug)
 
