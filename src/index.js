@@ -8,9 +8,9 @@ const Stage = require('telegraf/stage')
 const { gameScene } = require('@/scenes')
 const knexConfig = require('@/../knexfile')
 const {
-  newHandler,
-  joinHandler,
-  loadHandler,
+  // newHandler,
+  // joinHandler,
+  // loadHandler,
   inlineJoinHandler,
   inlineMoveHandler,
   inlineQueryHandler,
@@ -33,9 +33,9 @@ bot.use(session({
 }))
 bot.use(stage.middleware())
 
-bot.start(...loadHandler())
-bot.action(...newHandler())
-bot.action(...joinHandler())
+// bot.start(...loadHandler())
+// bot.action(...newHandler())
+// bot.action(...joinHandler())
 
 bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
