@@ -7,7 +7,9 @@ const startHandler = require('./start')
 const actionsHandler = require('./actions')
 const messageHandler = require('./message')
 const optionsHandler = require('./options')
-const inlineHandler = require('./inline')
+const inlineJoinHandler = require('./inlineJoin')
+const inlineMoveHandler = require('./inlineMove')
+const inlineQueryHandler = require('./inlineQuery')
 
 module.exports = {
   newHandler,
@@ -19,5 +21,7 @@ module.exports = {
   actionsHandler,
   messageHandler,
   optionsHandler,
-  inlineHandler,
+  inlineJoinHandler,
+  inlineMoveHandler,
+  inlineQueryHandler,
 }

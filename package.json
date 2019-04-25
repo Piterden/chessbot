@@ -15,22 +15,22 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chess": "^0.2.8",
-    "dotenv": "^5.0.1",
-    "knex": "^0.14.6",
+    "chess": "^0.4.1",
+    "dotenv": "^7.0.0",
+    "knex": "^0.16.5",
     "module-alias": "^2.2.0",
-    "pg": "^7.8.1",
-    "telegraf": "^3.27.1"
+    "pg": "^7.10.0",
+    "telegraf": "^3.29.0"
   },
   "devDependencies": {
-    "@atomix/eslint-config": "^7.0.0-next.1",
+    "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
-    "nodemon": "^1.18.10",
-    "prettier": "^1.17.0",
+    "nodemon": "^1.18.11",
     "sqlite3": "^4.0.6"
   },
   "_moduleAliases": {
