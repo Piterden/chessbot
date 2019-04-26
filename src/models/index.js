@@ -1,7 +1,8 @@
 const Sequelize = require('sequelize')
 
-const sequelize = new Sequelize(process.env.DB_STRING)
-sequelize.sync()
+const { DB_DATABASE, DB_USERNAME, DB_PASSWORD } = process.env
+
+const sequelize = new Sequelize(DB_DATABASE, DB_USERNAME, DB_PASSWORD).sync()
 
 module.exports = {
   sequelize,
