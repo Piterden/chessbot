@@ -12,12 +12,12 @@ const DB_CLIENT = 'postgres' // knex use 'pg' client name
 const connection = DB_CLIENT === 'sqlite' ? {
   storage: DB_HOST,
 } : {
-  host: DB_HOST
-  port: DB_PORT
+  host: DB_HOST,
+  port: DB_PORT,
 }
 
 const sequelize = new Sequelize(DB_DATABASE, DB_USERNAME, DB_PASSWORD, {
-  ...connection
+  ...connection,
   dialect: DB_CLIENT,
   logging: true,
 })
