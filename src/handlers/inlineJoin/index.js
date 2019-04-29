@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, escapeUser, unescapeUser } = require('@/helpers')
+const { debug, unescapeUser } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -18,21 +18,16 @@ module.exports = () => [
 
     if (enemy) {
       enemy = unescapeUser(enemy)
-    } else {
-      enemy = ctx.tg.getChatMember(
-        ctx.callbackQuery.chat_instance,
-        userId
-      )
-      await ctx.db('users').insert(escapeUser(enemy)).catch(debug)
     }
 
     const [gameId] = await ctx.db('games').returning('id').insert({
-      user_w: !iAmWhite() ? enemy.id : ctx.from.id,
-      user_b: !iAmWhite() ? ctx.from.id : enemy.id,
-      inline_id: ctx.update.callback_query.inline_message_id,
+      whites_id: iAmWhite() ? ctx.from.id : enemy.id,
+      blacks_id: iAmWhite() ? enemy.id : ctx.from.id,
+      inline_id: ctx.callbackQuery.inline_message_id,
     }).catch(debug)
 
-    ctx.session.gameId = gameId
+    ctx.game.id = gameId
+    ctx.game.inlineId = ctx.callbackQuery.inline_message_id
 
     const gameClient = chess.create({ PGN: true })
     const status = gameClient.getStatus()
