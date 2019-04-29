@@ -7,22 +7,22 @@ module.exports = () => [
   /^join::([wb])::(\d+)/,
   async (ctx) => {
     debug(ctx.update)
-    const userId = Number(ctx.match[2])
-    const iAmWhite = () => ctx.match[1] !== 'w'
+    const enemyId = Number(ctx.match[2])
+    const iAmWhite = ctx.match[1] !== 'w'
 
-    if (ctx.from.id === userId) {
+    if (ctx.from.id === enemyId) {
       return ctx.answerCbQuery('You can\'t join yourself!')
     }
 
-    let enemy = await ctx.db('users').where('id', userId).first().catch(debug)
+    let enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
 
     if (enemy) {
       enemy = unescapeUser(enemy)
     }
 
     const [gameId] = await ctx.db('games').returning('id').insert({
-      whites_id: iAmWhite() ? ctx.from.id : enemy.id,
-      blacks_id: iAmWhite() ? enemy.id : ctx.from.id,
+      whites_id: iAmWhite ? ctx.from.id : enemy.id,
+      blacks_id: iAmWhite ? enemy.id : ctx.from.id,
       inline_id: ctx.callbackQuery.inline_message_id,
     }).catch(debug)
 
@@ -33,7 +33,7 @@ module.exports = () => [
     const status = gameClient.getStatus()
 
     await ctx.editMessageText(
-      iAmWhite()
+      iAmWhite
         ? `Black (top): ${enemy.first_name}
 White (bottom): ${ctx.from.first_name}
 White's turn`

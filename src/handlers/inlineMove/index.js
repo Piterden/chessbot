@@ -20,7 +20,7 @@ Black's turn`
 White (bottom): ${enemy.first_name}
 White's turn`
 
-const isReady = (game) => !!(game.whites_id && game.blacks_id)
+const isReady = (game) => Boolean(game.whites_id && game.blacks_id)
 
 module.exports = () => [
   /^([a-h])([1-8])$/,
@@ -92,12 +92,11 @@ module.exports = () => [
         .catch(debug)
 
       ctx.game.moves = moves
-      ctx.game.selected = square
     } else {
       const moving = ctx.game.moves
         .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
 
-      if (moving && !gameMoves.find(({ move }) => move === moving.key)) {
+      if (moving && !gameMoves.find(({ entry }) => entry === moving.key)) {
         try {
           gameClient.move(moving.key)
         } catch (error) {
@@ -108,16 +107,15 @@ module.exports = () => [
 
         await ctx.db('moves').insert({
           game_id: ctx.game.id,
-          move: moving.key,
+          entry: moving.key,
         })
           .catch(debug)
       }
 
       ctx.game.moves = null
-      ctx.game.selected = null
 
       let enemy = await ctx.db('users')
-        .where('id', isWhiteTurn(gameMoves)
+        .where('id', ctx.from.id === Number(gameEntry.whites_id)
           ? Number(gameEntry.whites_id)
           : Number(gameEntry.blacks_id))
         .first()
@@ -125,24 +123,12 @@ module.exports = () => [
 
       if (enemy) {
         enemy = unescapeUser(enemy)
-      } else {
-        // enemy = ctx.tg.getChatMember(
-        //   ctx.callbackQuery.chat_instance,
-        //   isWhiteTurn(gameMoves)
-        //     ? Number(gameEntry.whites_id)
-        //     : Number(gameEntry.blacks_id)
-        // )
-        // await ctx.db('users').insert(escapeUser(enemy)).catch(debug)
       }
 
       debug(enemy)
 
       await ctx.editMessageText(
-        topMessage(
-          gameMoves,
-          ctx.update.callback_query.from,
-          enemy
-        ) + statusMessage(status),
+        topMessage(gameMoves, ctx.from, enemy) + statusMessage(status),
         board(status.board.squares, !isWhiteTurn(gameMoves))
       )
         .catch(debug)
