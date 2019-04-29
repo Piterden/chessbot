@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, escapeUser, unescapeUser } = require('@/helpers')
+const { debug, unescapeUser } = require('@/helpers')
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isWhiteUser = (game, ctx) => Number(game.whites_id) === ctx.from.id
@@ -25,9 +25,9 @@ const isReady = (game) => Boolean(game.whites_id && game.blacks_id)
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
-    const gameEntry = await ctx.db('games')
-      .where('id', ctx.game.id)
-      .first()
+    const gameEntry = ctx.game.id
+      ? await ctx.db('games').where('id', ctx.game.id).first()
+      : await ctx.db('games').where('inline_id', ctx.callbackQuery.inline_message_id).first()
 
     debug(gameEntry)
 
@@ -52,9 +52,9 @@ module.exports = () => [
 
     const gameClient = chess.create({ PGN: true })
 
-    gameMoves.forEach(({ move }) => {
+    gameMoves.forEach(({ entry }) => {
       try {
-        gameClient.move(move)
+        gameClient.move(entry)
       } catch (error) {
         debug(error)
       }
@@ -92,6 +92,7 @@ module.exports = () => [
         .catch(debug)
 
       ctx.game.moves = moves
+      ctx.game.selected = square
     } else {
       const moving = ctx.game.moves
         .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
@@ -103,8 +104,6 @@ module.exports = () => [
           debug(error)
         }
 
-        status = gameClient.getStatus()
-
         await ctx.db('moves').insert({
           game_id: ctx.game.id,
           entry: moving.key,
@@ -112,12 +111,16 @@ module.exports = () => [
           .catch(debug)
       }
 
+      status = gameClient.getStatus()
+      const cancelMove = ctx.game.selected === square
+
       ctx.game.moves = null
+      ctx.game.selected = null
 
       let enemy = await ctx.db('users')
         .where('id', ctx.from.id === Number(gameEntry.whites_id)
-          ? Number(gameEntry.whites_id)
-          : Number(gameEntry.blacks_id))
+          ? Number(gameEntry.blacks_id)
+          : Number(gameEntry.whites_id))
         .first()
         .catch(debug)
 
@@ -129,7 +132,10 @@ module.exports = () => [
 
       await ctx.editMessageText(
         topMessage(gameMoves, ctx.from, enemy) + statusMessage(status),
-        board(status.board.squares, !isWhiteTurn(gameMoves))
+        board(
+          status.board.squares,
+          cancelMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves)
+        )
       )
         .catch(debug)
     }

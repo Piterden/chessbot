@@ -19,12 +19,11 @@ const connection = DB_CLIENT === 'sqlite' ? {
 const sequelize = new Sequelize(DB_DATABASE, DB_USERNAME, DB_PASSWORD, {
   ...connection,
   dialect: DB_CLIENT,
-  logging: true,
 })
 
 const user = sequelize.define(...userModel)
 
-sequelize.sync()
+// sequelize.sync()
 
 module.exports = {
   sequelize, user,
