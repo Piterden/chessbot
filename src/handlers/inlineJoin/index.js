@@ -1,35 +1,64 @@
-// const chess = require('chess')
+const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, unescapeUser } = require('@/helpers')
+const { debug, escapeUser, unescapeUser } = require('@/helpers')
 
 module.exports = () => [
-  /^join::(\w)::(\d+)/, async (ctx) => {
+  /^join::([wb])::(\d+)/,
+  async (ctx) => {
     debug(ctx.update)
-    const userId = Number(ctx.match[2])
-    const iAmWhite = () => ctx.match[1] !== 'w'
+    const enemyId = Number(ctx.match[2])
+    const iAmWhite = ctx.match[1] !== 'w'
 
-    if (ctx.from.id === userId) {
+    if (ctx.from.id === enemyId) {
       return ctx.answerCbQuery('You can\'t join yourself!')
     }
 
-    const enemy = await ctx.db('users').where('id', userId).first()
+    let user = await ctx.db('users')
+      .where({ id: ctx.from.id })
+      .first()
+      .catch(debug)
 
-    await ctx.db('games').returning('id').insert({
-      user_w: !iAmWhite() ? enemy.id : ctx.from.id,
-      user_b: !iAmWhite() ? ctx.from.id : enemy.id,
-      inline_id: ctx.update.callback_query.inline_message_id,
+    if (user) {
+      user = unescapeUser(user)
+    } else {
+      const users = await ctx.db('users')
+        .insert(escapeUser(ctx.from))
+        .returning(Object.keys(ctx.from))
+        .catch(debug)
+
+      user = unescapeUser(users[0])
+    }
+
+    let enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
+
+    if (enemy) {
+      enemy = unescapeUser(enemy)
+    }
+
+    const [gameId] = await ctx.db('games').returning('id').insert({
+      whites_id: iAmWhite ? user.id : enemy.id,
+      blacks_id: iAmWhite ? enemy.id : user.id,
+      inline_id: ctx.callbackQuery.inline_message_id,
     }).catch(debug)
 
+    ctx.game.id = gameId
+    ctx.game.inlineId = ctx.callbackQuery.inline_message_id
+
+    const gameClient = chess.create({ PGN: true })
+    const status = gameClient.getStatus()
+
     await ctx.editMessageText(
-      !iAmWhite()
-        ? `Black (top): ${ctx.from.first_name}
-  White (bottom): ${unescapeUser(enemy).first_name}`
-        : `Black (top): ${unescapeUser(enemy).first_name}
-  White (bottom): ${ctx.from.first_name}`,
-      board()
+      iAmWhite
+        ? `Black (top): ${enemy.first_name}
+White (bottom): ${user.first_name}
+White's turn`
+        : `Black (top): ${user.first_name}
+White (bottom): ${enemy.first_name}
+White's turn`,
+      board(status.board.squares, true)
     )
 
-    return ctx.answerCbQuery()
+    return ctx.answerCbQuery('Now play!')
   },
 ]
