@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, unescapeUser, escapeUser } = require('@/helpers')
+const { debug } = require('@/helpers')
 
 const gameClient = chess.create({ PGN: true })
 const status = gameClient.getStatus()
@@ -14,21 +14,19 @@ module.exports = () => async (ctx) => {
     .first()
 
   if (user) {
-    user = unescapeUser(user)
-
     if (JSON.stringify(user) !== JSON.stringify(ctx.from)) {
       await ctx.db('users')
         .where('id', Number(user.id))
-        .update(escapeUser(ctx.from))
+        .update(ctx.from)
         .catch(debug)
     }
   } else {
     const users = await ctx.db('users')
-      .insert(escapeUser(ctx.from))
+      .insert(ctx.from)
       .returning(Object.keys(ctx.from))
       .catch(debug)
 
-    user = unescapeUser(users[0])
+    user = users[0]
   }
 
   await ctx.answerInlineQuery([

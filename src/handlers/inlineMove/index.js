@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, unescapeUser } = require('@/helpers')
+const { debug } = require('@/helpers')
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isWhiteUser = (game, ctx) => Number(game.whites_id) === ctx.from.id
@@ -60,42 +60,41 @@ module.exports = () => [
       }
     })
 
-    let moves = []
     let status = gameClient.getStatus()
-    const square = status.board.squares
+    const pressed = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-    if (!ctx.game.moves) {
-      if (
-        !square ||
-        !square.piece ||
-        (square.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
-        (square.piece.side.name === 'white' && !isWhiteTurn(gameMoves))
-      ) {
-        return ctx.answerCbQuery()
-      }
+    if (
+      !pressed ||
+      !pressed.piece ||
+      (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
+      (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves))
+    ) {
+      return ctx.answerCbQuery()
+    }
 
-      moves = Object.keys(status.notatedMoves)
-        .filter((key) => status.notatedMoves[key].src === square)
+    if (!ctx.game.selected) {
+      const allowedMoves = Object.keys(status.notatedMoves)
+        .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
       await ctx.editMessageReplyMarkup(board(
-        status.board.squares.map((sqr) => {
-          const move = moves
+        status.board.squares.map((square) => {
+          const move = allowedMoves
             .find((({ file, rank }) => ({ dest }) => dest.file === file &&
-              dest.rank === rank)(sqr))
+              dest.rank === rank)(square))
 
-          return move ? { ...sqr, destination: move } : sqr
+          return move ? { ...square, destination: move } : square
         }),
         isWhiteTurn(gameMoves)
       ).reply_markup)
         .catch(debug)
 
-      ctx.game.moves = moves
-      ctx.game.selected = square
+      ctx.game.allowedMoves = allowedMoves
+      ctx.game.selected = pressed
     } else {
-      const moving = ctx.game.moves
-        .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
+      const moving = ctx.game.allowedMoves
+        .find(({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank)
 
       if (moving && !gameMoves.find(({ entry }) => entry === moving.key)) {
         try {
@@ -113,19 +112,15 @@ module.exports = () => [
 
       status = gameClient.getStatus()
 
-      ctx.game.moves = null
+      ctx.game.allowedMoves = null
       ctx.game.selected = null
 
-      let enemy = await ctx.db('users')
+      const enemy = await ctx.db('users')
         .where('id', ctx.from.id === Number(gameEntry.whites_id)
           ? Number(gameEntry.blacks_id)
           : Number(gameEntry.whites_id))
         .first()
         .catch(debug)
-
-      if (enemy) {
-        enemy = unescapeUser(enemy)
-      }
 
       await ctx.editMessageText(
         topMessage(gameMoves, ctx.from, enemy) + statusMessage(status),

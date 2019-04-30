@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, escapeUser, unescapeUser } = require('@/helpers')
+const { debug } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -19,22 +19,16 @@ module.exports = () => [
       .first()
       .catch(debug)
 
-    if (user) {
-      user = unescapeUser(user)
-    } else {
+    if (!user) {
       const users = await ctx.db('users')
-        .insert(escapeUser(ctx.from))
+        .insert(ctx.from)
         .returning(Object.keys(ctx.from))
         .catch(debug)
 
-      user = unescapeUser(users[0])
+      user = users[0]
     }
 
     let enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
-
-    if (enemy) {
-      enemy = unescapeUser(enemy)
-    }
 
     const [gameId] = await ctx.db('games').returning('id').insert({
       whites_id: iAmWhite ? user.id : enemy.id,
