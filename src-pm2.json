@@ -1,6 +1,6 @@
 {
-  "script": "src/index.js",
-  "name": "chess",
+  "script": "src",
+  "name": "src",
   "env": {},
   "merge_logs": true,
   "vizion": true,

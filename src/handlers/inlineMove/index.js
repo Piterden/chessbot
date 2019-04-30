@@ -20,7 +20,7 @@ Black's turn`
 White (bottom): ${enemy.first_name}
 White's turn`
 
-const isReady = (game) => Boolean(game.whites_id && game.blacks_id)
+const isReady = (game) => game && Boolean(game.whites_id && game.blacks_id)
 
 module.exports = () => [
   /^([a-h])([1-8])$/,
@@ -112,7 +112,6 @@ module.exports = () => [
       }
 
       status = gameClient.getStatus()
-      const cancelMove = ctx.game.selected === square
 
       ctx.game.moves = null
       ctx.game.selected = null
@@ -128,13 +127,11 @@ module.exports = () => [
         enemy = unescapeUser(enemy)
       }
 
-      debug(enemy)
-
       await ctx.editMessageText(
         topMessage(gameMoves, ctx.from, enemy) + statusMessage(status),
         board(
           status.board.squares,
-          cancelMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves)
+          !isWhiteTurn(gameMoves)
         )
       )
         .catch(debug)
