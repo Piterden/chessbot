@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, escapeUser, unescapeUser } = require('@/helpers')
+const { debug } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -19,30 +19,30 @@ module.exports = () => [
       .first()
       .catch(debug)
 
-    if (user) {
-      user = unescapeUser(user)
-    } else {
-      const users = await ctx.db('users')
-        .insert(escapeUser(ctx.from))
-        .returning(Object.keys(ctx.from))
-        .catch(debug)
-
-      user = unescapeUser(users[0])
+    if (!user) {
+      await ctx.db('users').insert(ctx.from).catch(debug)
+      user = await ctx.db('users').where('id', ctx.from.id).first().catch(debug)
     }
 
-    let enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
+    const enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
 
-    if (enemy) {
-      enemy = unescapeUser(enemy)
-    }
-
-    const [gameId] = await ctx.db('games').returning('id').insert({
-      whites_id: iAmWhite ? user.id : enemy.id,
-      blacks_id: iAmWhite ? enemy.id : user.id,
+    await ctx.db('games').insert({
+      whites_id: iAmWhite ? ctx.from.id : enemy.id,
+      blacks_id: iAmWhite ? enemy.id : ctx.from.id,
       inline_id: ctx.callbackQuery.inline_message_id,
     }).catch(debug)
 
-    ctx.game.id = gameId
+    const game = await ctx.db('games')
+      .where('inline_id', ctx.callbackQuery.inline_message_id)
+      .first()
+      .catch(debug)
+
+    if (!game) {
+      await ctx.removeMessage()
+      return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
+    }
+
+    ctx.game.id = game.gameId
     ctx.game.inlineId = ctx.callbackQuery.inline_message_id
 
     const gameClient = chess.create({ PGN: true })

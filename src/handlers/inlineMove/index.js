@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, unescapeUser } = require('@/helpers')
+const { debug } = require('@/helpers')
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isWhiteUser = (game, ctx) => Number(game.whites_id) === ctx.from.id
@@ -12,7 +12,7 @@ ${isCheck ? '|CHECK|' : ''}
 ${isCheckmate ? '|CHECKMATE|' : ''}
 ${isRepetition ? '|REPETITION|' : ''}`
 
-const topMessage = (moves, player, enemy) => isWhiteTurn(moves)
+const topMessage = (isWhiteTurn, player, enemy) => isWhiteTurn
   ? `White (top): ${player.first_name}
 Black (bottom): ${enemy.first_name}
 Black's turn`
@@ -20,25 +20,32 @@ Black's turn`
 White (bottom): ${enemy.first_name}
 White's turn`
 
-const isReady = (game) => Boolean(game.whites_id && game.blacks_id)
+const isReady = (game) => game && Boolean(game.whites_id && game.blacks_id)
 
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
-    const gameEntry = ctx.game.id
-      ? await ctx.db('games').where('id', ctx.game.id).first()
-      : await ctx.db('games').where('inline_id', ctx.callbackQuery.inline_message_id).first()
+    const gameEntry = await ctx.db('games')
+      .where('inline_id', ctx.callbackQuery.inline_message_id)
+      .first()
 
-    debug(gameEntry)
+    if (!gameEntry) {
+      await ctx.deleteMessage()
+      return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
+    }
 
     if (!isReady(gameEntry)) {
       return ctx.answerCbQuery('Join the game to move pieces!')
     }
 
-    if (![Number(gameEntry.whites_id), Number(gameEntry.blacks_id)]
-      .includes(ctx.from.id)) {
+    if (![
+      Number(gameEntry.whites_id),
+      Number(gameEntry.blacks_id),
+    ].includes(ctx.from.id)) {
       return ctx.answerCbQuery('This board is full, please start a new one.')
     }
+
+    ctx.game.id = Number(gameEntry.id)
 
     const gameMoves = await ctx.db('moves')
       .where('game_id', gameEntry.id)
@@ -60,84 +67,78 @@ module.exports = () => [
       }
     })
 
-    let moves = []
     let status = gameClient.getStatus()
-    const square = status.board.squares
+    const pressed = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-    if (!ctx.game.moves) {
+    if (!ctx.game.selected) {
       if (
-        !square ||
-        !square.piece ||
-        (square.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
-        (square.piece.side.name === 'white' && !isWhiteTurn(gameMoves))
+        !pressed ||
+        !pressed.piece ||
+        (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
+        (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves))
       ) {
         return ctx.answerCbQuery()
       }
 
-      moves = Object.keys(status.notatedMoves)
-        .filter((key) => status.notatedMoves[key].src === square)
+      const allowedMoves = Object.keys(status.notatedMoves)
+        .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
       await ctx.editMessageReplyMarkup(board(
-        status.board.squares.map((sqr) => {
-          const move = moves
+        status.board.squares.map((square) => {
+          const move = allowedMoves
             .find((({ file, rank }) => ({ dest }) => dest.file === file &&
-              dest.rank === rank)(sqr))
+              dest.rank === rank)(square))
 
-          return move ? { ...sqr, destination: move } : sqr
+          return move ? { ...square, destination: move } : square
         }),
         isWhiteTurn(gameMoves)
       ).reply_markup)
         .catch(debug)
 
-      ctx.game.moves = moves
-      ctx.game.selected = square
+      ctx.game.allowedMoves = allowedMoves
+      ctx.game.selected = pressed
     } else {
-      const moving = ctx.game.moves
-        .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
+      const makeMove = ctx.game.allowedMoves
+        .find(({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank)
 
-      if (moving && !gameMoves.find(({ entry }) => entry === moving.key)) {
+      if (makeMove) {
         try {
-          gameClient.move(moving.key)
+          gameClient.move(makeMove.key)
         } catch (error) {
           debug(error)
         }
 
         await ctx.db('moves').insert({
           game_id: ctx.game.id,
-          entry: moving.key,
-        })
-          .catch(debug)
+          entry: makeMove.key,
+        }).catch(debug)
       }
 
       status = gameClient.getStatus()
-      const cancelMove = ctx.game.selected === square
 
-      ctx.game.moves = null
+      ctx.game.allowedMoves = null
       ctx.game.selected = null
 
-      let enemy = await ctx.db('users')
-        .where('id', ctx.from.id === Number(gameEntry.whites_id)
+      const enemy = await ctx.db('users')
+        .where('id', isWhiteUser(gameEntry, ctx)
           ? Number(gameEntry.blacks_id)
           : Number(gameEntry.whites_id))
         .first()
         .catch(debug)
 
-      if (enemy) {
-        enemy = unescapeUser(enemy)
-      }
-
-      debug(enemy)
-
       await ctx.editMessageText(
-        topMessage(gameMoves, ctx.from, enemy) + statusMessage(status),
+        topMessage(
+          makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
+          ctx.from,
+          enemy
+        ) + statusMessage(status),
         board(
           status.board.squares,
-          cancelMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves)
+          makeMove ? !isWhiteTurn(gameMoves) : isWhiteTurn(gameMoves)
         )
-      )
-        .catch(debug)
+      ).catch(debug)
     }
 
     return ctx.answerCbQuery()
