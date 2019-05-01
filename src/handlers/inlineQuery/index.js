@@ -21,12 +21,8 @@ module.exports = () => async (ctx) => {
         .catch(debug)
     }
   } else {
-    const users = await ctx.db('users')
-      .insert(ctx.from)
-      .returning(Object.keys(ctx.from))
-      .catch(debug)
-
-    user = users[0]
+    await ctx.db('users').insert(ctx.from).catch(debug)
+    user = await ctx.db('users').where('id', ctx.from.id).first().catch(debug)
   }
 
   await ctx.answerInlineQuery([

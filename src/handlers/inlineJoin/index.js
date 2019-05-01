@@ -20,23 +20,29 @@ module.exports = () => [
       .catch(debug)
 
     if (!user) {
-      const users = await ctx.db('users')
-        .insert(ctx.from)
-        .returning(Object.keys(ctx.from))
-        .catch(debug)
-
-      user = users[0]
+      await ctx.db('users').insert(ctx.from).catch(debug)
+      user = await ctx.db('users').where('id', ctx.from.id).first().catch(debug)
     }
 
-    let enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
+    const enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
 
-    const [gameId] = await ctx.db('games').returning('id').insert({
-      whites_id: iAmWhite ? user.id : enemy.id,
-      blacks_id: iAmWhite ? enemy.id : user.id,
+    await ctx.db('games').insert({
+      whites_id: iAmWhite ? ctx.from.id : enemy.id,
+      blacks_id: iAmWhite ? enemy.id : ctx.from.id,
       inline_id: ctx.callbackQuery.inline_message_id,
     }).catch(debug)
 
-    ctx.game.id = gameId
+    const game = await ctx.db('games')
+      .where('inline_id', ctx.callbackQuery.inline_message_id)
+      .first()
+      .catch(debug)
+
+    if (!game) {
+      await ctx.removeMessage()
+      return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
+    }
+
+    ctx.game.id = game.gameId
     ctx.game.inlineId = ctx.callbackQuery.inline_message_id
 
     const gameClient = chess.create({ PGN: true })
