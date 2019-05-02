@@ -38,7 +38,6 @@ module.exports = () => [
       .catch(debug)
 
     if (!game) {
-      await ctx.removeMessage()
       return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
     }
 

@@ -30,7 +30,6 @@ module.exports = () => [
       .first()
 
     if (!gameEntry) {
-      await ctx.deleteMessage()
       return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
     }
 
@@ -131,8 +130,8 @@ module.exports = () => [
       await ctx.editMessageText(
         topMessage(
           makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
-          ctx.from,
-          enemy
+          makeMove ? ctx.from : enemy,
+          makeMove ? enemy : ctx.from
         ) + statusMessage(status),
         board(
           status.board.squares,
