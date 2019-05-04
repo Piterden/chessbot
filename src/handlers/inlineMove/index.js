@@ -102,7 +102,7 @@ module.exports = () => [
       ctx.game.allowedMoves = allowedMoves
       ctx.game.selected = pressed
 
-      return ctx.answerCbQuery()
+      return ctx.answerCbQuery(`${pressed.piece.type} ${pressed.file}${pressed.rank}`)
     }
 
     if (
@@ -161,8 +161,8 @@ module.exports = () => [
         ) + statusMessage(status),
         ctx.game.lastBoard
       ).catch(debug)
-    }
 
-    return ctx.answerCbQuery()
+      return ctx.answerCbQuery(`${makeMove.key}`)
+    }
   },
 ]

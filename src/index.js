@@ -4,7 +4,6 @@ require('module-alias/register')
 const knex = require('knex')
 const Telegraf = require('telegraf')
 
-const knexConfig = require('@/../knexfile')
 const {
   inlineBackHandler,
   inlineJoinHandler,
@@ -13,6 +12,7 @@ const {
   inlineSettingsHandler,
 } = require('@/handlers')
 const { debug } = require('@/helpers')
+const knexConfig = require('@/../knexfile')
 
 const { session } = Telegraf
 const { BOT_NAME, BOT_TOKEN } = process.env
