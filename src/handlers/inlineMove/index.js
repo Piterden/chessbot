@@ -68,16 +68,15 @@ module.exports = () => [
     const pressed = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-    if (!ctx.game.selected) {
-      if (
-        !pressed ||
-        !pressed.piece ||
-        (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
-        (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves))
-      ) {
-        return ctx.answerCbQuery()
-      }
-
+    if (
+      pressed &&
+      pressed.piece &&
+      ((pressed.piece.side.name === 'white' && isWhiteTurn(gameMoves)) ||
+      (pressed.piece.side.name === 'black' && !isWhiteTurn(gameMoves))) &&
+      !(ctx.game.selected &&
+        pressed.file === ctx.game.selected.file &&
+        pressed.rank === ctx.game.selected.rank)
+    ) {
       const allowedMoves = Object.keys(status.notatedMoves)
         .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
@@ -102,7 +101,21 @@ module.exports = () => [
 
       ctx.game.allowedMoves = allowedMoves
       ctx.game.selected = pressed
-    } else {
+
+      return ctx.answerCbQuery()
+    }
+
+    if (
+      !ctx.game.selected &&
+      (!pressed ||
+      !pressed.piece ||
+      (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
+      (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves)))
+    ) {
+      return ctx.answerCbQuery()
+    }
+
+    if (ctx.game.selected) {
       const makeMove = ctx.game.allowedMoves
         .find(({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank)
 
