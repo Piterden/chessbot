@@ -17,7 +17,7 @@ module.exports = () => [
           { text: '⬅️ Back to game', callback_data: 'back' },
         ],
       ],
-    })
+    }).catch(debug)
 
     return ctx.answerCbQuery('Please choose a setting you want to change!')
   },
