@@ -1,8 +1,24 @@
-const { debug } = require('@/helpers')
+const { debug, isReady, isPlayer } = require('@/helpers')
 
 module.exports = () => [
   /^settings(?:::(\w+))?(?:::(\w+))?$/,
   async (ctx) => {
+    const gameEntry = await ctx.db('games')
+      .where('inline_id', ctx.callbackQuery.inline_message_id)
+      .first()
+
+    if (!gameEntry) {
+      return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
+    }
+
+    if (!isReady(gameEntry)) {
+      return ctx.answerCbQuery('Join the game to move pieces!')
+    }
+
+    if (!isPlayer(gameEntry, ctx)) {
+      return ctx.answerCbQuery('This board is full, please start a new one.')
+    }
+
     switch (ctx.match[1]) {
       case 'rotation':
         switch (ctx.match[2]) {

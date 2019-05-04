@@ -1,11 +1,14 @@
 const chess = require('chess')
 
-const { debug } = require('@/helpers')
+const {
+  debug,
+  isReady,
+  isPlayer,
+  isWhiteTurn,
+  isWhiteUser,
+  isBlackUser,
+} = require('@/helpers')
 const { board } = require('@/keyboards')
-
-const isWhiteTurn = (moves) => !(moves.length % 2)
-const isWhiteUser = (game, ctx) => Number(game.whites_id) === ctx.from.id
-const isBlackUser = (game, ctx) => Number(game.blacks_id) === ctx.from.id
 
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
 ${isCheck ? '|CHECK|' : ''}
@@ -19,8 +22,6 @@ Black's turn`
   : `Black (top): ${player.first_name}
 White (bottom): ${enemy.first_name}
 White's turn`
-
-const isReady = (game) => game && Boolean(game.whites_id && game.blacks_id)
 
 module.exports = () => [
   /^([a-h])([1-8])$/,
@@ -37,8 +38,7 @@ module.exports = () => [
       return ctx.answerCbQuery('Join the game to move pieces!')
     }
 
-    if (![Number(gameEntry.whites_id), Number(gameEntry.blacks_id)]
-      .includes(ctx.from.id)) {
+    if (!isPlayer(gameEntry, ctx)) {
       return ctx.answerCbQuery('This board is full, please start a new one.')
     }
 
