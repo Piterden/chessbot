@@ -7,8 +7,6 @@ const gameClient = chess.create({ PGN: true })
 const status = gameClient.getStatus()
 
 module.exports = () => async (ctx) => {
-  debug(ctx.update)
-
   let user = await ctx.db('users')
     .where('id', Number(ctx.from.id))
     .first()
