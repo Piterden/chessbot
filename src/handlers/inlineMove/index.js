@@ -23,7 +23,7 @@ White's turn`
 const isReady = (game) => game && Boolean(game.whites_id && game.blacks_id)
 
 module.exports = () => [
-  /^([a-h])([1-8])(::back)?$/,
+  /^([a-h])([1-8])$/,
   async (ctx) => {
     const gameEntry = await ctx.db('games')
       .where('inline_id', ctx.callbackQuery.inline_message_id)
