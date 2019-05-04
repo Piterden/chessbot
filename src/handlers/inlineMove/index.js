@@ -1,7 +1,7 @@
 const chess = require('chess')
 
-const { board } = require('@/keyboards')
 const { debug } = require('@/helpers')
+const { board } = require('@/keyboards')
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isWhiteUser = (game, ctx) => Number(game.whites_id) === ctx.from.id
@@ -23,7 +23,7 @@ White's turn`
 const isReady = (game) => game && Boolean(game.whites_id && game.blacks_id)
 
 module.exports = () => [
-  /^([a-h])([1-8])$/,
+  /^([a-h])([1-8])(::back)?$/,
   async (ctx) => {
     const gameEntry = await ctx.db('games')
       .where('inline_id', ctx.callbackQuery.inline_message_id)
@@ -37,10 +37,8 @@ module.exports = () => [
       return ctx.answerCbQuery('Join the game to move pieces!')
     }
 
-    if (![
-      Number(gameEntry.whites_id),
-      Number(gameEntry.blacks_id),
-    ].includes(ctx.from.id)) {
+    if (![Number(gameEntry.whites_id), Number(gameEntry.blacks_id)]
+      .includes(ctx.from.id)) {
       return ctx.answerCbQuery('This board is full, please start a new one.')
     }
 
@@ -84,7 +82,7 @@ module.exports = () => [
         .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
-      await ctx.editMessageReplyMarkup(board(
+      ctx.game.lastBoard = board(
         status.board.squares.map((square) => {
           const move = allowedMoves
             .find((({ file, rank }) => ({ dest }) => dest.file === file &&
@@ -92,8 +90,14 @@ module.exports = () => [
 
           return move ? { ...square, destination: move } : square
         }),
-        isWhiteTurn(gameMoves)
-      ).reply_markup)
+        isWhiteTurn(gameMoves),
+        [{
+          text: 'Settings',
+          callback_data: 'settings',
+        }]
+      )
+
+      await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
         .catch(debug)
 
       ctx.game.allowedMoves = allowedMoves
@@ -127,16 +131,22 @@ module.exports = () => [
         .first()
         .catch(debug)
 
+      ctx.game.lastBoard = board(
+        status.board.squares,
+        makeMove ? !isWhiteTurn(gameMoves) : isWhiteTurn(gameMoves),
+        [{
+          text: 'Settings',
+          callback_data: 'settings',
+        }]
+      )
+
       await ctx.editMessageText(
         topMessage(
           makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
           makeMove ? ctx.from : enemy,
           makeMove ? enemy : ctx.from
         ) + statusMessage(status),
-        board(
-          status.board.squares,
-          makeMove ? !isWhiteTurn(gameMoves) : isWhiteTurn(gameMoves)
-        )
+        ctx.game.lastBoard
       ).catch(debug)
     }
 

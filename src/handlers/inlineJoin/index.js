@@ -6,7 +6,6 @@ const { debug } = require('@/helpers')
 module.exports = () => [
   /^join::([wb])::(\d+)/,
   async (ctx) => {
-    debug(ctx.update)
     const enemyId = Number(ctx.match[2])
     const iAmWhite = ctx.match[1] !== 'w'
 
@@ -41,11 +40,16 @@ module.exports = () => [
       return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
     }
 
-    ctx.game.id = game.gameId
+    ctx.game.id = game.id
     ctx.game.inlineId = ctx.callbackQuery.inline_message_id
 
     const gameClient = chess.create({ PGN: true })
     const status = gameClient.getStatus()
+
+    ctx.game.lastBoard = board(status.board.squares, true, [{
+      text: 'Settings',
+      callback_data: 'settings',
+    }])
 
     await ctx.editMessageText(
       iAmWhite
@@ -55,7 +59,7 @@ White's turn`
         : `Black (top): ${user.first_name}
 White (bottom): ${enemy.first_name}
 White's turn`,
-      board(status.board.squares, true)
+      ctx.game.lastBoard
     )
 
     return ctx.answerCbQuery('Now play!')
