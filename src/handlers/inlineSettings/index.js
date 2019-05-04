@@ -26,37 +26,44 @@ module.exports = () => [
                 .catch(debug)
             }
 
-            break
+            return ctx.answerCbQuery(`You choose ${ctx.match[2]} rotation mode.`)
 
           default:
             await ctx.editMessageReplyMarkup({
               inline_keyboard: [
-                [
-                  { text: 'Whites at bottom', callback_data: 'settings::rotation::whites' },
-                ],
-                [
-                  { text: 'Blacks at bottom', callback_data: 'settings::rotation::blacks' },
-                ],
-                [
-                  { text: 'Current mover at bottom', callback_data: 'settings::rotation::dynamic' },
-                ],
-                [
-                  { text: '⬅️ Back to settings', callback_data: 'settings' },
-                ],
+                [{
+                  text: 'Whites at bottom',
+                  callback_data: 'settings::rotation::whites',
+                }],
+                [{
+                  text: 'Blacks at bottom',
+                  callback_data: 'settings::rotation::blacks',
+                }],
+                [{
+                  text: 'Current mover at bottom',
+                  callback_data: 'settings::rotation::dynamic',
+                }],
+                [{
+                  text: '⬅️ Back to settings',
+                  callback_data: 'settings',
+                }],
               ],
             }).catch(debug)
+
+            return ctx.answerCbQuery('Please choose a rotation mode!')
         }
-        break
 
       default:
         await ctx.editMessageReplyMarkup({
           inline_keyboard: [
-            [
-              { text: 'Board Rotation', callback_data: 'settings::rotation' },
-            ],
-            [
-              { text: '⬅️ Back to game', callback_data: 'back' },
-            ],
+            [{
+              text: 'Board Rotation',
+              callback_data: 'settings::rotation',
+            }],
+            [{
+              text: '⬅️ Back to game',
+              callback_data: 'back',
+            }],
           ],
         }).catch(debug)
 
