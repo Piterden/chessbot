@@ -1,6 +1,8 @@
 # The PvP chess bot for the Telegram
 
-[![Build Status](https://travis-ci.org/Piterden/chessbot.svg?branch=master)](https://travis-ci.com/Piterden/chessbot)
+![Travis (.org)](https://img.shields.io/travis/Piterden/chessbot.svg?style=for-the-badge)
+![GitHub search hit counter](https://img.shields.io/github/search/Piterden/chessbot/chess.svg?style=for-the-badge)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Piterden/chessbot.svg?style=for-the-badge)
 
 ## Overview
 
@@ -13,7 +15,7 @@ A simple PvP chess game based on inline message and edit a reply markup of a che
 - Bot works in any group or private chat.
 - All moves stored in the DB, so you can play a few games simultaneously.
 
-[**Demo**](https://t.me/chessy_bot) (WIP version)
+**[Demo]**(https://t.me/chessy_bot) (WIP version)
 
 ## Usage
 
@@ -77,7 +79,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 ## Authors
 
 - **Denis Efremov** - *Code|Idea* - [Piterden](https://github.com/Piterden)
-- **kolay** *Code|Consulting* - [kolay-v](<https://github.com/kolay-v>)
+- **kolay** - *Code|Consulting* - [kolay-v](<https://github.com/kolay-v>)
 
 ## License
 
