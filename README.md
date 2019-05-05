@@ -1,6 +1,8 @@
 # The PvP chess bot for the Telegram
 
-[![Build Status](https://travis-ci.org/Piterden/chessbot.svg?branch=master)](https://travis-ci.com/Piterden/chessbot)
+![Travis (.org)](https://img.shields.io/travis/Piterden/chessbot.svg?style=for-the-badge)
+![GitHub search hit counter](https://img.shields.io/github/search/Piterden/chessbot/chess.svg?style=for-the-badge)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Piterden/chessbot.svg?style=for-the-badge)
 
 ## Overview
 
@@ -13,11 +15,11 @@ A simple PvP chess game based on inline message and edit a reply markup of a che
 - Bot works in any group or private chat.
 - All moves stored in the DB, so you can play a few games simultaneously.
 
-[**Demo**](https://t.me/chessy_bot) (WIP version)
+**[Demo]**(https://t.me/chessy_bot) (WIP version)
 
 ## Usage
 
-To play chess simply type `@chessy_bot[SPACE]` to your telegram's message input box.
+To play chess simply type `@chessy_bot[SPACE]` to your telegram message input box.
 
 ![](img/3.png)
 
@@ -29,7 +31,7 @@ When someone join your game, this will be displayed in the status message. Also 
 
 ![](img/5.png)
 
-Now everything is ready to start the game. Whites should make the first turn. To move your pieces you should easily select a piece you want to move and then select a destination from displayed available to move squares.
+Now everything is ready to start the game. To move your pieces just select a piece you want to move and then select a destination from displayed available to move squares.
 
 > **WARNING!!!**
 >
@@ -45,7 +47,7 @@ cd chessbot
 npm i
 ```
 
-Then you should create and fill up a new `.env` file:
+Then you have to create and fill up a new `.env` file:
 
 ```bash
 cp .env.example .env
@@ -55,7 +57,7 @@ editor .env
 Next migrate the DB:
 
 ```bash
-./node_modules/.bin/knex migrate:latest
+npm run knex migrate:latest
 ```
 
 Then run the dev mode:
@@ -77,7 +79,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 ## Authors
 
 - **Denis Efremov** - *Code|Idea* - [Piterden](https://github.com/Piterden)
-- **kolay** *Code|Consulting* - [kolay-v](<https://github.com/kolay-v>)
+- **kolay** - *Code|Consulting* - [kolay-v](<https://github.com/kolay-v>)
 
 ## License
 
