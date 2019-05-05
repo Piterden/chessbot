@@ -40,7 +40,7 @@ module.exports = () => [
       return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
     }
 
-    ctx.game.id = game.id
+    ctx.game.entry = game
     ctx.game.inlineId = ctx.callbackQuery.inline_message_id
 
     const gameClient = chess.create({ PGN: true })

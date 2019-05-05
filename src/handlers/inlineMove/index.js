@@ -2,8 +2,7 @@ const chess = require('chess')
 
 const {
   debug,
-  isReady,
-  isPlayer,
+  getGame,
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
@@ -15,7 +14,7 @@ ${isCheck ? '|CHECK|' : ''}
 ${isCheckmate ? '|CHECKMATE|' : ''}
 ${isRepetition ? '|REPETITION|' : ''}`
 
-const topMessage = (isWhiteTurn, player, enemy) => isWhiteTurn
+const topMessage = (whiteTurn, player, enemy) => whiteTurn
   ? `White (top): ${player.first_name}
 Black (bottom): ${enemy.first_name}
 Black's turn`
@@ -26,23 +25,13 @@ White's turn`
 module.exports = () => [
   /^([a-h])([1-8])$/,
   async (ctx) => {
-    const gameEntry = await ctx.db('games')
-      .where('inline_id', ctx.callbackQuery.inline_message_id)
-      .first()
+    const gameEntry = await getGame(ctx)
 
-    if (!gameEntry) {
-      return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
+    if (typeof gameEntry === 'boolean') {
+      return gameEntry
     }
 
-    if (!isReady(gameEntry)) {
-      return ctx.answerCbQuery('Join the game to move pieces!')
-    }
-
-    if (!isPlayer(gameEntry, ctx)) {
-      return ctx.answerCbQuery('This board is full, please start a new one.')
-    }
-
-    ctx.game.id = Number(gameEntry.id)
+    ctx.game.entry = gameEntry
 
     const gameMoves = await ctx.db('moves')
       .where('game_id', gameEntry.id)
@@ -127,7 +116,7 @@ module.exports = () => [
         }
 
         await ctx.db('moves').insert({
-          game_id: ctx.game.id,
+          game_id: ctx.game.entry.id,
           entry: makeMove.key,
         }).catch(debug)
       }
