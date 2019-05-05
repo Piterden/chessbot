@@ -17,7 +17,7 @@ A simple PvP chess game based on inline message and edit a reply markup of a che
 
 ## Usage
 
-To play chess simply type `@chessy_bot[SPACE]` to your telegram's message input box.
+To play chess simply type `@chessy_bot[SPACE]` to your telegram message input box.
 
 ![](img/3.png)
 
@@ -29,7 +29,7 @@ When someone join your game, this will be displayed in the status message. Also 
 
 ![](img/5.png)
 
-Now everything is ready to start the game. Whites should make the first turn. To move your pieces you should easily select a piece you want to move and then select a destination from displayed available to move squares.
+Now everything is ready to start the game. To move your pieces just select a piece you want to move and then select a destination from displayed available to move squares.
 
 > **WARNING!!!**
 >
@@ -45,7 +45,7 @@ cd chessbot
 npm i
 ```
 
-Then you should create and fill up a new `.env` file:
+Then you have to create and fill up a new `.env` file:
 
 ```bash
 cp .env.example .env
@@ -55,7 +55,7 @@ editor .env
 Next migrate the DB:
 
 ```bash
-./node_modules/.bin/knex migrate:latest
+npm run knex migrate:latest
 ```
 
 Then run the dev mode:
