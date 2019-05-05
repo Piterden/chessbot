@@ -1,6 +1,6 @@
 # The PvP chess bot for the Telegram
 
-[![Build Status](https://travis-ci.com/Piterden/chessbot.svg?branch=master)](https://travis-ci.com/Piterden/chessbot)
+[![Build Status](https://travis-ci.org/Piterden/chessbot.svg?branch=master)](https://travis-ci.com/Piterden/chessbot)
 
 ## Overview
 
