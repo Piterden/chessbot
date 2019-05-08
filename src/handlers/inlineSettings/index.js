@@ -21,9 +21,7 @@ module.exports = () => [
               .catch(debug)
 
             if (game) {
-              let { config } = game
-
-              config = JSON.parse(config) || {}
+              const config = JSON.parse(game.config) || {}
               config.rotation = ctx.match[2]
 
               await ctx.db('games')
@@ -32,7 +30,7 @@ module.exports = () => [
                 .catch(debug)
             }
 
-            return ctx.answerCbQuery(`You choose ${ctx.match[2]} rotation mode.`)
+            return ctx.answerCbQuery(`You choose ${ctx.match[2]} rotation mode. It will be applied after the next turn.`)
 
           default:
             await ctx.editMessageReplyMarkup({
