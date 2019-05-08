@@ -1,12 +1,12 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug } = require('@/helpers')
-
-const gameClient = chess.create({ PGN: true })
-const status = gameClient.getStatus()
+const { debug, isWhiteTurn } = require('@/helpers')
 
 module.exports = () => async (ctx) => {
+  const gameClient = chess.create({ PGN: true })
+  let status = gameClient.getStatus()
+
   let user = await ctx.db('users')
     .where('id', Number(ctx.from.id))
     .first()
@@ -21,6 +21,65 @@ module.exports = () => async (ctx) => {
   } else {
     await ctx.db('users').insert(ctx.from).catch(debug)
     user = await ctx.db('users').where('id', ctx.from.id).first().catch(debug)
+  }
+
+  const match = ctx.inlineQuery.query.match(/^\s*(\d+)::(\d+)::(\d+)\s*$/)
+
+  if (match) {
+    const game = await ctx.db('games')
+      .where('id', match[3])
+      .where('whites_id', match[1])
+      .where('blacks_id', match[2])
+      .first()
+      .catch(debug)
+
+    if (game) {
+      const enemyId = Number(match[1]) === ctx.from.id
+        ? Number(match[2])
+        : Number(match[1])
+
+      const enemy = await ctx.db('users')
+        .where('id', enemyId)
+        .first()
+        .catch(debug)
+
+      const moves = await ctx.db('moves')
+        .where('game_id', game.id)
+        .orderBy('created_at', 'asc')
+        .select()
+        .catch(debug)
+
+      moves.forEach(({ entry }) => {
+        try {
+          gameClient.move(entry)
+        } catch (error) {
+          debug(error)
+        }
+      })
+
+      status = gameClient.getStatus()
+
+      await ctx.answerInlineQuery([
+        {
+          id: 1,
+          type: 'article',
+          title: 'Game found',
+          description: `Moves: ${moves.length}.
+${isWhiteTurn(moves) ? 'Whites' : 'Blacks'} turn.`,
+          input_message_content: {
+            message_text: `Black (top): ${enemy.first_name}
+White (bottom): ${user.first_name}`,
+          },
+          ...board(status.board.squares, isWhiteTurn(moves), [{
+            text: 'Settings',
+            callback_data: 'settings',
+          }]),
+        },
+      ], {
+        is_personal: true,
+        cache_time: 0,
+      })
+    }
   }
 
   await ctx.answerInlineQuery([

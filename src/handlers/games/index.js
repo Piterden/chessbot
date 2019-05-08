@@ -39,7 +39,7 @@ module.exports = () => [
     }, {})
 
     ctx.editMessageReplyMarkup({ inline_keyboard: [
-      ...games.map((game) => {
+      ...await Promise.all(games.map(async (game) => {
         const whites = game.whites_id === ctx.from.id
           ? ctx.from.first_name
           : enemies[game.whites_id].first_name
@@ -49,12 +49,15 @@ module.exports = () => [
         const time = game.created_at.toUTCString()
           .replace(/^\w{3}, /, '')
           .replace(/:\d{2} GMT$/, '')
+        const movesLength = await ctx.db('moves')
+          .where('game_id', game.id)
+          .count()
 
         return [{
-          text: `${time} :: ${whites} || ${blacks}`,
-          callback_data: `${game.whites_id}::${game.blacks_id}::${game.id}`,
+          text: `${time} || ${whites} vs ${blacks} || ${movesLength[0]['count(*)']} moves`,
+          switch_inline_query: `${game.whites_id}::${game.blacks_id}::${game.id}`,
         }]
-      }),
+      })),
       [{
         text: '⬅️ Back to menu',
         callback_data: 'main_menu',

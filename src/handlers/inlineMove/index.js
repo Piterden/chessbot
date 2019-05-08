@@ -156,7 +156,7 @@ module.exports = () => [
         ctx.game.lastBoard
       ).catch(debug)
 
-      return ctx.answerCbQuery(`${makeMove.key}`)
+      return ctx.answerCbQuery(`${makeMove ? makeMove.key : ''}`)
     }
   },
 ]

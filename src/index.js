@@ -14,6 +14,7 @@ const {
   inlineQueryHandler,
   inlineSettingsHandler,
 } = require('@/handlers')
+const { debug } = require('@/helpers')
 
 const knexConfig = require('@/../knexfile')
 
@@ -30,11 +31,11 @@ bot.use(session({
     (ctx.from && ctx.chat && `${ctx.from.id}:${ctx.chat.id}`),
 }))
 
-// bot.use(async (ctx, next) => {
-//   debug(ctx.update)
-//   debug(ctx.game)
-//   next(ctx)
-// })
+bot.use(async (ctx, next) => {
+  debug(ctx.update)
+  // debug(ctx.game)
+  next(ctx)
+})
 
 bot.command('start', startHandler())
 
@@ -47,5 +48,9 @@ bot.action(...inlineBackHandler())
 bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
 bot.action(...inlineSettingsHandler())
+
+bot.on('chosen_inline_result', async (ctx) => {
+  debug(ctx.update)
+})
 
 bot.startPolling()
