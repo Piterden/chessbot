@@ -29,6 +29,7 @@ module.exports = () => [
       whites_id: iAmWhite ? ctx.from.id : enemy.id,
       blacks_id: iAmWhite ? enemy.id : ctx.from.id,
       inline_id: ctx.callbackQuery.inline_message_id,
+      config: JSON.stringify({ rotation: 'dynamic' }),
     }).catch(debug)
 
     const game = await ctx.db('games')
@@ -41,15 +42,21 @@ module.exports = () => [
     }
 
     ctx.game.entry = game
+    ctx.game.config = JSON.parse(game.config) || { rotation: 'dynamic' }
     ctx.game.inlineId = ctx.callbackQuery.inline_message_id
 
     const gameClient = chess.create({ PGN: true })
     const status = gameClient.getStatus()
 
-    ctx.game.lastBoard = board(status.board.squares, true, [{
-      text: 'Settings',
-      callback_data: 'settings',
-    }])
+    ctx.game.lastBoard = board(
+      status.board.squares,
+      ctx.game.config.rotation === 'dynamic' ||
+        ctx.game.config.rotation === 'whites',
+      [{
+        text: 'Settings',
+        callback_data: 'settings',
+      }]
+    )
 
     await ctx.editMessageText(
       iAmWhite

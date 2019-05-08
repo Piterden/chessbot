@@ -32,6 +32,7 @@ module.exports = () => [
     }
 
     ctx.game.entry = gameEntry
+    ctx.game.config = JSON.parse(gameEntry.config) || { rotation: 'dynamic' }
 
     const gameMoves = await ctx.db('moves')
       .where('game_id', gameEntry.id)
@@ -78,7 +79,9 @@ module.exports = () => [
 
           return move ? { ...square, destination: move } : square
         }),
-        isWhiteTurn(gameMoves),
+        ctx.game.config.rotation === 'dynamic'
+          ? isWhiteTurn(gameMoves)
+          : ctx.game.config.rotation === 'whites',
         [{
           text: 'Settings',
           callback_data: 'settings',
@@ -135,7 +138,9 @@ module.exports = () => [
 
       ctx.game.lastBoard = board(
         status.board.squares,
-        makeMove ? !isWhiteTurn(gameMoves) : isWhiteTurn(gameMoves),
+        ctx.game.config.rotation === 'dynamic'
+          ? (makeMove ? !isWhiteTurn(gameMoves) : isWhiteTurn(gameMoves))
+          : ctx.game.config.rotation === 'whites',
         [{
           text: 'Settings',
           callback_data: 'settings',
