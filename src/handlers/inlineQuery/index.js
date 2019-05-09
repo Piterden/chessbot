@@ -70,10 +70,15 @@ ${isWhiteTurn(moves) ? 'Whites' : 'Blacks'} turn.`,
             message_text: `Black (top): ${enemy.first_name}
 White (bottom): ${user.first_name}`,
           },
-          ...board(status.board.squares, isWhiteTurn(moves), [{
-            text: 'Settings',
-            callback_data: 'settings',
-          }]),
+          ...board(
+            status.board.squares,
+            isWhiteTurn(moves),
+            [{
+              text: 'Settings',
+              callback_data: 'settings',
+            }],
+            `::${game.id}`
+          ),
         },
       ], {
         is_personal: true,

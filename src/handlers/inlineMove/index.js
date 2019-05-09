@@ -23,7 +23,7 @@ White (bottom): ${enemy.first_name}
 White's turn`
 
 module.exports = () => [
-  /^([a-h])([1-8])$/,
+  /^([a-h])([1-8])(?:::(\d+))?$/,
   async (ctx) => {
     const gameEntry = await getGame(ctx)
 
@@ -59,8 +59,7 @@ module.exports = () => [
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
     if (
-      pressed &&
-      pressed.piece &&
+      pressed && pressed.piece &&
       ((pressed.piece.side.name === 'white' && isWhiteTurn(gameMoves)) ||
       (pressed.piece.side.name === 'black' && !isWhiteTurn(gameMoves))) &&
       !(ctx.game.selected &&

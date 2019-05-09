@@ -4,7 +4,7 @@ const { emodji } = require('@/helpers')
 
 const { Markup } = Telegraf
 
-module.exports = (board, isWhite, actions) => {
+module.exports = (board, isWhite, actions, suffix = '') => {
   const horizontal = 'abcdefgh'.split('')
   const vertical = Array.from({ length: 8 })
     .map((item, idx) => idx + 1).reverse()
@@ -17,17 +17,17 @@ module.exports = (board, isWhite, actions) => {
       return square.destination
         ? {
           text: `X${emodji[square.piece.side.name][square.piece.type]}`,
-          callback_data: `${col}${row}`,
+          callback_data: `${col}${row}${suffix}`,
         }
         : {
           text: `${emodji[square.piece.side.name][square.piece.type]}`,
-          callback_data: `${col}${row}`,
+          callback_data: `${col}${row}${suffix}`,
         }
     }
 
     return square.destination
-      ? { text: 'O', callback_data: `${col}${row}` }
-      : { text: unescape('%u0020'), callback_data: `${col}${row}` }
+      ? { text: 'O', callback_data: `${col}${row}${suffix}` }
+      : { text: unescape('%u0020'), callback_data: `${col}${row}${suffix}` }
   }))
 
   const keyboard = isWhite

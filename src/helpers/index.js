@@ -17,9 +17,21 @@ const mainMenu = [
 ]
 
 const getGame = async (ctx) => {
-  const game = ctx.game.entry || await ctx.db('games')
-    .where('inline_id', ctx.callbackQuery.inline_message_id)
-    .first()
+  let game
+
+  if (ctx.match && ctx.match[3]) {
+    await ctx.db('games')
+      .where('id', Number(ctx.match[3]))
+      .update({ inline_id: ctx.callbackQuery.inline_message_id })
+
+    game = await ctx.db('games')
+      .where('id', Number(ctx.match[3]))
+      .first()
+  } else {
+    game = ctx.game.entry || await ctx.db('games')
+      .where('inline_id', ctx.callbackQuery.inline_message_id)
+      .first()
+  }
 
   if (!game) {
     return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
