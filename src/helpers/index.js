@@ -48,6 +48,10 @@ const getGame = async (ctx) => {
   return game
 }
 
+const getGamePgn = (moves) => moves.reduce((acc, cur, idx) => idx % 2
+  ? `${acc}${cur.entry} `
+  : `${acc}${parseInt(idx / 2) + 1}. ${cur.entry} `, '')
+
 module.exports = {
   debug,
   emodji,
@@ -55,6 +59,7 @@ module.exports = {
   isReady,
   isPlayer,
   mainMenu,
+  getGamePgn,
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
