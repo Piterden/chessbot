@@ -1,5 +1,29 @@
-const debug = require('./debug')
-const emodji = require('./emodji')
+const { inspect } = require('util')
+
+const emodji = {
+  white: {
+    rook: '♜',
+    knight: '♞',
+    bishop: '♟',
+    queen: '♛',
+    king: '♚',
+    pawn: '♝',
+  },
+  black: {
+    rook: '♖',
+    knight: '♘',
+    bishop: '♙',
+    queen: '♕',
+    king: '♔',
+    pawn: '♗',
+  },
+}
+
+const debug = (data) => console.log(inspect(data, {
+  colors: true,
+  showHidden: true,
+  depth: 10,
+}))
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isWhiteUser = (game, ctx) => Number(game.whites_id) === ctx.from.id
@@ -17,22 +41,28 @@ const mainMenu = [
 ]
 
 const getGame = async (ctx) => {
-  let game
-
   if (ctx.match && ctx.match[3]) {
     await ctx.db('games')
       .where('id', Number(ctx.match[3]))
       .update({ inline_id: ctx.callbackQuery.inline_message_id })
 
-    game = await ctx.db('games')
+    const game = await ctx.db('games')
       .where('id', Number(ctx.match[3]))
+      .select()
       .first()
-  } else {
-    game = ctx.game.entry || await ctx.db('games')
-      .where('inline_id', ctx.callbackQuery.inline_message_id)
-      .first()
+
+    return game
   }
 
+  const game = ctx.game.entry || await ctx.db('games')
+    .where('inline_id', ctx.callbackQuery.inline_message_id)
+    .select()
+    .first()
+
+  return game
+}
+
+const validateGame = (game, ctx) => {
   if (!game) {
     return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
   }
@@ -63,4 +93,5 @@ module.exports = {
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
+  validateGame,
 }
