@@ -35,6 +35,8 @@ bot.use(async (ctx, next) => {
   debug(ctx.update)
   // debug(ctx.game)
   next(ctx)
+  // if (ctx.chat && ctx.chat.type === 'private') {
+  // }
 })
 
 bot.command('start', startHandler())
