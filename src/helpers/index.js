@@ -19,6 +19,25 @@ const emodji = {
   },
 }
 
+const letters = {
+  white: {
+    rook: 'WR',
+    knight: 'WN',
+    bishop: 'WB',
+    queen: 'WQ',
+    king: 'WK',
+    pawn: 'wp',
+  },
+  black: {
+    rook: 'BR',
+    knight: 'BN',
+    bishop: 'BB',
+    queen: 'BQ',
+    king: 'BK',
+    pawn: 'bp',
+  },
+}
+
 const debug = (data) => console.log(inspect(data, {
   colors: true,
   showHidden: true,
@@ -87,6 +106,7 @@ module.exports = {
   emodji,
   getGame,
   isReady,
+  letters,
   isPlayer,
   mainMenu,
   getGamePgn,

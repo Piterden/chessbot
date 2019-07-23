@@ -1,13 +1,13 @@
 const Telegraf = require('telegraf')
 
-const { emodji } = require('@/helpers')
+const { emodji, letters } = require('@/helpers')
 
 const { Markup } = Telegraf
+const lang = { emodji, letters }
 
 module.exports = (board, isWhite, actions, suffix = '') => {
   const horizontal = 'abcdefgh'.split('')
-  const vertical = Array.from({ length: 8 })
-    .map((item, idx) => idx + 1).reverse()
+  const vertical = Array.from({ length: 8 }, (item, idx) => idx + 1).reverse()
 
   const boardMarkup = vertical.map((row) => horizontal.map((col) => {
     const square = board
@@ -16,11 +16,11 @@ module.exports = (board, isWhite, actions, suffix = '') => {
     if (square && square.piece) {
       return square.destination
         ? {
-          text: `X${emodji[square.piece.side.name][square.piece.type]}`,
+          text: `X${lang.emodji[square.piece.side.name][square.piece.type]}`,
           callback_data: `${col}${row}${suffix}`,
         }
         : {
-          text: `${emodji[square.piece.side.name][square.piece.type]}`,
+          text: `${lang.emodji[square.piece.side.name][square.piece.type]}`,
           callback_data: `${col}${row}${suffix}`,
         }
     }
