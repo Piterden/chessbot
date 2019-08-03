@@ -31,6 +31,10 @@ module.exports = () => [
       return gameEntry
     }
 
+    if (!isBlackUser(gameEntry, ctx) && !isWhiteUser(gameEntry, ctx)) {
+      return ctx.answerCbQuery('Sorry, this game is busy. Try to make a new one.')
+    }
+
     ctx.game.entry = gameEntry
     ctx.game.config = JSON.parse(gameEntry.config) || { rotation: 'dynamic' }
 

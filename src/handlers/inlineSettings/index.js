@@ -1,4 +1,9 @@
-const { debug, getGame } = require('@/helpers')
+const {
+  debug,
+  getGame,
+  isWhiteUser,
+  isBlackUser,
+} = require('@/helpers')
 
 module.exports = () => [
   /^settings(?:::(\w+))?(?:::(\w+))?$/,
@@ -7,6 +12,10 @@ module.exports = () => [
 
     if (typeof gameEntry === 'boolean') {
       return gameEntry
+    }
+
+    if (!isBlackUser(gameEntry, ctx) && !isWhiteUser(gameEntry, ctx)) {
+      return ctx.answerCbQuery('Sorry, this game is busy. Try to make a new one.')
     }
 
     switch (ctx.match[1]) {

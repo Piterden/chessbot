@@ -5,6 +5,15 @@ const { emodji, letters } = require('@/helpers')
 const { Markup } = Telegraf
 const lang = { emodji, letters }
 
+/**
+ * Makes a board markup
+ *
+ * @param  {Object} board The board
+ * @param  {Boolean} isWhite Indicates if white
+ * @param  {Object[]} actions The actions
+ * @param  {String}  [suffix=''] The suffix (default: '')
+ * @return {Object}
+ */
 module.exports = (board, isWhite, actions, suffix = '') => {
   const horizontal = 'abcdefgh'.split('')
   const vertical = Array.from({ length: 8 }, (item, idx) => idx + 1).reverse()

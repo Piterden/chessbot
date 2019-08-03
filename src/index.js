@@ -51,8 +51,8 @@ bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
 bot.action(...inlineSettingsHandler())
 
-bot.on('chosen_inline_result', async (ctx) => {
-  debug(ctx.update)
-})
+// bot.on('chosen_inline_result', async (ctx) => {
+//   debug(ctx.update)
+// })
 
 bot.startPolling()
