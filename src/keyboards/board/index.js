@@ -8,34 +8,32 @@ module.exports = (board, isWhite, actions) => {
   const horizontal = 'abcdefgh'.split('')
   const vertical = Array.from({ length: 8 }, (item, idx) => idx + 1).reverse()
 
-  const boardMarkup = vertical.map((row) => horizontal.map((col) => {
+  let boardMarkup = vertical.map((row) => horizontal.map((col) => {
     const square = board
       .find(({ file, rank }) => file === col && rank === row)
 
     if (square && square.piece) {
-      return square.destination
-        ? {
-          text: `X${emodji[square.piece.side.name][square.piece.type]}`,
-          callback_data: `${col}${row}`,
-        }
-        : {
-          text: `${emodji[square.piece.side.name][square.piece.type]}`,
-          callback_data: `${col}${row}`,
-        }
+      const piece = emodji[square.piece.side.name][square.piece.type]
+
+      return {
+        text: `${square.destination ? 'X' : ''}${piece}`,
+        callback_data: `${col}${row}`,
+      }
     }
 
-    return square.destination
-      ? { text: 'O', callback_data: `${col}${row}` }
-      : { text: unescape('%u0020'), callback_data: `${col}${row}` }
+    return {
+      text: square.destination ? 'O' : unescape('%u0020'),
+      callback_data: `${col}${row}`,
+    }
   }))
 
-  const keyboard = isWhite
-    ? boardMarkup
-    : boardMarkup.map((row) => row.reverse()).reverse()
-
-  if (actions) {
-    keyboard.push(actions)
+  if (!isWhite) {
+    boardMarkup = boardMarkup.map((row) => row.reverse()).reverse()
   }
 
-  return Markup.inlineKeyboard(keyboard).extra()
+  if (actions) {
+    boardMarkup.push(actions)
+  }
+
+  return Markup.inlineKeyboard(boardMarkup).extra()
 }
