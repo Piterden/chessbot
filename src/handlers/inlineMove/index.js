@@ -16,10 +16,10 @@ ${isRepetition ? '|REPETITION|' : ''}`
 
 const topMessage = (whiteTurn, player, enemy) => whiteTurn
   ? `White (top): ${player.first_name}
-Black (bottom): ${enemy.first_name}
+Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 Black's turn`
   : `Black (top): ${player.first_name}
-White (bottom): ${enemy.first_name}
+White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn`
 
 module.exports = () => [
@@ -156,7 +156,10 @@ module.exports = () => [
           makeMove ? ctx.from : enemy,
           makeMove ? enemy : ctx.from
         ) + statusMessage(status),
-        ctx.game.lastBoard
+        {
+          ...ctx.game.lastBoard,
+          parse_mode: 'Markdown',
+        }
       ).catch(debug)
 
       return ctx.answerCbQuery(`${makeMove ? makeMove.key : ''}`)

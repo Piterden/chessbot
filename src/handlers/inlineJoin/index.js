@@ -66,7 +66,10 @@ White's turn`
         : `Black (top): ${user.first_name}
 White (bottom): ${enemy.first_name}
 White's turn`,
-      ctx.game.lastBoard
+      {
+        ...ctx.game.lastBoard,
+        parse_mode: 'Markdown',
+      }
     )
 
     return ctx.answerCbQuery('Now play!')

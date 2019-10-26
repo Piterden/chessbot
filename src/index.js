@@ -45,6 +45,9 @@ bot.action(...mainMenuHandler())
 bot.action(...gamesHandler())
 
 bot.on('inline_query', inlineQueryHandler())
+// bot.on('chosen_inline_result', async (ctx) => {
+//   debug(Object.keys(ctx))
+// })
 
 bot.action(...inlineBackHandler())
 bot.action(...inlineJoinHandler())

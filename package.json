@@ -18,11 +18,11 @@
     "chess": "^0.4.2",
     "dotenv": "^7.0.0",
     "knex": "^0.16.5",
-    "module-alias": "^2.2.1",
+    "module-alias": "^2.2.2",
     "mysql": "^2.17.1",
     "pg": "^7.12.1",
-    "sequelize": "^5.18.4",
-    "telegraf": "^3.32.0"
+    "sequelize": "^5.21.1",
+    "telegraf": "^3.33.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
@@ -32,7 +32,7 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "nodemon": "^1.19.2",
+    "nodemon": "^1.19.4",
     "sqlite3": "^4.1.0"
   },
   "_moduleAliases": {
