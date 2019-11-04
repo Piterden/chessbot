@@ -1,9 +1,9 @@
 const Telegraf = require('telegraf')
 
-const { emodji, letters } = require('@/helpers')
+const { emodji } = require('@/helpers')
 
 const { Markup } = Telegraf
-const lang = { emodji, letters }
+const lang = { emodji }
 
 /**
  * Makes a board markup
