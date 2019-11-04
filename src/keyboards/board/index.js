@@ -3,49 +3,70 @@ const Telegraf = require('telegraf')
 const { emodji, letters } = require('@/helpers')
 
 const { Markup } = Telegraf
-const lang = { emodji, letters }
 
 /**
- * Makes a board markup
+ * Board generator function.
  *
- * @param  {Object} board The board
- * @param  {Boolean} isWhite Indicates if white
- * @param  {Object[]} actions The actions
- * @param  {String}  [suffix=''] The suffix (default: '')
- * @return {Object}
+ * @param {Array} board The board.
+ * @param {Boolean} isWhite Indicates if it is action of a white side.
+ * @param {Array[]} actions The additional buttons under the board.
+ * @return {Extra}
  */
-module.exports = (board, isWhite, actions, suffix = '') => {
+module.exports = (board, isWhite, actions) => {
   const horizontal = 'abcdefgh'.split('')
   const vertical = Array.from({ length: 8 }, (item, idx) => idx + 1).reverse()
 
-  const boardMarkup = vertical.map((row) => horizontal.map((col) => {
+  /**
+   * Nested loops board generation.
+   *
+   * @type {Array}
+   */
+  let boardMarkup = vertical.map((row) => horizontal.map((col) => {
+    /**
+     * Find a pressed square.
+     *
+     * @type {Object}
+     */
     const square = board
       .find(({ file, rank }) => file === col && rank === row)
 
+    /**
+     * If it is a piece.
+     */
     if (square && square.piece) {
-      return square.destination
-        ? {
-          text: `X${lang.emodji[square.piece.side.name][square.piece.type]}`,
-          callback_data: `${col}${row}${suffix}`,
-        }
-        : {
-          text: `${lang.emodji[square.piece.side.name][square.piece.type]}`,
-          callback_data: `${col}${row}${suffix}`,
-        }
+      const piece = emodji[square.piece.side.name][square.piece.type]
+
+      return {
+        text: `${square.destination ? 'X' : ''}${piece}`,
+        callback_data: `${col}${row}`,
+      }
     }
 
-    return square.destination
-      ? { text: 'O', callback_data: `${col}${row}${suffix}` }
-      : { text: unescape('%u0020'), callback_data: `${col}${row}${suffix}` }
+    /**
+     * If it is an empty square.
+     */
+    return {
+      text: square.destination ? 'O' : unescape('%u0020'),
+      callback_data: `${col}${row}`,
+    }
   }))
 
-  const keyboard = isWhite
-    ? boardMarkup
-    : boardMarkup.map((row) => row.reverse()).reverse()
-
-  if (actions) {
-    keyboard.push(actions)
+  /**
+   * Manage the rotation of a board.
+   */
+  if (!isWhite) {
+    boardMarkup = boardMarkup.map((row) => row.reverse()).reverse()
   }
 
-  return Markup.inlineKeyboard(keyboard).extra()
+  /**
+   * Attach additional buttons.
+   */
+  if (actions) {
+    boardMarkup.push(actions)
+  }
+
+  /**
+   * Returns an Extra object.
+   */
+  return Markup.inlineKeyboard(boardMarkup).extra()
 }
