@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src",
+    "lint": "eslint --ext .js src",
+    "lint:fix": "eslint --fix --ext .js src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -w src src/index.js"
   },
@@ -32,10 +33,16 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
+    "husky": "^3.0.9",
     "nodemon": "^1.19.4",
     "sqlite3": "^4.1.0"
   },
   "_moduleAliases": {
     "@": "./src"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run lint"
+    }
   }
 }
