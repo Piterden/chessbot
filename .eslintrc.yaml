@@ -1,5 +1,49 @@
-extends: '@atomix/eslint-config'
+root: true
 parser: babel-eslint
+extends:
+  - standard
+env:
+  node: true
+parserOptions:
+  sourceType: module
+  ecmaVersion: 2018
+  ecmaFeatures:
+    globalReturn: false
+    modules: false
 rules:
-  no-console: 0
-  unicorn/filename-case: 0
+  max-len: off
+  prefer-rest-params: off
+  prefer-destructuring: off
+  unicorn/prefer-spread: off
+  function-paren-newline: off
+  curly:
+    - error
+  comma-dangle:
+    - error
+    - always-multiline
+  id-length:
+    - error
+    -
+      min: 2
+      exceptions:
+        - i
+        - x
+        - y
+        - e
+  id-match:
+    - error
+    - "^(([A-Za-z0-9]+){2,})|([A-Z][A-Z_0-9]+)$"
+    -
+      properties: false
+      onlyDeclarations: true
+  indent:
+    - error
+    - 2
+    -
+      SwitchCase: 1
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - never
