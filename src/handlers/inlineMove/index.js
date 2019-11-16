@@ -16,19 +16,23 @@ ${isRepetition ? '|REPETITION|' : ''}`
 
 const topMessage = (whiteTurn, player, enemy) => whiteTurn
   ? `White (top): ${player.first_name}
-Black (bottom): ${enemy.first_name}
+Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 Black's turn`
   : `Black (top): ${player.first_name}
-White (bottom): ${enemy.first_name}
+White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn`
 
 module.exports = () => [
-  /^([a-h])([1-8])$/,
+  /^([a-h])([1-8])(?:::(\d+))?$/,
   async (ctx) => {
     const gameEntry = await getGame(ctx)
 
     if (typeof gameEntry === 'boolean') {
       return gameEntry
+    }
+
+    if (!isBlackUser(gameEntry, ctx) && !isWhiteUser(gameEntry, ctx)) {
+      return ctx.answerCbQuery('Sorry, this game is busy. Try to make a new one.')
     }
 
     ctx.game.entry = gameEntry
@@ -59,8 +63,7 @@ module.exports = () => [
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
     if (
-      pressed &&
-      pressed.piece &&
+      pressed && pressed.piece &&
       ((pressed.piece.side.name === 'white' && isWhiteTurn(gameMoves)) ||
       (pressed.piece.side.name === 'black' && !isWhiteTurn(gameMoves))) &&
       !(ctx.game.selected &&
@@ -153,10 +156,13 @@ module.exports = () => [
           makeMove ? ctx.from : enemy,
           makeMove ? enemy : ctx.from
         ) + statusMessage(status),
-        ctx.game.lastBoard
+        {
+          ...ctx.game.lastBoard,
+          parse_mode: 'Markdown',
+        }
       ).catch(debug)
 
-      return ctx.answerCbQuery(`${makeMove.key}`)
+      return ctx.answerCbQuery(`${makeMove ? makeMove.key : ''}`)
     }
   },
 ]

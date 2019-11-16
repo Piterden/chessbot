@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src",
+    "lint": "eslint --ext .js src",
+    "lint:fix": "eslint --fix --ext .js src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -w src src/index.js"
   },
@@ -15,27 +16,33 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chess": "^0.4.1",
+    "chess": "^0.4.2",
     "dotenv": "^7.0.0",
     "knex": "^0.20.1",
-    "module-alias": "^2.2.0",
+    "module-alias": "^2.2.2",
     "mysql": "^2.17.1",
-    "pg": "^7.10.0",
-    "sequelize": "^5.7.5",
-    "telegraf": "^3.29.0"
+    "pg": "^7.12.1",
+    "sequelize": "^5.21.2",
+    "telegraf": "^3.33.3"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
+    "babel-eslint": "^10.0.3",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "nodemon": "^1.18.11",
-    "sqlite3": "^4.0.6"
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": "^3.0.9",
+    "nodemon": "^1.19.4",
+    "sqlite3": "^4.1.0"
   },
   "_moduleAliases": {
     "@": "./src"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run lint"
+    }
   }
 }
