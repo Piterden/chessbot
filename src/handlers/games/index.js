@@ -3,11 +3,13 @@ const { debug } = require('@/helpers')
 module.exports = () => [
   'games',
   async (ctx) => {
-    let user = await ctx.db('users').where('id', ctx.from.id).first().catch(debug)
+    let user = await ctx.db('users').where('id', ctx.from.id).first()
+      .catch(debug)
 
     if (!user) {
       await ctx.db('users').insert(ctx.from).catch(debug)
-      user = await ctx.db('users').where('id', ctx.from.id).first().catch(debug)
+      user = await ctx.db('users').where('id', ctx.from.id).first()
+        .catch(debug)
     }
 
     const games = await ctx.db('games')
@@ -31,7 +33,8 @@ module.exports = () => [
       []
     ).filter((id) => id !== ctx.from.id)
 
-    let enemies = await ctx.db('users').whereIn('id', ids).select().catch(debug)
+    let enemies = await ctx.db('users').whereIn('id', ids).select()
+      .catch(debug)
 
     enemies = enemies.reduce((acc, { id, ...props }) => {
       acc[id] = props

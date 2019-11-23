@@ -5,7 +5,7 @@ const {
   startHandler,
   actionsHandler,
   leaveHandler,
-} = require('../../handlers')
+} = require('@/handlers')
 
 module.exports = new Scene('game')
   .leave(...leaveHandler())
