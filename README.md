@@ -84,3 +84,9 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Donate
+
+**BTC**  `3F275vPSCvYW19MHZqSjw79fEwwU4MbTgV`
+**LTC**  `MGMCQB3QAcrSBjU3eGJviqB2J2f5BNVRGr`
+**DOGE** `D5m69FRDGEn3G3xuakvqTxUpGVt6NegKJp`
