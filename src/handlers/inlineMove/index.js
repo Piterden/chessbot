@@ -88,6 +88,9 @@ module.exports = () => [
         [{
           text: 'Settings',
           callback_data: 'settings',
+        }, {
+          text: 'New game',
+          switch_inline_query_current_chat: '',
         }]
       )
 
@@ -147,6 +150,9 @@ module.exports = () => [
         [{
           text: 'Settings',
           callback_data: 'settings',
+        }, {
+          text: 'New game',
+          switch_inline_query_current_chat: '',
         }]
       )
 

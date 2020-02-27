@@ -46,7 +46,7 @@ module.exports = (board, isWhite, actions) => {
      * If it is an empty square.
      */
     return {
-      text: square.destination ? 'O' : unescape('%u0020'),
+      text: square.destination ? '·' : unescape('%u0020'),
       callback_data: `${col}${row}`,
     }
   }))

@@ -100,6 +100,9 @@ Waiting for a black side`,
       ...board(status.board.squares, true, [{
         text: 'Join the game',
         callback_data: `join::w::${user.id}`,
+      }, {
+        text: 'New game',
+        switch_inline_query_current_chat: '',
       }]),
     },
     {
@@ -114,6 +117,9 @@ Waiting for a white side`,
       ...board(status.board.squares, false, [{
         text: 'Join the game',
         callback_data: `join::b::${user.id}`,
+      }, {
+        text: 'New game',
+        switch_inline_query_current_chat: '',
       }]),
     },
   ], {
