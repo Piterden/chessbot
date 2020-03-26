@@ -38,6 +38,16 @@ const letters = {
   },
 }
 
+/**
+ * Sleep pause.
+ *
+ * @param {Number} time The time in milliseconds.
+ * @return {Promise<void>}
+ */
+const sleep = (time) => new Promise((resolve) => {
+  setTimeout(resolve, time)
+})
+
 const debug = (data) => console.log(inspect(data, {
   colors: true,
   showHidden: true,
@@ -45,6 +55,7 @@ const debug = (data) => console.log(inspect(data, {
 }))
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
+const isBlackTurn = (moves) => moves.length % 2
 const isWhiteUser = (game, ctx) => Number(game.whites_id) === ctx.from.id
 const isBlackUser = (game, ctx) => Number(game.blacks_id) === ctx.from.id
 const isReady = (game) => game && Boolean(game.whites_id && game.blacks_id)
@@ -103,6 +114,7 @@ const getGamePgn = (moves) => moves.reduce((acc, cur, idx) => idx % 2
 
 module.exports = {
   debug,
+  sleep,
   emodji,
   getGame,
   isReady,
@@ -110,8 +122,9 @@ module.exports = {
   isPlayer,
   mainMenu,
   getGamePgn,
+  isBlackTurn,
   isWhiteTurn,
-  isWhiteUser,
   isBlackUser,
+  isWhiteUser,
   validateGame,
 }

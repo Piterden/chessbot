@@ -7,6 +7,7 @@ const Telegraf = require('telegraf')
 const {
   gamesHandler,
   startHandler,
+  inlineLastTurn,
   mainMenuHandler,
   inlineBackHandler,
   inlineJoinHandler,
@@ -53,6 +54,7 @@ bot.action(...inlineBackHandler())
 bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
 bot.action(...inlineSettingsHandler())
+bot.action(...inlineLastTurn())
 
 // bot.on('chosen_inline_result', async (ctx) => {
 //   debug(ctx.update)

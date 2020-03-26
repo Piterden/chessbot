@@ -56,6 +56,9 @@ module.exports = () => [
         text: 'Settings',
         callback_data: 'settings',
       }, {
+        text: 'Last turn',
+        callback_data: `last::${ctx.game.entry.id}`,
+      }, {
         text: 'New game',
         switch_inline_query_current_chat: '',
       }]
