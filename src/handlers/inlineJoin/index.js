@@ -48,11 +48,11 @@ module.exports = () => [
     const gameClient = chess.create({ PGN: true })
     const status = gameClient.getStatus()
 
-    ctx.game.lastBoard = board(
-      status.board.squares,
-      ctx.game.config.rotation === 'dynamic' ||
+    ctx.game.lastBoard = board({
+      board: status.board.squares,
+      isWhite: ctx.game.config.rotation === 'dynamic' ||
         ctx.game.config.rotation === 'whites',
-      [{
+      actions: [{
         text: 'Settings',
         callback_data: 'settings',
       }, {
@@ -61,8 +61,8 @@ module.exports = () => [
       }, {
         text: 'New game',
         switch_inline_query_current_chat: '',
-      }]
-    )
+      }],
+    })
 
     await ctx.editMessageText(
       iAmWhite

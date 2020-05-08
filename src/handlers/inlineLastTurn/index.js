@@ -28,7 +28,7 @@ module.exports = () => [
 
     if (!((isWhiteUser(game, ctx) && isWhiteTurn(moves)) ||
       (isBlackUser(game, ctx) && isBlackTurn(moves)))) {
-      return true
+      return ctx.answerCbQuery('Don\'t touch')
     }
 
     const currentGame = chess.create({ PGN: true })
@@ -42,10 +42,10 @@ module.exports = () => [
     })
 
     const currentStatus = currentGame.getStatus()
-    const currentBoard = board(
-      currentStatus.board.squares,
-      isWhiteTurn(moves),
-      [{
+    const currentBoard = board({
+      board: currentStatus.board.squares,
+      isWhite: isWhiteTurn(moves),
+      actions: [{
         text: 'Settings',
         callback_data: 'settings',
       }, {
@@ -54,8 +54,8 @@ module.exports = () => [
       }, {
         text: 'New game',
         switch_inline_query_current_chat: '',
-      }]
-    )
+      }],
+    })
 
     const beforeGame = chess.create({ PGN: true })
 
@@ -69,10 +69,10 @@ module.exports = () => [
     })
 
     const beforeStatus = beforeGame.getStatus()
-    const beforeBoard = board(
-      beforeStatus.board.squares,
-      !isWhiteTurn(moves),
-      [{
+    const beforeBoard = board({
+      board: beforeStatus.board.squares,
+      isWhite: !isWhiteTurn(moves),
+      actions: [{
         text: 'Settings',
         callback_data: 'settings',
       }, {
@@ -81,8 +81,8 @@ module.exports = () => [
       }, {
         text: 'New game',
         switch_inline_query_current_chat: '',
-      }]
-    )
+      }],
+    })
 
     await ctx.editMessageReplyMarkup(beforeBoard.reply_markup).catch(debug)
     await sleep(400)

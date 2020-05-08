@@ -74,18 +74,18 @@ module.exports = () => [
         .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
-      ctx.game.lastBoard = board(
-        status.board.squares.map((square) => {
+      ctx.game.lastBoard = board({
+        board: status.board.squares.map((square) => {
           const move = allowedMoves
             .find((({ file, rank }) => ({ dest }) => dest.file === file &&
               dest.rank === rank)(square))
 
           return move ? { ...square, destination: move } : square
         }),
-        ctx.game.config.rotation === 'dynamic'
+        isWhite: ctx.game.config.rotation === 'dynamic'
           ? isWhiteTurn(gameMoves)
           : ctx.game.config.rotation === 'whites',
-        [{
+        actions: [{
           text: 'Settings',
           callback_data: 'settings',
         }, {
@@ -94,8 +94,8 @@ module.exports = () => [
         }, {
           text: 'New game',
           switch_inline_query_current_chat: '',
-        }]
-      )
+        }],
+      })
 
       await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
         .catch(debug)
@@ -145,12 +145,12 @@ module.exports = () => [
         .first()
         .catch(debug)
 
-      ctx.game.lastBoard = board(
-        status.board.squares,
-        ctx.game.config.rotation === 'dynamic'
+      ctx.game.lastBoard = board({
+        board: status.board.squares,
+        isWhite: ctx.game.config.rotation === 'dynamic'
           ? (makeMove ? !isWhiteTurn(gameMoves) : isWhiteTurn(gameMoves))
           : ctx.game.config.rotation === 'whites',
-        [{
+        actions: [{
           text: 'Settings',
           callback_data: 'settings',
         }, {
@@ -159,8 +159,8 @@ module.exports = () => [
         }, {
           text: 'New game',
           switch_inline_query_current_chat: '',
-        }]
-      )
+        }],
+      })
 
       await ctx.editMessageText(
         topMessage(

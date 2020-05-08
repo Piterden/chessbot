@@ -2,7 +2,7 @@ require('dotenv').config()
 require('module-alias/register')
 
 const knex = require('knex')
-const Telegraf = require('telegraf')
+const { default: Telegraf, session } = require('telegraf')
 
 const {
   gamesHandler,
@@ -16,10 +16,8 @@ const {
   inlineSettingsHandler,
 } = require('@/handlers')
 const { debug } = require('@/helpers')
-
 const knexConfig = require('@/../knexfile')
 
-const { session } = Telegraf
 const { BOT_NAME, BOT_TOKEN } = process.env
 
 const bot = new Telegraf(BOT_TOKEN, { username: BOT_NAME })
