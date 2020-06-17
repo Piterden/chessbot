@@ -4,18 +4,18 @@ const emodji = {
   white: {
     rook: '♜',
     knight: '♞',
-    bishop: '♟',
+    bishop: '♝',
     queen: '♛',
     king: '♚',
-    pawn: '♝',
+    pawn: '♟',
   },
   black: {
     rook: '♖',
     knight: '♘',
-    bishop: '♙',
+    bishop: '♗',
     queen: '♕',
     king: '♔',
-    pawn: '♗',
+    pawn: '♙',
   },
 }
 

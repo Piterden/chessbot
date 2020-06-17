@@ -3,7 +3,7 @@
 exports.up = async (knex, Promise) => (await knex.schema.hasTable('users'))
   ? null
   : knex.schema.createTable('users', (table) => {
-    table.integer('id').unsigned()
+    table.biginteger('id').unsigned()
     table.boolean('is_bot')
     table.string('first_name')
     table.string('last_name')
