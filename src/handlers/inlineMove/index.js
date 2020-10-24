@@ -7,7 +7,7 @@ const {
   isWhiteUser,
   isBlackUser,
 } = require('@/helpers')
-const { board } = require('@/keyboards')
+const { board, actions } = require('@/keyboards')
 
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
 ${isCheck ? '|CHECK|' : ''}
@@ -85,16 +85,7 @@ module.exports = () => [
         isWhite: ctx.game.config.rotation === 'dynamic'
           ? isWhiteTurn(gameMoves)
           : ctx.game.config.rotation === 'whites',
-        actions: [{
-          text: 'Settings',
-          callback_data: 'settings',
-        }, {
-          text: 'Last turn',
-          callback_data: 'last',
-        }, {
-          text: 'New game',
-          switch_inline_query_current_chat: '',
-        }],
+        actions: actions(),
       })
 
       await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
@@ -150,16 +141,7 @@ module.exports = () => [
         isWhite: ctx.game.config.rotation === 'dynamic'
           ? (makeMove ? !isWhiteTurn(gameMoves) : isWhiteTurn(gameMoves))
           : ctx.game.config.rotation === 'whites',
-        actions: [{
-          text: 'Settings',
-          callback_data: 'settings',
-        }, {
-          text: 'Last turn',
-          callback_data: 'last',
-        }, {
-          text: 'New game',
-          switch_inline_query_current_chat: '',
-        }],
+        actions: actions(),
       })
 
       await ctx.editMessageText(

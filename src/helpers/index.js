@@ -56,11 +56,25 @@ const debug = (data) => console.log(inspect(data, {
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isBlackTurn = (moves) => moves.length % 2
-const isWhiteUser = (game, ctx) => Number(game.whites_id) === ctx.from.id
-const isBlackUser = (game, ctx) => Number(game.blacks_id) === ctx.from.id
 const isReady = (game) => game && Boolean(game.whites_id && game.blacks_id)
 const isPlayer = (game, ctx) => [Number(game.whites_id), Number(game.blacks_id)]
   .includes(ctx.from.id)
+
+const isWhiteUser = (game, ctx) => {
+  if (!game) {
+    ctx.answerCbQuery('Sorry, game not found.')
+    return false
+  }
+  return Number(game.whites_id) === ctx.from.id
+}
+
+const isBlackUser = (game, ctx) => {
+  if (!game) {
+    ctx.answerCbQuery('Sorry, game not found.')
+    return false
+  }
+  return Number(game.blacks_id) === ctx.from.id
+}
 
 const mainMenu = [
   [{ text: 'My Games', callback_data: 'games' }],

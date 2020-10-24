@@ -9,7 +9,7 @@ const {
   isWhiteUser,
   isBlackUser,
 } = require('@/helpers')
-const { board } = require('@/keyboards')
+const { board, actions } = require('@/keyboards')
 
 module.exports = () => [
   /^last$/,
@@ -45,16 +45,7 @@ module.exports = () => [
     const currentBoard = board({
       board: currentStatus.board.squares,
       isWhite: isWhiteTurn(moves),
-      actions: [{
-        text: 'Settings',
-        callback_data: 'settings',
-      }, {
-        text: 'Last turn',
-        callback_data: 'last',
-      }, {
-        text: 'New game',
-        switch_inline_query_current_chat: '',
-      }],
+      actions: actions(),
     })
 
     const beforeGame = chess.create({ PGN: true })
@@ -72,16 +63,7 @@ module.exports = () => [
     const beforeBoard = board({
       board: beforeStatus.board.squares,
       isWhite: !isWhiteTurn(moves),
-      actions: [{
-        text: 'Settings',
-        callback_data: 'settings',
-      }, {
-        text: 'Last turn',
-        callback_data: 'last',
-      }, {
-        text: 'New game',
-        switch_inline_query_current_chat: '',
-      }],
+      actions: actions(),
     })
 
     await ctx.editMessageReplyMarkup(beforeBoard.reply_markup).catch(debug)
