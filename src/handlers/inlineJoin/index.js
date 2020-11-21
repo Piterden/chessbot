@@ -1,6 +1,6 @@
 const chess = require('chess')
 
-const { board } = require('@/keyboards')
+const { board, actions } = require('@/keyboards')
 const { debug } = require('@/helpers')
 
 module.exports = () => [
@@ -52,17 +52,10 @@ module.exports = () => [
       board: status.board.squares,
       isWhite: ctx.game.config.rotation === 'dynamic' ||
         ctx.game.config.rotation === 'whites',
-      actions: [{
-        text: 'Settings',
-        callback_data: 'settings',
-      }, {
-        text: 'Last turn',
-        callback_data: `last::${ctx.game.entry.id}`,
-      }, {
-        text: 'New game',
-        switch_inline_query_current_chat: '',
-      }],
+      actions: actions(`last::${ctx.game.entry.id}`),
     })
+
+    console.log(ctx.game.lastBoard)
 
     await ctx.editMessageText(
       iAmWhite
@@ -74,7 +67,7 @@ White (bottom): ${enemy.first_name}
 White's turn`,
       {
         ...ctx.game.lastBoard,
-        parse_mode: 'Markdown',
+        // parse_mode: 'Markdown',
       }
     )
 
