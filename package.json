@@ -16,7 +16,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chess": "^0.4.5",
+    "chess": "^0.4.6",
     "dotenv": "^7.0.0",
     "knex": "^0.20.13",
     "module-alias": "^2.2.2",

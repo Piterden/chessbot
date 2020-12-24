@@ -3,24 +3,13 @@ const chess = require('chess')
 const {
   debug,
   getGame,
+  topMessage,
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
+  statusMessage,
 } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
-
-const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
-${isCheck ? '|CHECK|' : ''}
-${isCheckmate ? '|CHECKMATE|' : ''}
-${isRepetition ? '|REPETITION|' : ''}`
-
-const topMessage = (whiteTurn, player, enemy) => whiteTurn
-  ? `White (top): ${player.first_name}
-Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
-Black's turn`
-  : `Black (top): ${player.first_name}
-White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
-White's turn`
 
 module.exports = () => [
   /^([a-h])([1-8])(?:::(\d+))?$/,

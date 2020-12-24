@@ -126,6 +126,16 @@ const getGamePgn = (moves) => moves.reduce((acc, cur, idx) => idx % 2
   ? `${acc}${cur.entry} `
   : `${acc}${parseInt(idx / 2) + 1}. ${cur.entry} `, '')
 
+const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
+
+const topMessage = (whiteTurn, player, enemy) => whiteTurn
+  ? `White (top): [${player.first_name}](tg://user?id=${player.id})
+Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+Black's turn`
+  : `Black (top): [${player.first_name}](tg://user?id=${player.id})
+White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+White's turn`
+
 module.exports = {
   debug,
   sleep,
@@ -136,9 +146,11 @@ module.exports = {
   isPlayer,
   mainMenu,
   getGamePgn,
+  topMessage,
   isBlackTurn,
   isWhiteTurn,
   isBlackUser,
   isWhiteUser,
   validateGame,
+  statusMessage,
 }

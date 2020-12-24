@@ -55,19 +55,17 @@ module.exports = () => [
       actions: actions(`last::${ctx.game.entry.id}`),
     })
 
-    console.log(ctx.game.lastBoard)
-
     await ctx.editMessageText(
       iAmWhite
-        ? `Black (top): ${enemy.first_name}
-White (bottom): ${user.first_name}
+        ? `Black (top): [${enemy.first_name}](tg://user?id=${enemy.id})
+White (bottom): [${user.first_name}](tg://user?id=${user.id})
 White's turn`
-        : `Black (top): ${user.first_name}
-White (bottom): ${enemy.first_name}
+        : `Black (top): [${user.first_name}](tg://user?id=${user.id})
+White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn`,
       {
         ...ctx.game.lastBoard,
-        // parse_mode: 'Markdown',
+        parse_mode: 'Markdown',
       }
     )
 

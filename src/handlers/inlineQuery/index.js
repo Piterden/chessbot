@@ -1,13 +1,7 @@
 const chess = require('chess')
 
-const { board, actions } = require('@/keyboards')
-const { debug, isWhiteTurn } = require('@/helpers')
-
-const statusMessage = ({
-  isCheck,
-  isCheckmate,
-  isRepetition,
-}) => `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
+const { board } = require('@/keyboards')
+const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
 
 module.exports = () => async (ctx) => {
   let user = await ctx.db('users')
@@ -91,20 +85,27 @@ module.exports = () => async (ctx) => {
       id: idx + 3,
       type: 'article',
       title: `You vs ${enemy.first_name}`,
-      description: `Started ${game.created_at.getDate()}.${game.created_at.getMonth()}.${game.created_at.getFullYear()} | ${moves.length} turns
-${statusMessage(status)}`,
+      description: `Started ${game.created_at.getDate()}.${game.created_at.getMonth()}.${game.created_at.getFullYear()} | ${moves.length} turns`,
       thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
       thumb_width: 418,
       thumb_height: 418,
       input_message_content: {
+        parse_mode: 'Markdown',
         message_text: `Under construction!!!
-Black (top): ${enemy.first_name}
-White (bottom): ${user.first_name}`,
+${topMessage(!isWhiteTurn(moves), user, enemy)}
+${statusMessage(status)}`,
       },
       ...board({
         board: status.board.squares,
         isWhite: isWhiteTurn(moves),
-        actions: actions(),
+        callbackOverride: `rejoin::${game.id}`,
+        actions: [{
+          text: 'Join the game',
+          callback_data: `rejoin::${game.id}`,
+        }, {
+          text: 'New game',
+          switch_inline_query_current_chat: '',
+        }],
       }),
     }
   }))
@@ -118,6 +119,7 @@ White (bottom): ${user.first_name}`,
       type: 'sticker',
       sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
       input_message_content: {
+        parse_mode: 'Markdown',
         message_text: `Black (top): ?
 White (bottom): ${user.first_name}
 Waiting for a black side`,
@@ -140,6 +142,7 @@ Waiting for a black side`,
       type: 'sticker',
       sticker_file_id: 'CAADAgADMwADX5T2DqhR9w5HSpCZAg',
       input_message_content: {
+        parse_mode: 'Markdown',
         message_text: `White (top): ?
 Black (bottom): ${user.first_name}
 Waiting for a white side`,
