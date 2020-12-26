@@ -24,6 +24,8 @@ module.exports = () => async (ctx) => {
     .where({ whites_id: ctx.from.id })
     .orWhere({ blacks_id: ctx.from.id })
     .orderBy('created_at', 'desc')
+    .offset(Number(ctx.update.inline_query.offset))
+    .limit(!ctx.update.inline_query.offset ? 48 : 50)
     .catch(debug)
 
   function getFen (board) {
@@ -56,7 +58,7 @@ module.exports = () => async (ctx) => {
     return fen.reverse().join('')
   }
 
-  const list = await Promise.all(games.slice(0, 48).map(async (game, idx) => {
+  const list = await Promise.all(games.map(async (game, idx) => {
     const gameClient = chess.create({ PGN: true })
     let status
 
@@ -82,7 +84,9 @@ module.exports = () => async (ctx) => {
     const fen = getFen(gameClient.game.board)
 
     return {
-      id: idx + 3,
+      id: !ctx.update.inline_query.offset
+        ? idx + 3
+        : idx + Number(ctx.update.inline_query.offset) + 2,
       type: 'article',
       title: `You vs ${enemy.first_name}`,
       description: `Started ${game.created_at.getDate()}.${game.created_at.getMonth()}.${game.created_at.getFullYear()} | ${moves.length} turns`,
@@ -112,57 +116,67 @@ ${statusMessage(status)}`,
 
   const gameClient = chess.create({ PGN: true })
   let status = gameClient.getStatus()
+  let results = []
 
-  await ctx.answerInlineQuery([
-    {
-      id: 1,
-      type: 'sticker',
-      sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
-      input_message_content: {
-        parse_mode: 'Markdown',
-        message_text: `Black (top): ?
-White (bottom): ${user.first_name}
-Waiting for a black side`,
+  if (!ctx.update.inline_query.offset) {
+    results.push(
+      {
+        id: 1,
+        type: 'sticker',
+        sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
+        input_message_content: {
+          parse_mode: 'Markdown',
+          message_text: `Black (top): ?
+  White (bottom): ${user.first_name}
+  Waiting for a black side`,
+        },
+        ...board({
+          board: status.board.squares,
+          isWhite: true,
+          callbackOverride: `join::w::${user.id}`,
+          actions: [{
+            text: 'Join the game',
+            callback_data: `join::w::${user.id}`,
+          }, {
+            text: 'New game',
+            switch_inline_query_current_chat: '',
+          }],
+        }),
       },
-      ...board({
-        board: status.board.squares,
-        isWhite: true,
-        callbackOverride: `join::w::${user.id}`,
-        actions: [{
-          text: 'Join the game',
-          callback_data: `join::w::${user.id}`,
-        }, {
-          text: 'New game',
-          switch_inline_query_current_chat: '',
-        }],
-      }),
-    },
-    {
-      id: 2,
-      type: 'sticker',
-      sticker_file_id: 'CAADAgADMwADX5T2DqhR9w5HSpCZAg',
-      input_message_content: {
-        parse_mode: 'Markdown',
-        message_text: `White (top): ?
-Black (bottom): ${user.first_name}
-Waiting for a white side`,
+      {
+        id: 2,
+        type: 'sticker',
+        sticker_file_id: 'CAADAgADMwADX5T2DqhR9w5HSpCZAg',
+        input_message_content: {
+          parse_mode: 'Markdown',
+          message_text: `White (top): ?
+  Black (bottom): ${user.first_name}
+  Waiting for a white side`,
+        },
+        ...board({
+          board: status.board.squares,
+          isWhite: false,
+          callbackOverride: `join::b::${user.id}`,
+          actions: [{
+            text: 'Join the game',
+            callback_data: `join::b::${user.id}`,
+          }, {
+            text: 'New game',
+            switch_inline_query_current_chat: '',
+          }],
+        }),
       },
-      ...board({
-        board: status.board.squares,
-        isWhite: false,
-        callbackOverride: `join::b::${user.id}`,
-        actions: [{
-          text: 'Join the game',
-          callback_data: `join::b::${user.id}`,
-        }, {
-          text: 'New game',
-          switch_inline_query_current_chat: '',
-        }],
-      }),
-    },
-    ...list,
-  ], {
+      ...list,
+    )
+  } else {
+    results = list
+  }
+
+  await ctx.answerInlineQuery(results, {
     is_personal: true,
     cache_time: 0,
+    next_offset: !ctx.update.inline_query.offset
+      ? 48
+      : Number(ctx.update.inline_query.offset) + 50,
   })
 }
