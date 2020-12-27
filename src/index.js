@@ -13,6 +13,7 @@ const {
   inlineJoinHandler,
   inlineMoveHandler,
   inlineQueryHandler,
+  inlineRejoinHandler,
   inlineSettingsHandler,
 } = require('@/handlers')
 const { debug } = require('@/helpers')
@@ -48,11 +49,12 @@ bot.on('inline_query', inlineQueryHandler())
 //   debug(Object.keys(ctx))
 // })
 
+bot.action(...inlineLastTurn())
 bot.action(...inlineBackHandler())
 bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
+bot.action(...inlineRejoinHandler())
 bot.action(...inlineSettingsHandler())
-bot.action(...inlineLastTurn())
 
 // bot.on('chosen_inline_result', async (ctx) => {
 //   debug(ctx.update)

@@ -92,7 +92,6 @@ const getGame = async (ctx) => {
 
     const game = await ctx.db('games')
       .where('id', Number(ctx.match[3]))
-      .select()
       .first()
 
     return game
@@ -100,7 +99,6 @@ const getGame = async (ctx) => {
 
   const game = ctx.game.entry || await ctx.db('games')
     .where('inline_id', ctx.callbackQuery.inline_message_id)
-    .select()
     .first()
 
   return game

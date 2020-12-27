@@ -95,17 +95,17 @@ module.exports = () => async (ctx) => {
       thumb_height: 418,
       input_message_content: {
         parse_mode: 'Markdown',
-        message_text: `Under construction!!!
+        message_text: `Waiting for confirmation by [${enemy.first_name}](tg://user?id=${enemy.id})!
 ${topMessage(!isWhiteTurn(moves), user, enemy)}
 ${statusMessage(status)}`,
       },
       ...board({
         board: status.board.squares,
         isWhite: isWhiteTurn(moves),
-        callbackOverride: `rejoin::${game.id}`,
+        callbackOverride: `rejoin::${game.id}::${user.id}`,
         actions: [{
           text: 'Join the game',
-          callback_data: `rejoin::${game.id}`,
+          callback_data: `rejoin::${game.id}::${user.id}`,
         }, {
           text: 'New game',
           switch_inline_query_current_chat: '',
@@ -127,8 +127,8 @@ ${statusMessage(status)}`,
         input_message_content: {
           parse_mode: 'Markdown',
           message_text: `Black (top): ?
-  White (bottom): ${user.first_name}
-  Waiting for a black side`,
+White (bottom): ${user.first_name}
+Waiting for a black side`,
         },
         ...board({
           board: status.board.squares,
@@ -150,8 +150,8 @@ ${statusMessage(status)}`,
         input_message_content: {
           parse_mode: 'Markdown',
           message_text: `White (top): ?
-  Black (bottom): ${user.first_name}
-  Waiting for a white side`,
+Black (bottom): ${user.first_name}
+Waiting for a white side`,
         },
         ...board({
           board: status.board.squares,
