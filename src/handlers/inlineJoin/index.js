@@ -57,18 +57,18 @@ module.exports = () => [
 
     await ctx.editMessageText(
       iAmWhite
-        ? `Black (top): [${enemy.first_name}](tg://user?id=${enemy.id})
-White (bottom): [${user.first_name}](tg://user?id=${user.id})
+        ? `Black  (top): [${enemy.first_name}](tg://user?id=${enemy.id})
+White  (bottom): [${user.first_name}](tg://user?id=${user.id})
 White's turn`
-        : `Black (top): [${user.first_name}](tg://user?id=${user.id})
-White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+        : `Black  (top): [${user.first_name}](tg://user?id=${user.id})
+White  (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn`,
       {
         ...ctx.game.lastBoard,
         parse_mode: 'Markdown',
       }
-    )
+    ).catch(debug)
 
-    return ctx.answerCbQuery('Now play!')
+    return ctx.answerCbQuery('Now play!').catch(debug)
   },
 ]

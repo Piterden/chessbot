@@ -27,7 +27,10 @@ module.exports = () => [
     }
 
     await ctx.db('games')
-      .update({ inline_id: ctx.callbackQuery.inline_message_id })
+      .update({
+        inline_id: ctx.callbackQuery.inline_message_id,
+        updated_at: new Date(),
+      })
       .where({ id: gameId })
       .catch(debug)
 
@@ -69,7 +72,7 @@ module.exports = () => [
     })
 
     await ctx.editMessageText(
-      `${topMessage(isWhiteTurn(moves), user, enemy)}
+      `${topMessage(!isWhiteTurn(moves), user, enemy)}
 ${statusMessage(status)}`,
       {
         ...ctx.game.lastBoard,
