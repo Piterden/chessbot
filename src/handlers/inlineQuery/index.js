@@ -3,23 +3,7 @@ const chess = require('chess')
 const { board } = require('@/keyboards')
 const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
 
-module.exports = () => async (ctx, next) => {
-  if (Number(ctx.from.id) !== 93407355) {
-    await ctx.answerInlineQuery([
-      {
-        id: 1,
-        type: 'article',
-        title: 'Maintenance until December 12th, 2021',
-      }
-    ], {
-      is_personal: true,
-      cache_time: 0,
-    }).catch(debug)
-
-    next()
-    return
-  }
-
+module.exports = () => async (ctx) => {
   let user = await ctx.db('users')
     .where('id', Number(ctx.from.id))
     .first()
