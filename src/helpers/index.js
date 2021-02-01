@@ -85,18 +85,18 @@ const mainMenu = [
 ]
 
 const getGame = async (ctx) => {
-  if (ctx.match && ctx.match[3]) {
-    await ctx.db('games')
-      .where('id', Number(ctx.match[3]))
-      .update({ inline_id: ctx.callbackQuery.inline_message_id })
+  // if (ctx.match && ctx.match[3]) {
+  //   // await ctx.db('games')
+  //   //   .where('id', Number(ctx.match[3]))
+  //   //   .update({ inline_id: ctx.callbackQuery.inline_message_id })
 
-    const game = await ctx.db('games')
-      .where('id', Number(ctx.match[3]))
-      .select()
-      .first()
+  //   const game = await ctx.db('games')
+  //     .where('id', Number(ctx.match[3]))
+  //     .select()
+  //     .first()
 
-    return game
-  }
+  //   return game
+  // }
 
   const game = ctx.game.entry || await ctx.db('games')
     .where('inline_id', ctx.callbackQuery.inline_message_id)
