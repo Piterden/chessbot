@@ -23,7 +23,7 @@ White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn`
 
 module.exports = () => [
-  /^([a-h])([1-8])(?:::(\d+))?$/,
+  /^([a-h])([1-8])([QRNB])?$/,
   async (ctx) => {
     const gameEntry = await getGame(ctx)
 
@@ -62,6 +62,9 @@ module.exports = () => [
     const pressed = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
+    /**
+     * Selection of a piece
+     */
     if (
       pressed && pressed.piece &&
       ((pressed.piece.side.name === 'white' && isWhiteTurn(gameMoves)) ||
@@ -107,9 +110,53 @@ module.exports = () => [
       return ctx.answerCbQuery()
     }
 
+    /**
+     * Selection of a destination to move
+     */
     if (ctx.game.selected) {
-      const makeMove = ctx.game.allowedMoves
-        .find(({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank)
+      if (
+        ctx.game.selected.piece.type === 'pawn' &&
+        (
+          (isWhiteTurn(gameMoves) && ctx.game.selected.rank === 7) ||
+          (!isWhiteTurn(gameMoves) && ctx.game.selected.rank === 2)
+        ) &&
+        (
+          (isWhiteTurn(gameMoves) && pressed.rank === 8) ||
+          (!isWhiteTurn(gameMoves) && pressed.rank === 1)
+        ) &&
+        !ctx.game.promotion
+      ) {
+        ctx.game.promotion = pressed
+
+        const makeMoves = ctx.game.allowedMoves.filter(
+          ({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank,
+        )
+        const keyboardRow = makeMoves.map(({ key }) => ({
+          text: key,
+          callback_data: `${pressed.file}${pressed.rank}${key[key.length - 1]}`,
+        }))
+        const board = ctx.game.lastBoard.reply_markup
+
+        board.inline_keyboard.unshift(keyboardRow)
+
+        await ctx.editMessageReplyMarkup(board)
+          .catch(debug)
+
+        return ctx.answerCbQuery()
+      }
+
+      let makeMove
+
+      if (ctx.game.promotion) {
+        makeMove = ctx.game.allowedMoves.find(({ key, dest: { file, rank } }) => (
+          file === pressed.file && rank === pressed.rank && key.endsWith(ctx.match[3])
+        ))
+        ctx.game.promotion = null
+      } else {
+        makeMove = ctx.game.allowedMoves.find(
+          ({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank,
+        )
+      }
 
       if (makeMove) {
         try {
@@ -148,12 +195,12 @@ module.exports = () => [
         topMessage(
           makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
           makeMove ? ctx.from : enemy,
-          makeMove ? enemy : ctx.from
+          makeMove ? enemy : ctx.from,
         ) + statusMessage(status),
         {
           ...ctx.game.lastBoard,
           parse_mode: 'Markdown',
-        }
+        },
       ).catch(debug)
 
       return ctx.answerCbQuery(`${makeMove ? makeMove.key : ''}`)
