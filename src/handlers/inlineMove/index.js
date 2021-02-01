@@ -6,6 +6,7 @@ const {
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
+  promotionMap,
 } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
 
@@ -132,7 +133,7 @@ module.exports = () => [
           ({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank,
         )
         const keyboardRow = makeMoves.map(({ key }) => ({
-          text: key,
+          text: promotionMap[key[key.length - 1]],
           callback_data: `${pressed.file}${pressed.rank}${key[key.length - 1]}`,
         }))
         const board = ctx.game.lastBoard.reply_markup

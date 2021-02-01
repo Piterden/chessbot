@@ -38,6 +38,13 @@ const letters = {
   },
 }
 
+const promotionMap = {
+  Q: '♛', // eslint-disable-line id-length
+  R: '♜', // eslint-disable-line id-length
+  K: '♞', // eslint-disable-line id-length
+  B: '♝', // eslint-disable-line id-length
+}
+
 /**
  * Sleep pause.
  *
@@ -86,9 +93,12 @@ const mainMenu = [
 
 const getGame = async (ctx) => {
   // if (ctx.match && ctx.match[3]) {
-  //   // await ctx.db('games')
-  //   //   .where('id', Number(ctx.match[3]))
-  //   //   .update({ inline_id: ctx.callbackQuery.inline_message_id })
+  //   await ctx.db('games')
+  //     .where('id', Number(ctx.match[3]))
+  //     .update({ inline_id: ctx.callbackQuery.inline_message_id })
+  //   await ctx.db('games')
+  //     .where('id', Number(ctx.match[3]))
+  //     .update({ inline_id: ctx.callbackQuery.inline_message_id })
 
   //   const game = await ctx.db('games')
   //     .where('id', Number(ctx.match[3]))
@@ -140,5 +150,6 @@ module.exports = {
   isWhiteTurn,
   isBlackUser,
   isWhiteUser,
+  promotionMap,
   validateGame,
 }
