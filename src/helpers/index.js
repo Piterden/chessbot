@@ -89,6 +89,9 @@ const getGame = async (ctx) => {
   //   await ctx.db('games')
   //     .where('id', Number(ctx.match[3]))
   //     .update({ inline_id: ctx.callbackQuery.inline_message_id })
+  //   await ctx.db('games')
+  //     .where('id', Number(ctx.match[3]))
+  //     .update({ inline_id: ctx.callbackQuery.inline_message_id })
 
   //   const game = await ctx.db('games')
   //     .where('id', Number(ctx.match[3]))
