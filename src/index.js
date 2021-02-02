@@ -5,10 +5,10 @@ const knex = require('knex')
 const { default: Telegraf, session } = require('telegraf')
 
 const {
-  gamesHandler,
-  startHandler,
+  // gamesHandler,
+  // startHandler,
   inlineLastTurn,
-  mainMenuHandler,
+  // mainMenuHandler,
   inlineBackHandler,
   inlineJoinHandler,
   inlineMoveHandler,
@@ -38,10 +38,10 @@ bot.use(session({
 //   // }
 // })
 
-bot.command('start', startHandler())
+// bot.command('start', startHandler())
 
-bot.action(...mainMenuHandler())
-bot.action(...gamesHandler())
+// bot.action(...mainMenuHandler())
+// bot.action(...gamesHandler())
 
 bot.on('inline_query', inlineQueryHandler())
 // bot.on('chosen_inline_result', async (ctx) => {

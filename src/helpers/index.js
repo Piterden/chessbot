@@ -55,7 +55,7 @@ const sleep = (time) => new Promise((resolve) => {
   setTimeout(resolve, time)
 })
 
-const debug = (data) => console.log(inspect(data, {
+const debug = (data) => console.error(inspect(data, {
   colors: true,
   showHidden: true,
   depth: 10,
@@ -148,7 +148,7 @@ const makeUserLog = ({
   last_name: lastName,
   first_name: firstName,
   language_code: languageCode,
-}) => `|${id}-@${username || ''}-${firstName}-${lastName}-(${languageCode})|`
+}) => `|${id}-@${username || ''}-${firstName || ''}-${lastName || ''}-(${languageCode || ''})|`
 
 module.exports = {
   log,
