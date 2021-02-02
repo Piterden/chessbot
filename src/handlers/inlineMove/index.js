@@ -1,11 +1,14 @@
 const chess = require('chess')
 
 const {
+  log,
   debug,
+  preLog,
   getGame,
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
+  makeUserLog,
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
@@ -155,18 +158,22 @@ module.exports = () => [
         )
       }
 
-      if (makeMove) {
-        try {
-          gameClient.move(makeMove.key)
-        } catch (error) {
-          debug(error)
-        }
-
-        await ctx.db('moves').insert({
-          game_id: ctx.game.entry.id,
-          entry: makeMove.key,
-        }).catch(debug)
+      if (!makeMove) {
+        return ctx.answerCbQuery('Error, move not found!')
       }
+
+      try {
+        gameClient.move(makeMove.key)
+      } catch (error) {
+        debug(error)
+      }
+
+      await ctx.db('moves').insert({
+        game_id: ctx.game.entry.id,
+        entry: makeMove.key,
+      }).catch(debug)
+
+      log(preLog('MOVE', `${gameEntry.id} ${makeMove.key} ${gameMoves.length} ${makeUserLog(ctx.from)}`))
 
       status = gameClient.getStatus()
 

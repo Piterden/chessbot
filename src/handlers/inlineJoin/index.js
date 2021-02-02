@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board, actions } = require('@/keyboards')
-const { debug } = require('@/helpers')
+const { debug, preLog, log, makeUserLog } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -55,7 +55,7 @@ module.exports = () => [
       actions: actions(`last::${ctx.game.entry.id}`),
     })
 
-    console.log(ctx.game.lastBoard)
+    log(preLog('JOIN', `${game.id} ${makeUserLog(enemy)} ${makeUserLog(user)}`))
 
     await ctx.editMessageText(
       iAmWhite

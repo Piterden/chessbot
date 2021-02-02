@@ -61,6 +61,8 @@ const debug = (data) => console.log(inspect(data, {
   depth: 10,
 }))
 
+const log = (data) => console.log(data)
+
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isBlackTurn = (moves) => moves.length % 2
 const isReady = (game) => game && Boolean(game.whites_id && game.blacks_id)
@@ -136,10 +138,24 @@ const getGamePgn = (moves) => moves.reduce((acc, cur, idx) => idx % 2
   ? `${acc}${cur.entry} `
   : `${acc}${parseInt(idx / 2) + 1}. ${cur.entry} `, '')
 
+const preLog = (type = 'UNKNOWN', data = {}, date = new Date().toISOString()) => (
+  `[${type}]${date}:${data}`
+)
+
+const makeUserLog = ({
+  id,
+  username,
+  last_name: lastName,
+  first_name: firstName,
+  language_code: languageCode,
+}) => `|${id}-@${username || ''}-${firstName}-${lastName}-(${languageCode})|`
+
 module.exports = {
+  log,
   debug,
   sleep,
   emodji,
+  preLog,
   getGame,
   isReady,
   letters,
@@ -150,6 +166,7 @@ module.exports = {
   isWhiteTurn,
   isBlackUser,
   isWhiteUser,
+  makeUserLog,
   promotionMap,
   validateGame,
 }

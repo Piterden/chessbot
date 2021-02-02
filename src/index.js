@@ -15,7 +15,7 @@ const {
   inlineQueryHandler,
   inlineSettingsHandler,
 } = require('@/handlers')
-const { debug } = require('@/helpers')
+// const { debug } = require('@/helpers')
 const knexConfig = require('@/../knexfile')
 
 const { BOT_NAME, BOT_TOKEN } = process.env
@@ -30,13 +30,13 @@ bot.use(session({
     (ctx.from && ctx.chat && `${ctx.from.id}:${ctx.chat.id}`),
 }))
 
-bot.use(async (ctx, next) => {
-  debug(ctx.update)
-  // debug(ctx.game)
-  next(ctx)
-  // if (ctx.chat && ctx.chat.type === 'private') {
-  // }
-})
+// bot.use(async (ctx, next) => {
+//   debug(ctx.update)
+//   // debug(ctx.game)
+//   next(ctx)
+//   // if (ctx.chat && ctx.chat.type === 'private') {
+//   // }
+// })
 
 bot.command('start', startHandler())
 
