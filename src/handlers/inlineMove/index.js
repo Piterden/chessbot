@@ -6,9 +6,8 @@ const {
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
-  promotionMap,
 } = require('@/helpers')
-const { board, actions } = require('@/keyboards')
+const { board, actions, promotion } = require('@/keyboards')
 
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
 ${isCheck ? '|CHECK|' : ''}
@@ -132,10 +131,7 @@ module.exports = () => [
         const makeMoves = ctx.game.allowedMoves.filter(
           ({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank,
         )
-        const keyboardRow = makeMoves.map(({ key }) => ({
-          text: promotionMap[key[key.length - 1]],
-          callback_data: `${pressed.file}${pressed.rank}${key[key.length - 1]}`,
-        }))
+        const keyboardRow = promotion({ makeMoves, pressed })
         const board = ctx.game.lastBoard.reply_markup
 
         board.inline_keyboard.unshift(keyboardRow)

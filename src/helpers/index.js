@@ -41,7 +41,7 @@ const letters = {
 const promotionMap = {
   Q: '♛', // eslint-disable-line id-length
   R: '♜', // eslint-disable-line id-length
-  K: '♞', // eslint-disable-line id-length
+  N: '♞', // eslint-disable-line id-length
   B: '♝', // eslint-disable-line id-length
 }
 
