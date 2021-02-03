@@ -6,6 +6,9 @@ const { debug, preLog, log, makeUserLog } = require('@/helpers')
 module.exports = () => [
   /^join::([wb])::(\d+)/,
   async (ctx) => {
+    if (ctx.game.joined) {
+      return ctx.answerCbQuery('You are already join the game')
+    }
     const enemyId = Number(ctx.match[2])
     const iAmWhite = ctx.match[1] !== 'w'
 
@@ -70,7 +73,9 @@ White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
         parse_mode: 'Markdown',
         disable_web_page_preview: true,
       }
-    )
+    ).catch(debug)
+
+    ctx.game.joined = true
 
     return ctx.answerCbQuery('Now play!')
   },
