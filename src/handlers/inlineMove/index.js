@@ -13,17 +13,17 @@ const {
 const { board, actions, promotion } = require('@/keyboards')
 
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
-${isCheck ? '\\|CHECK\\|' : ''}
-${isCheckmate ? '\\|CHECKMATE\\|' : ''}
-${isRepetition ? '\\|REPETITION\\|' : ''}`
+${isCheck ? '|CHECK|' : ''}
+${isCheckmate ? '|CHECKMATE|' : ''}
+${isRepetition ? '|REPETITION|' : ''}`
 
 const topMessage = (whiteTurn, player, enemy) => whiteTurn
-  ? `White \\(top\\): ${player.first_name}
-Black \\(bottom\\): [${enemy.first_name}](tg://user?id=${enemy.id})
-Black's turn \\| [Discussion](https://t.me/chessy_bot_chat)`
-  : `Black \\(top\\): ${player.first_name}
-White \\(bottom\\): [${enemy.first_name}](tg://user?id=${enemy.id})
-White's turn \\| [Discussion](https://t.me/chessy_bot_chat)`
+  ? `White (top): ${player.first_name}
+Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+Black's turn | [Discussion](https://t.me/chessy_bot_chat)`
+  : `Black (top): ${player.first_name}
+White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+White's turn | [Discussion](https://t.me/chessy_bot_chat)`
 
 module.exports = () => [
   /^([a-h])([1-8])([QRNB])?$/,
@@ -203,7 +203,7 @@ module.exports = () => [
         ) + statusMessage(status),
         {
           ...ctx.game.lastBoard,
-          parse_mode: 'MarkdownV2',
+          parse_mode: 'Markdown',
           disable_web_page_preview: true,
         },
       ).catch(debug)

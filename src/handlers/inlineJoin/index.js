@@ -59,15 +59,15 @@ module.exports = () => [
 
     await ctx.editMessageText(
       iAmWhite
-        ? `Black \\(top\\): ${enemy.first_name}
-White \\(bottom\\): ${user.first_name}
-White's turn \\| [Discussion](https://t.me/chessy_bot_chat)`
-        : `Black \\(top\\): ${user.first_name}
-White \\(bottom\\): ${enemy.first_name}
-White's turn \\| [Discussion](https://t.me/chessy_bot_chat)`,
+        ? `Black (top): ${enemy.first_name}
+White (bottom): ${user.first_name}
+White's turn | [Discussion](https://t.me/chessy_bot_chat)`
+        : `Black (top): ${user.first_name}
+White (bottom): ${enemy.first_name}
+White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         ...ctx.game.lastBoard,
-        parse_mode: 'MarkdownV2',
+        parse_mode: 'Markdown',
         disable_web_page_preview: true,
       }
     )

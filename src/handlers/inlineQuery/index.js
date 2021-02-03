@@ -71,10 +71,10 @@ module.exports = () => async (ctx) => {
   //           description: `Moves: ${moves.length}.
   // ${isWhiteTurn(moves) ? 'Whites' : 'Blacks'} turn.`,
   //           input_message_content: {
-  //             parse_mode: 'MarkdownV2',
+  //             parse_mode: 'Markdown',
   //             disable_web_page_preview: true,
-  //             message_text: `Black \\(top\\): ${enemy.first_name}
-  // White \\(bottom\\): ${user.first_name}`,
+  //             message_text: `Black (top): ${enemy.first_name}
+  // White (bottom): ${user.first_name}`,
   //           },
   //           ...board(
   //             status.board.squares,
@@ -101,11 +101,11 @@ module.exports = () => async (ctx) => {
       type: 'sticker',
       sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
       input_message_content: {
-        parse_mode: 'MarkdownV2',
+        parse_mode: 'Markdown',
         disable_web_page_preview: true,
-        message_text: `Black \\(top\\): ?
-White \\(bottom\\): ${user.first_name}
-Waiting for a black side \\| [Discussion](https://t.me/chessy_bot_chat)`,
+        message_text: `Black (top): ?
+White (bottom): ${user.first_name}
+Waiting for a black side | [Discussion](https://t.me/chessy_bot_chat)`,
       },
       ...board({
         board: status.board.squares,
@@ -125,11 +125,11 @@ Waiting for a black side \\| [Discussion](https://t.me/chessy_bot_chat)`,
       type: 'sticker',
       sticker_file_id: 'CAADAgADMwADX5T2DqhR9w5HSpCZAg',
       input_message_content: {
-        parse_mode: 'MarkdownV2',
+        parse_mode: 'Markdown',
         disable_web_page_preview: true,
-        message_text: `White \\(top\\): ?
-Black \\(bottom\\): ${user.first_name}
-Waiting for a white side \\| [Discussion](https://t.me/chessy_bot_chat)`,
+        message_text: `White (top): ?
+Black (bottom): ${user.first_name}
+Waiting for a white side | [Discussion](https://t.me/chessy_bot_chat)`,
       },
       ...board({
         board: status.board.squares,
