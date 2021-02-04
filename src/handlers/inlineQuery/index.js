@@ -147,5 +147,5 @@ Waiting for a white side | [Discussion](https://t.me/chessy_bot_chat)`,
   ], {
     is_personal: true,
     cache_time: 0,
-  })
+  }).catch(debug)
 }

@@ -15,7 +15,7 @@ const {
   inlineQueryHandler,
   inlineSettingsHandler,
 } = require('@/handlers')
-// const { debug } = require('@/helpers')
+const { debug, log, preLog, makeUserLog } = require('@/helpers')
 const knexConfig = require('@/../knexfile')
 
 const { BOT_NAME, BOT_TOKEN } = process.env
@@ -54,8 +54,10 @@ bot.action(...inlineMoveHandler())
 bot.action(...inlineSettingsHandler())
 bot.action(...inlineLastTurn())
 
-// bot.on('chosen_inline_result', async (ctx) => {
-//   debug(ctx.update)
-// })
+bot.on('chosen_inline_result', async (ctx) => {
+  log(preLog('BOARD', `|${makeUserLog(ctx.update.chosen_inline_result.from)}| [${ctx.update.chosen_inline_result.result_id === 2 ? 'black' : 'white'}] {${ctx.update.chosen_inline_result.inline_message_id}}`))
+})
 
-bot.startPolling()
+bot.catch((err) => debug(err))
+
+bot.telegram.getUpdates(1, -1).then(() => bot.launch())
