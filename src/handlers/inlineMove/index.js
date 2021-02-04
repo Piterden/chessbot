@@ -11,6 +11,7 @@ const {
   isBlackUser,
   makeUserLog,
   statusMessage,
+  getFen
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
@@ -189,12 +190,17 @@ module.exports = () => [
         actions: actions(),
       })
 
-      await ctx.editMessageText(
-        topMessage(
-          makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
-          makeMove ? ctx.from : enemy,
-          makeMove ? enemy : ctx.from,
-        ) + statusMessage(status),
+      await ctx.editMessageMedia(
+        {
+          type: 'photo',
+          media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&1`,
+          caption:
+            topMessage(
+              makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
+              makeMove ? ctx.from : enemy,
+              makeMove ? enemy : ctx.from,
+            ) + statusMessage(status),
+        },
         {
           ...ctx.game.lastBoard,
           parse_mode: 'Markdown',

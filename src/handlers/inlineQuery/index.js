@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
+const { debug, isWhiteTurn, topMessage, statusMessage, getFen } = require('@/helpers')
 
 module.exports = () => async (ctx) => {
   let user = await ctx.db('users')
@@ -27,36 +27,6 @@ module.exports = () => async (ctx) => {
     .offset(Number(ctx.update.inline_query.offset))
     .limit(!ctx.update.inline_query.offset ? 48 : 50)
     .catch(debug)
-
-  function getFen (board) {
-    const fen = []
-
-    for (let idx = 0; idx < board.squares.length; idx += 1) {
-      const square = board.squares[idx]
-
-      if (square.file === 'a' && idx > 0) {
-        fen.push('/')
-      }
-
-      if (square.piece) {
-        fen.push(square.piece.side.name === 'white'
-          ? (square.piece.notation || 'p').toUpperCase()
-          : (square.piece.notation || 'p').toLowerCase())
-      } else {
-        if (isNaN(Number(fen[fen.length - 1]))) {
-          fen.push(1)
-        } else {
-          if (square.file === 'a') {
-            fen.push(1)
-          } else {
-            fen[fen.length - 1] += 1
-          }
-        }
-      }
-    }
-
-    return fen.reverse().join('')
-  }
 
   const list = await Promise.all(games.map(async (game, idx) => {
     const gameClient = chess.create({ PGN: true })
@@ -89,7 +59,7 @@ module.exports = () => async (ctx) => {
         : idx + Number(ctx.update.inline_query.offset) + 2,
       type: 'article',
       title: `You vs ${enemy.first_name}`,
-      description: `Started ${game.created_at.getDate()}.${game.created_at.getMonth()}.${game.created_at.getFullYear()} | ${moves.length} turns`,
+      description: `${moves.length} turns`, /// Started ${game.created_at.getDate()}.${game.created_at.getMonth()}.${game.created_at.getFullYear()} |
       thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
       thumb_width: 418,
       thumb_height: 418,
@@ -118,19 +88,17 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
   const gameClient = chess.create({ PGN: true })
   let status = gameClient.getStatus()
   let results = []
-
+  console.log(ctx.update.inline_query.offset)
   if (!ctx.update.inline_query.offset) {
-    results.push(
+    results = [
       {
         id: 1,
-        type: 'sticker',
-        sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
-        input_message_content: {
-          parse_mode: 'Markdown',
-          message_text: `Black (top): ?
+        type: 'photo',
+        photo_url: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&1`,
+        thumb_url: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=240&coordinates=true&1`,
+        caption: `Black (top): ?
 White (bottom): ${user.first_name}
 Waiting for a black side`,
-        },
         ...board({
           board: status.board.squares,
           isWhite: true,
@@ -144,6 +112,29 @@ Waiting for a black side`,
           }],
         }),
       },
+      //       {
+      //         id: 1,
+      //         type: 'sticker',
+      //         sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
+      //         input_message_content: {
+      //           parse_mode: 'Markdown',
+      //           message_text: `Black (top): ?
+      // White (bottom): ${user.first_name}
+      // Waiting for a black side`,
+      //         },
+      //         ...board({
+      //           board: status.board.squares,
+      //           isWhite: true,
+      //           callbackOverride: `join::w::${user.id}`,
+      //           actions: [{
+      //             text: 'Join the game',
+      //             callback_data: `join::w::${user.id}`,
+      //           }, {
+      //             text: 'New game',
+      //             switch_inline_query_current_chat: '',
+      //           }],
+      //         }),
+      //       },
       {
         id: 2,
         type: 'sticker',
@@ -151,8 +142,8 @@ Waiting for a black side`,
         input_message_content: {
           parse_mode: 'Markdown',
           message_text: `White (top): ?
-Black (bottom): ${user.first_name}
-Waiting for a white side`,
+      Black (bottom): ${user.first_name}
+      Waiting for a white side`,
         },
         ...board({
           board: status.board.squares,
@@ -168,16 +159,16 @@ Waiting for a white side`,
         }),
       },
       ...list,
-    )
+    ]
   } else {
     results = list
   }
-
+  console.log(results)
   await ctx.answerInlineQuery(results, {
     is_personal: true,
     cache_time: 0,
-    next_offset: !ctx.update.inline_query.offset
-      ? 48
-      : Number(ctx.update.inline_query.offset) + 50,
+    // next_offset: !ctx.update.inline_query.offset
+    //   ? 48
+    //   : Number(ctx.update.inline_query.offset) + 50,
   }).catch(debug)
 }

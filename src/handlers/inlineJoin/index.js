@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board, actions } = require('@/keyboards')
-const { debug, preLog, log, makeUserLog } = require('@/helpers')
+const { debug, preLog, log, makeUserLog, getFen } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -60,18 +60,22 @@ module.exports = () => [
 
     log(preLog('JOIN', `${game.id} ${makeUserLog(enemy)} ${makeUserLog(user)}`))
 
-    await ctx.editMessageText(
-      iAmWhite
-        ? `Black  (top): [${enemy.first_name}](tg://user?id=${enemy.id})
+    await ctx.editMessageMedia(
+      {
+        type: 'photo',
+        media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&1`,
+        caption:
+        iAmWhite
+          ? `Black  (top): [${enemy.first_name}](tg://user?id=${enemy.id})
 White  (bottom): [${user.first_name}](tg://user?id=${user.id})
 White's turn | [Discussion](https://t.me/chessy_bot_chat)`
-        : `Black  (top): [${user.first_name}](tg://user?id=${user.id})
+          : `Black  (top): [${user.first_name}](tg://user?id=${user.id})
 White  (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
+      },
       {
         ...ctx.game.lastBoard,
         parse_mode: 'Markdown',
-        disable_web_page_preview: true,
       }
     ).catch(debug)
 
