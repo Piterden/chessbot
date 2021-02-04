@@ -1,18 +1,34 @@
 const chess = require('chess')
 
 const {
+  log,
   debug,
+  preLog,
   getGame,
   topMessage,
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
+  makeUserLog,
   statusMessage,
 } = require('@/helpers')
-const { board, actions } = require('@/keyboards')
+const { board, actions, promotion } = require('@/keyboards')
+
+const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
+${isCheck ? '|CHECK|' : ''}
+${isCheckmate ? '|CHECKMATE|' : ''}
+${isRepetition ? '|REPETITION|' : ''}`
+
+const topMessage = (whiteTurn, player, enemy) => whiteTurn
+  ? `White (top): ${player.first_name}
+Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+Black's turn | [Discussion](https://t.me/chessy_bot_chat)`
+  : `Black (top): ${player.first_name}
+White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+White's turn | [Discussion](https://t.me/chessy_bot_chat)`
 
 module.exports = () => [
-  /^([a-h])([1-8])(?:::(\d+))?$/,
+  /^([a-h])([1-8])([QRNB])?$/,
   async (ctx) => {
     const gameEntry = await getGame(ctx)
 
@@ -51,6 +67,9 @@ module.exports = () => [
     const pressed = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
+    /**
+     * Selection of a piece
+     */
     if (
       pressed && pressed.piece &&
       ((pressed.piece.side.name === 'white' && isWhiteTurn(gameMoves)) ||
@@ -101,22 +120,67 @@ module.exports = () => [
       return ctx.answerCbQuery()
     }
 
+    /**
+     * Selection of a destination to move
+     */
     if (ctx.game.selected) {
-      const makeMove = ctx.game.allowedMoves
-        .find(({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank)
+      if (
+        ctx.game.selected.piece.type === 'pawn' &&
+        (
+          (isWhiteTurn(gameMoves) && ctx.game.selected.rank === 7) ||
+          (!isWhiteTurn(gameMoves) && ctx.game.selected.rank === 2)
+        ) &&
+        (
+          (isWhiteTurn(gameMoves) && pressed.rank === 8) ||
+          (!isWhiteTurn(gameMoves) && pressed.rank === 1)
+        ) &&
+        !ctx.game.promotion
+      ) {
+        ctx.game.promotion = pressed
 
-      if (makeMove) {
-        try {
-          gameClient.move(makeMove.key)
-        } catch (error) {
-          debug(error)
-        }
+        const makeMoves = ctx.game.allowedMoves.filter(
+          ({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank,
+        )
+        const keyboardRow = promotion({ makeMoves, pressed })
+        const board = ctx.game.lastBoard.reply_markup
 
-        await ctx.db('moves').insert({
-          game_id: ctx.game.entry.id,
-          entry: makeMove.key,
-        }).catch(debug)
+        board.inline_keyboard.unshift(keyboardRow)
+
+        await ctx.editMessageReplyMarkup(board)
+          .catch(debug)
+
+        return ctx.answerCbQuery()
       }
+
+      let makeMove
+
+      if (ctx.game.promotion) {
+        makeMove = ctx.game.allowedMoves.find(({ key, dest: { file, rank } }) => (
+          file === pressed.file && rank === pressed.rank && key.endsWith(ctx.match[3])
+        ))
+        ctx.game.promotion = null
+      } else {
+        makeMove = ctx.game.allowedMoves.find(
+          ({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank,
+        )
+      }
+
+      if (!makeMove) {
+        return ctx.answerCbQuery('Error, move not found!')
+      }
+
+      try {
+        gameClient.move(makeMove.key)
+      } catch (error) {
+        debug(error)
+      }
+
+      await ctx.db('moves').insert({
+        game_id: ctx.game.entry.id,
+        entry: makeMove.key,
+      }).catch(debug)
+
+      log(preLog('MOVE', `${gameEntry.id} ${makeMove.key} ${gameMoves.length} ${makeUserLog(ctx.from)}`))
 
       status = gameClient.getStatus()
 
@@ -142,12 +206,13 @@ module.exports = () => [
         topMessage(
           makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
           makeMove ? ctx.from : enemy,
-          makeMove ? enemy : ctx.from
+          makeMove ? enemy : ctx.from,
         ) + statusMessage(status),
         {
           ...ctx.game.lastBoard,
           parse_mode: 'Markdown',
-        }
+          disable_web_page_preview: true,
+        },
       ).catch(debug)
 
       return ctx.answerCbQuery(`${makeMove ? makeMove.key : ''}`)

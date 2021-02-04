@@ -38,6 +38,13 @@ const letters = {
   },
 }
 
+const promotionMap = {
+  Q: '♛', // eslint-disable-line id-length
+  R: '♜', // eslint-disable-line id-length
+  N: '♞', // eslint-disable-line id-length
+  B: '♝', // eslint-disable-line id-length
+}
+
 /**
  * Sleep pause.
  *
@@ -48,11 +55,13 @@ const sleep = (time) => new Promise((resolve) => {
   setTimeout(resolve, time)
 })
 
-const debug = (data) => console.log(inspect(data, {
+const debug = (data) => console.error(inspect(data, {
   colors: true,
   showHidden: true,
   depth: 10,
 }))
+
+const log = (data) => console.log(data)
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isBlackTurn = (moves) => moves.length % 2
@@ -85,6 +94,21 @@ const mainMenu = [
 ]
 
 const getGame = async (ctx) => {
+  // if (ctx.match && ctx.match[3]) {
+  //   await ctx.db('games')
+  //     .where('id', Number(ctx.match[3]))
+  //     .update({ inline_id: ctx.callbackQuery.inline_message_id })
+  //   await ctx.db('games')
+  //     .where('id', Number(ctx.match[3]))
+  //     .update({ inline_id: ctx.callbackQuery.inline_message_id })
+
+  //   const game = await ctx.db('games')
+  //     .where('id', Number(ctx.match[3]))
+  //     .select()
+  //     .first()
+
+  //   return game
+  // }
   if (ctx.match && ctx.match[3]) {
     await ctx.db('games')
       .where('id', Number(ctx.match[3]))
@@ -124,6 +148,18 @@ const getGamePgn = (moves) => moves.reduce((acc, cur, idx) => idx % 2
   ? `${acc}${cur.entry} `
   : `${acc}${parseInt(idx / 2) + 1}. ${cur.entry} `, '')
 
+const preLog = (type = 'UNKNOWN', data = {}, date = new Date().toISOString()) => (
+  `[${type}]${date}:${data}`
+)
+
+const makeUserLog = ({
+  id,
+  username,
+  last_name: lastName,
+  first_name: firstName,
+  language_code: languageCode,
+}) => `|${id}-@${username || ''}-${firstName || ''}-${lastName || ''}-(${languageCode || ''})|`
+
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
 
 const topMessage = (whiteTurn, player, enemy) => whiteTurn
@@ -135,9 +171,11 @@ White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn`
 
 module.exports = {
+  log,
   debug,
   sleep,
   emodji,
+  preLog,
   getGame,
   isReady,
   letters,
@@ -149,6 +187,8 @@ module.exports = {
   isWhiteTurn,
   isBlackUser,
   isWhiteUser,
+  makeUserLog,
+  promotionMap,
   validateGame,
   statusMessage,
 }

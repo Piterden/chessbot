@@ -1,13 +1,16 @@
 const chess = require('chess')
 
 const {
+  log,
   debug,
   sleep,
+  preLog,
   getGame,
   isBlackTurn,
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
+  makeUserLog,
 } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
 
@@ -47,6 +50,8 @@ module.exports = () => [
       isWhite: isWhiteTurn(moves),
       actions: actions(),
     })
+
+    log(preLog('LAST', `${game.id} ${moves.length} ${makeUserLog(ctx.from)}`))
 
     const beforeGame = chess.create({ PGN: true })
 

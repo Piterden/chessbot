@@ -95,9 +95,10 @@ module.exports = () => async (ctx) => {
       thumb_height: 418,
       input_message_content: {
         parse_mode: 'Markdown',
+        disable_web_page_preview: true,
         message_text: `Waiting for confirmation by [${enemy.first_name}](tg://user?id=${enemy.id})!
 ${topMessage(!isWhiteTurn(moves), user, enemy)}
-${statusMessage(status)}`,
+${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
       },
       ...board({
         board: status.board.squares,
@@ -111,7 +112,7 @@ ${statusMessage(status)}`,
           switch_inline_query_current_chat: '',
         }],
       }),
-    }
+    },
   }))
 
   const gameClient = chess.create({ PGN: true })

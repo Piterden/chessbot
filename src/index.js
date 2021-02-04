@@ -5,10 +5,10 @@ const knex = require('knex')
 const { default: Telegraf, session } = require('telegraf')
 
 const {
-  gamesHandler,
-  startHandler,
+  // gamesHandler,
+  // startHandler,
   inlineLastTurn,
-  mainMenuHandler,
+  // mainMenuHandler,
   inlineBackHandler,
   inlineJoinHandler,
   inlineMoveHandler,
@@ -16,7 +16,7 @@ const {
   inlineRejoinHandler,
   inlineSettingsHandler,
 } = require('@/handlers')
-// const { debug } = require('@/helpers')
+const { debug, log, preLog, makeUserLog } = require('@/helpers')
 const knexConfig = require('@/../knexfile')
 
 const { BOT_NAME, BOT_TOKEN } = process.env
@@ -39,10 +39,10 @@ bot.use(session({
 //   // }
 // })
 
-bot.command('start', startHandler())
+// bot.command('start', startHandler())
 
-bot.action(...mainMenuHandler())
-bot.action(...gamesHandler())
+// bot.action(...mainMenuHandler())
+// bot.action(...gamesHandler())
 
 bot.on('inline_query', inlineQueryHandler())
 // bot.on('chosen_inline_result', async (ctx) => {
@@ -56,8 +56,10 @@ bot.action(...inlineMoveHandler())
 bot.action(...inlineRejoinHandler())
 bot.action(...inlineSettingsHandler())
 
-// bot.on('chosen_inline_result', async (ctx) => {
-//   debug(ctx.update)
-// })
+bot.on('chosen_inline_result', async (ctx) => {
+  log(preLog('BOARD', `|${makeUserLog(ctx.update.chosen_inline_result.from)}| [${ctx.update.chosen_inline_result.result_id === 2 ? 'black' : 'white'}] {${ctx.update.chosen_inline_result.inline_message_id}}`))
+})
 
-bot.startPolling()
+bot.catch((err) => debug(err))
+
+bot.telegram.getUpdates(1, -1).then(() => bot.launch())
