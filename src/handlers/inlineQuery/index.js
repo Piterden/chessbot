@@ -112,7 +112,7 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
           switch_inline_query_current_chat: '',
         }],
       }),
-    },
+    }
   }))
 
   const gameClient = chess.create({ PGN: true })
