@@ -5,10 +5,12 @@ const {
   debug,
   preLog,
   getGame,
+  topMessage,
   isWhiteTurn,
   isWhiteUser,
   isBlackUser,
   makeUserLog,
+  statusMessage,
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
@@ -80,7 +82,7 @@ module.exports = () => [
         .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
-      ctx.game.lastBoard = board({
+      const lastBoard = board({
         board: status.board.squares.map((square) => {
           const move = allowedMoves
             .find((({ file, rank }) => ({ dest }) => dest.file === file &&
@@ -94,8 +96,13 @@ module.exports = () => [
         actions: actions(),
       })
 
-      await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
-        .catch(debug)
+      if (!ctx.game.lastBoard) {
+        ctx.game.lastBoard = lastBoard
+        if (JSON.stringify(lastBoard.reply_markup) !== JSON.stringify(ctx.game.lastBoard.reply_markup)) {
+          await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
+            .catch(debug)
+        }
+      }
 
       ctx.game.allowedMoves = allowedMoves
       ctx.game.selected = pressed

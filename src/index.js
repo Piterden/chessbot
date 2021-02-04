@@ -13,6 +13,7 @@ const {
   inlineJoinHandler,
   inlineMoveHandler,
   inlineQueryHandler,
+  inlineRejoinHandler,
   inlineSettingsHandler,
 } = require('@/handlers')
 const { debug, log, preLog, makeUserLog } = require('@/helpers')
@@ -48,11 +49,12 @@ bot.on('inline_query', inlineQueryHandler())
 //   debug(Object.keys(ctx))
 // })
 
+bot.action(...inlineLastTurn())
 bot.action(...inlineBackHandler())
 bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
+bot.action(...inlineRejoinHandler())
 bot.action(...inlineSettingsHandler())
-bot.action(...inlineLastTurn())
 
 bot.on('chosen_inline_result', async (ctx) => {
   log(preLog('BOARD', `|${makeUserLog(ctx.update.chosen_inline_result.from)}| [${ctx.update.chosen_inline_result.result_id === 2 ? 'black' : 'white'}] {${ctx.update.chosen_inline_result.inline_message_id}}`))

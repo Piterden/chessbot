@@ -6,6 +6,7 @@ const inlineJoinHandler = require('./inlineJoin')
 const inlineMoveHandler = require('./inlineMove')
 const inlineLastTurn = require('./inlineLastTurn')
 const inlineQueryHandler = require('./inlineQuery')
+const inlineRejoinHandler = require('./inlineRejoin')
 const inlineSettingsHandler = require('./inlineSettings')
 
 module.exports = {
@@ -17,5 +18,6 @@ module.exports = {
   inlineJoinHandler,
   inlineMoveHandler,
   inlineQueryHandler,
+  inlineRejoinHandler,
   inlineSettingsHandler,
 }

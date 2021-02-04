@@ -109,10 +109,20 @@ const getGame = async (ctx) => {
 
   //   return game
   // }
+  if (ctx.match && ctx.match[3]) {
+    await ctx.db('games')
+      .where('id', Number(ctx.match[3]))
+      .update({ inline_id: ctx.callbackQuery.inline_message_id })
+
+    const game = await ctx.db('games')
+      .where('id', Number(ctx.match[3]))
+      .first()
+
+    return game
+  }
 
   const game = ctx.game.entry || await ctx.db('games')
     .where('inline_id', ctx.callbackQuery.inline_message_id)
-    .select()
     .first()
 
   return game
@@ -150,6 +160,16 @@ const makeUserLog = ({
   language_code: languageCode,
 }) => `|${id}-@${username || ''}-${firstName || ''}-${lastName || ''}-(${languageCode || ''})|`
 
+const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
+
+const topMessage = (whiteTurn, player, enemy) => whiteTurn
+  ? `White (top): [${player.first_name}](tg://user?id=${player.id})
+Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+Black's turn`
+  : `Black (top): [${player.first_name}](tg://user?id=${player.id})
+White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+White's turn`
+
 module.exports = {
   log,
   debug,
@@ -162,6 +182,7 @@ module.exports = {
   isPlayer,
   mainMenu,
   getGamePgn,
+  topMessage,
   isBlackTurn,
   isWhiteTurn,
   isBlackUser,
@@ -169,4 +190,5 @@ module.exports = {
   makeUserLog,
   promotionMap,
   validateGame,
+  statusMessage,
 }

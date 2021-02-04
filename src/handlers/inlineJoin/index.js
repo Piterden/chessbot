@@ -62,11 +62,11 @@ module.exports = () => [
 
     await ctx.editMessageText(
       iAmWhite
-        ? `Black (top): ${enemy.first_name}
-White (bottom): ${user.first_name}
+        ? `Black  (top): [${enemy.first_name}](tg://user?id=${enemy.id})
+White  (bottom): [${user.first_name}](tg://user?id=${user.id})
 White's turn | [Discussion](https://t.me/chessy_bot_chat)`
-        : `Black (top): ${user.first_name}
-White (bottom): ${enemy.first_name}
+        : `Black  (top): [${user.first_name}](tg://user?id=${user.id})
+White  (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         ...ctx.game.lastBoard,
@@ -77,6 +77,6 @@ White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
 
     ctx.game.joined = true
 
-    return ctx.answerCbQuery('Now play!')
+    return ctx.answerCbQuery('Now play!').catch(debug)
   },
 ]
