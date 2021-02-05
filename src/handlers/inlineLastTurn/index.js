@@ -51,7 +51,10 @@ module.exports = () => [
       actions: actions(),
     })
 
-    log(preLog('LAST', `${game.id} ${moves.length} ${makeUserLog(ctx.from)}`))
+    log(
+      preLog('LAST', `${game.id} ${moves.length - 1} ${makeUserLog(ctx.from)}`),
+      ctx
+    )
 
     const beforeGame = chess.create({ PGN: true })
 
