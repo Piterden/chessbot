@@ -188,11 +188,11 @@ module.exports = () => [
           : ctx.game.config.rotation === 'whites',
         actions: actions(),
       })
-
+console.log(`${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&orientation=${isWhiteTurn(gameMoves) ? 'white' : 'black'}`)
       await ctx.editMessageMedia(
         {
           type: 'photo',
-          media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&1`,
+          media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&orientation=${!isWhiteTurn(gameMoves) ? 'white' : 'black'}`,
           caption:
             topMessage(
               makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),

@@ -182,7 +182,7 @@ White's turn`
 const getFen = (board) => {
   const fen = []
 
-  for (let idx = 0; idx < board.squares.length; idx += 1) {
+  for (let idx = 0; idx < board.squares.length; idx++) {
     const square = board.squares[idx]
 
     if (square.file === 'a' && idx > 0) {
