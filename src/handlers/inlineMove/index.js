@@ -76,7 +76,7 @@ module.exports = () => [
             .find((({ file, rank }) => ({ dest }) => dest.file === file &&
               dest.rank === rank)(square))
 
-          return move ? { ...square, destination: move } : square
+          return move ? { ...square, move } : square
         }),
         isWhite: ctx.game.config.rotation === 'dynamic'
           ? isWhiteTurn(gameMoves)
@@ -165,7 +165,7 @@ module.exports = () => [
 
         log(
           preLog('MOVE', `${gameEntry.id} ${makeMove.key} ${gameMoves.length + 1} ${makeUserLog(ctx.from)}`),
-          ctx
+          ctx,
         )
       }
 
