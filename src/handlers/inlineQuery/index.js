@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board } = require('@/keyboards')
-const { debug, isWhiteTurn, topMessage, statusMessage, getFen } = require('@/helpers')
+const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
 
 module.exports = () => async (ctx) => {
   let user = await ctx.db('users')
@@ -27,6 +27,36 @@ module.exports = () => async (ctx) => {
     .offset(Number(ctx.update.inline_query.offset))
     .limit(!ctx.update.inline_query.offset ? 48 : 50)
     .catch(debug)
+
+  function getFen (board) {
+    const fen = []
+
+    for (let idx = 0; idx < board.squares.length; idx += 1) {
+      const square = board.squares[idx]
+
+      if (square.file === 'a' && idx > 0) {
+        fen.push('/')
+      }
+
+      if (square.piece) {
+        fen.push(square.piece.side.name === 'white'
+          ? (square.piece.notation || 'p').toUpperCase()
+          : (square.piece.notation || 'p').toLowerCase())
+      } else {
+        if (isNaN(Number(fen[fen.length - 1]))) {
+          fen.push(1)
+        } else {
+          if (square.file === 'a') {
+            fen.push(1)
+          } else {
+            fen[fen.length - 1] += 1
+          }
+        }
+      }
+    }
+
+    return fen.reverse().join('')
+  }
 
   const list = await Promise.all(games.map(async (game, idx) => {
     const gameClient = chess.create({ PGN: true })
@@ -59,7 +89,7 @@ module.exports = () => async (ctx) => {
         : idx + Number(ctx.update.inline_query.offset) + 2,
       type: 'article',
       title: `You vs ${enemy.first_name}`,
-      description: `${moves.length} turns`, /// Started ${game.created_at.getDate()}.${game.created_at.getMonth()}.${game.created_at.getFullYear()} |
+      description: `Started ${game.created_at.getDate()}.${game.created_at.getMonth()}.${game.created_at.getFullYear()} | ${moves.length} turns`,
       thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
       thumb_width: 418,
       thumb_height: 418,
@@ -159,16 +189,16 @@ Waiting for a black side`,
         }),
       },
       ...list,
-    ]
+    )
   } else {
     results = list
   }
-  console.log(results)
+
   await ctx.answerInlineQuery(results, {
     is_personal: true,
     cache_time: 0,
-    // next_offset: !ctx.update.inline_query.offset
-    //   ? 48
-    //   : Number(ctx.update.inline_query.offset) + 50,
+    next_offset: !ctx.update.inline_query.offset
+      ? 48
+      : Number(ctx.update.inline_query.offset) + 50,
   }).catch(debug)
 }

@@ -3,6 +3,7 @@ const chess = require('chess')
 const {
   log,
   debug,
+  getFen,
   preLog,
   getGame,
   topMessage,
@@ -11,7 +12,6 @@ const {
   isBlackUser,
   makeUserLog,
   statusMessage,
-  getFen
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
@@ -34,7 +34,7 @@ module.exports = () => [
     const gameMoves = await ctx.db('moves')
       .where('game_id', gameEntry.id)
       .orderBy('created_at', 'asc')
-      .select()
+      .catch(debug)
 
     if ((isWhiteTurn(gameMoves) && isBlackUser(gameEntry, ctx)) ||
       (!isWhiteTurn(gameMoves) && isWhiteUser(gameEntry, ctx))) {
@@ -86,10 +86,8 @@ module.exports = () => [
 
       if (!ctx.game.lastBoard) {
         ctx.game.lastBoard = lastBoard
-        if (JSON.stringify(lastBoard.reply_markup) !== JSON.stringify(ctx.game.lastBoard.reply_markup)) {
-          await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
-            .catch(debug)
-        }
+        await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
+          .catch(debug)
       }
 
       ctx.game.allowedMoves = allowedMoves

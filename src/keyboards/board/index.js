@@ -40,7 +40,7 @@ module.exports = ({ board = [], isWhite, actions, callbackOverride }) => {
       const piece = pieces[square.piece.side.name][square.piece.type]
 
       return {
-        text: `${square.destination ? 'X' : ''}${piece}`,
+        text: `${square.move ? 'X' : ''}${piece}`,
         callback_data: callbackOverride || `${col}${row}`,
       }
     }
@@ -49,7 +49,7 @@ module.exports = ({ board = [], isWhite, actions, callbackOverride }) => {
      * If it is an empty square.
      */
     return {
-      text: square.destination ? '·' : unescape('%u0020'),
+      text: square.move ? '·' : unescape('%u0020'),
       callback_data: callbackOverride || `${col}${row}`,
     }
   }))
