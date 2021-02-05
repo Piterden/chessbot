@@ -3,6 +3,8 @@ const chess = require('chess')
 const { board } = require('@/keyboards')
 const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
 
+const { BOARD_VISUALIZER_URL } = process.env
+
 module.exports = () => async (ctx) => {
   let user = await ctx.db('users')
     .where('id', Number(ctx.from.id))
@@ -118,14 +120,16 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
   const gameClient = chess.create({ PGN: true })
   let status = gameClient.getStatus()
   let results = []
-  console.log(ctx.update.inline_query.offset)
+
   if (!ctx.update.inline_query.offset) {
+    const fen = getFen(gameClient.game.board)
+
     results = [
       {
         id: 1,
         type: 'photo',
-        photo_url: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&1`,
-        thumb_url: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=240&coordinates=true&1`,
+        photo_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=1024&coordinates=true&1`,
+        thumb_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=240&coordinates=true&1`,
         caption: `Black (top): ?
 White (bottom): ${user.first_name}
 Waiting for a black side`,
@@ -142,39 +146,15 @@ Waiting for a black side`,
           }],
         }),
       },
-      //       {
-      //         id: 1,
-      //         type: 'sticker',
-      //         sticker_file_id: 'CAADAgADNAADX5T2DgeepFdKYLnKAg',
-      //         input_message_content: {
-      //           parse_mode: 'Markdown',
-      //           message_text: `Black (top): ?
-      // White (bottom): ${user.first_name}
-      // Waiting for a black side`,
-      //         },
-      //         ...board({
-      //           board: status.board.squares,
-      //           isWhite: true,
-      //           callbackOverride: `join::w::${user.id}`,
-      //           actions: [{
-      //             text: 'Join the game',
-      //             callback_data: `join::w::${user.id}`,
-      //           }, {
-      //             text: 'New game',
-      //             switch_inline_query_current_chat: '',
-      //           }],
-      //         }),
-      //       },
       {
         id: 2,
-        type: 'sticker',
-        sticker_file_id: 'CAADAgADMwADX5T2DqhR9w5HSpCZAg',
-        input_message_content: {
-          parse_mode: 'Markdown',
-          message_text: `White (top): ?
-      Black (bottom): ${user.first_name}
-      Waiting for a white side`,
-        },
+        type: 'photo',
+        photo_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=1024&coordinates=true&1`,
+        thumb_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=240&coordinates=true&1`,
+        parse_mode: 'Markdown',
+        caption: `Black (top): ?
+White (bottom): ${user.first_name}
+Waiting for a black side`,
         ...board({
           board: status.board.squares,
           isWhite: false,
@@ -189,7 +169,7 @@ Waiting for a black side`,
         }),
       },
       ...list,
-    )
+    ]
   } else {
     results = list
   }
