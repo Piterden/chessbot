@@ -84,11 +84,35 @@ module.exports = () => [
         actions: actions(),
       })
 
-      if (!ctx.game.lastBoard) {
-        ctx.game.lastBoard = lastBoard
-        await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
-          .catch(debug)
-      }
+      // if (!ctx.game.lastBoard) {
+      ctx.game.lastBoard = lastBoard
+
+      const enemy = await ctx.db('users')
+        .where('id', isWhiteUser(gameEntry, ctx)
+          ? Number(gameEntry.blacks_id)
+          : Number(gameEntry.whites_id))
+        .first()
+        .catch(debug)
+      const highlightSquares = allowedMoves.map(({ dest }) => ((pressed.piece.side.name === 'white' && isWhiteTurn(gameMoves)) ||
+        (pressed.piece.side.name === 'black' && !isWhiteTurn(gameMoves))) && `${dest.file}${dest.rank}`).filter((s) => s).join(',')
+      await ctx.editMessageMedia(
+        {
+          type: 'photo',
+          media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&orientation=${isWhiteTurn(gameMoves) ? 'white' : 'black'}&squares=${highlightSquares}`,
+          caption:
+            topMessage(
+              !isWhiteTurn(gameMoves),
+              enemy,
+              ctx.from,
+            ) + statusMessage(status),
+        },
+        {
+          ...ctx.game.lastBoard,
+          parse_mode: 'Markdown',
+          disable_web_page_preview: true,
+        },
+      ).catch(debug)
+      // }
 
       ctx.game.allowedMoves = allowedMoves
       ctx.game.selected = pressed
@@ -188,7 +212,6 @@ module.exports = () => [
           : ctx.game.config.rotation === 'whites',
         actions: actions(),
       })
-console.log(`${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&orientation=${isWhiteTurn(gameMoves) ? 'white' : 'black'}`)
       await ctx.editMessageMedia(
         {
           type: 'photo',
