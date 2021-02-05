@@ -3,6 +3,7 @@ const chess = require('chess')
 const {
   log,
   debug,
+  getFen,
   preLog,
   getGame,
   topMessage,
@@ -11,7 +12,6 @@ const {
   isBlackUser,
   makeUserLog,
   statusMessage,
-  getFen
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
