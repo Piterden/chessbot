@@ -1,5 +1,7 @@
 const { inspect } = require('util')
 
+const { LOG_INFO_CHANNEL } = process.env
+
 const emodji = {
   white: {
     rook: '♜',
@@ -61,7 +63,14 @@ const debug = (data) => console.error(inspect(data, {
   depth: 10,
 }))
 
-const log = (data) => console.log(data)
+const log = (data, ctx) => {
+  ctx.telegram.sendMessage(
+    `@${LOG_INFO_CHANNEL}`,
+    `\`\`\`\n${data}\n\`\`\``,
+    { parse_mode: 'Markdown' }
+  ).catch(debug)
+  console.log(data)
+}
 
 const isWhiteTurn = (moves) => !(moves.length % 2)
 const isBlackTurn = (moves) => moves.length % 2
@@ -138,8 +147,8 @@ const getGamePgn = (moves) => moves.reduce((acc, cur, idx) => idx % 2
   ? `${acc}${cur.entry} `
   : `${acc}${parseInt(idx / 2) + 1}. ${cur.entry} `, '')
 
-const preLog = (type = 'UNKNOWN', data = {}, date = new Date().toISOString()) => (
-  `[${type}]${date}:${data}`
+const preLog = (type = 'UNKN', data = {}, delimiter = ' ', date = new Date().toISOString()) => (
+  `[${type}] ${date}:${delimiter}${data}`
 )
 
 const makeUserLog = ({

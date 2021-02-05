@@ -158,22 +158,23 @@ module.exports = () => [
         )
       }
 
-      if (!makeMove) {
-        return ctx.answerCbQuery('Error, move not found!')
+      if (makeMove) {
+        try {
+          gameClient.move(makeMove.key)
+        } catch (error) {
+          debug(error)
+        }
+
+        await ctx.db('moves').insert({
+          game_id: ctx.game.entry.id,
+          entry: makeMove.key,
+        }).catch(debug)
+
+        log(
+          preLog('MOVE', `${gameEntry.id} ${makeMove.key} ${gameMoves.length + 1} ${makeUserLog(ctx.from)}`),
+          ctx
+        )
       }
-
-      try {
-        gameClient.move(makeMove.key)
-      } catch (error) {
-        debug(error)
-      }
-
-      await ctx.db('moves').insert({
-        game_id: ctx.game.entry.id,
-        entry: makeMove.key,
-      }).catch(debug)
-
-      log(preLog('MOVE', `${gameEntry.id} ${makeMove.key} ${gameMoves.length} ${makeUserLog(ctx.from)}`))
 
       status = gameClient.getStatus()
 

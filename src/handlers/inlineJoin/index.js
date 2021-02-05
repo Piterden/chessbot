@@ -58,7 +58,10 @@ module.exports = () => [
       actions: actions(`last::${ctx.game.entry.id}`),
     })
 
-    log(preLog('JOIN', `${game.id} ${makeUserLog(enemy)} ${makeUserLog(user)}`))
+    log(
+      preLog('JOIN', `${game.id} ${makeUserLog(enemy)} ${makeUserLog(user)}`),
+      ctx
+    )
 
     await ctx.editMessageText(
       iAmWhite
