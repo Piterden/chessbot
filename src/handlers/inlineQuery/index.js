@@ -84,14 +84,14 @@ module.exports = () => async (ctx) => {
 
     status = gameClient.getStatus()
     const fen = getFen(gameClient.game.board)
-
+    const createdDate = new Date(game.created_at)
     return {
       id: !ctx.update.inline_query.offset
         ? idx + 3
         : idx + Number(ctx.update.inline_query.offset) + 2,
       type: 'article',
       title: `You vs ${enemy.first_name}`,
-      description: `Started ${game.created_at.getDate()}.${game.created_at.getMonth()}.${game.created_at.getFullYear()} | ${moves.length} turns`,
+      description: `Started ${createdDate.getDate()}.${createdDate.getMonth()}.${createdDate.getFullYear()} | ${moves.length} turns`,
       thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
       thumb_width: 418,
       thumb_height: 418,
@@ -120,7 +120,7 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
   const gameClient = chess.create({ PGN: true })
   let status = gameClient.getStatus()
   let results = []
-
+  console.log(ctx.update.inline_query.offset)
   if (!ctx.update.inline_query.offset) {
     const fen = getFen(gameClient.game.board)
 
@@ -128,8 +128,9 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         id: 1,
         type: 'photo',
-        photo_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=1024&coordinates=true&1`,
-        thumb_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=240&coordinates=true&1`,
+        photo_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=1024&coordinates=true`,
+        thumb_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=240&coordinates=true`,
+        title: 'Play as white',
         caption: `Black (top): ?
 White (bottom): ${user.first_name}
 Waiting for a black side`,
@@ -149,12 +150,13 @@ Waiting for a black side`,
       {
         id: 2,
         type: 'photo',
-        photo_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=1024&coordinates=true&1`,
-        thumb_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=240&coordinates=true&1`,
+        photo_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=1024&coordinates=true`,
+        thumb_url: `${BOARD_VISUALIZER_URL}?fen=${fen}&size=240&coordinates=true`,
         parse_mode: 'Markdown',
+        title: 'Play as black',
         caption: `Black (top): ?
-White (bottom): ${user.first_name}
-Waiting for a black side`,
+      White (bottom): ${user.first_name}
+      Waiting for a black side`,
         ...board({
           board: status.board.squares,
           isWhite: false,
@@ -173,12 +175,12 @@ Waiting for a black side`,
   } else {
     results = list
   }
-
+  console.log(results[0])
   await ctx.answerInlineQuery(results, {
     is_personal: true,
     cache_time: 0,
-    next_offset: !ctx.update.inline_query.offset
-      ? 48
-      : Number(ctx.update.inline_query.offset) + 50,
+    // next_offset: !ctx.update.inline_query.offset
+    //   ? 48
+    //   : Number(ctx.update.inline_query.offset) + 50,
   }).catch(debug)
 }
