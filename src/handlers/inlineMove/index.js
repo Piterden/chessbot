@@ -95,6 +95,13 @@ module.exports = () => [
         .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
+      if (allowedMoves.length === 0) {
+        ctx.game.allowedMoves = allowedMoves
+        ctx.game.selected = pressed
+
+        return ctx.answerCbQuery(`${pressed.piece.type} ${pressed.file}${pressed.rank}`)
+      }
+
       ctx.game.lastBoard = board({
         board: status.board.squares.map((square) => {
           const move = allowedMoves
