@@ -12,10 +12,9 @@ const {
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
-const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
-${isCheck ? '|CHECK|' : ''}
-${isCheckmate ? '|CHECKMATE|' : ''}
-${isRepetition ? '|REPETITION|' : ''}`
+const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => (
+  `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
+)
 
 const topMessage = (whiteTurn, player, enemy) => whiteTurn
   ? `White (top): ${player.first_name}
