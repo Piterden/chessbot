@@ -71,7 +71,6 @@ module.exports = () => [
     const pressed = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
-
     if (
       !ctx.game.selected &&
       (!pressed ||
@@ -152,11 +151,11 @@ module.exports = () => [
       }
 
       let makeMove
-      let topMessageText = topMessage(
-        !isWhiteTurn(gameMoves),
-        enemy,
-        ctx.from,
-      )
+      // let topMessageText = topMessage(
+      //   !isWhiteTurn(gameMoves),
+      //   enemy,
+      //   ctx.from,
+      // )
 
       if (ctx.game.promotion) {
         makeMove = ctx.game.allowedMoves.find(({ key, dest: { file, rank } }) => (
@@ -183,7 +182,7 @@ module.exports = () => [
 
         log(
           preLog('MOVE', `${gameEntry.id} ${makeMove.key} ${gameMoves.length + 1} ${makeUserLog(ctx.from)}`),
-          ctx
+          ctx,
         )
       }
 
