@@ -60,10 +60,27 @@ module.exports = () => [
       }
     })
 
+    const enemy = await ctx.db('users')
+      .where('id', isWhiteUser(gameEntry, ctx)
+        ? Number(gameEntry.blacks_id)
+        : Number(gameEntry.whites_id))
+      .first()
+      .catch(debug)
+
     let status = gameClient.getStatus()
     const pressed = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
 
+
+    if (
+      !ctx.game.selected &&
+      (!pressed ||
+      !pressed.piece ||
+      (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
+      (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves)))
+    ) {
+      return ctx.answerCbQuery()
+    }
     /**
      * Selection of a piece
      */
@@ -85,7 +102,7 @@ module.exports = () => [
             .find((({ file, rank }) => ({ dest }) => dest.file === file &&
               dest.rank === rank)(square))
 
-          return move ? { ...square, destination: move } : square
+          return move ? { ...square, move } : square
         }),
         isWhite: ctx.game.config.rotation === 'dynamic'
           ? isWhiteTurn(gameMoves)
