@@ -102,16 +102,6 @@ module.exports = () => [
       return ctx.answerCbQuery(`${pressed.piece.type} ${pressed.file}${pressed.rank}`)
     }
 
-    if (
-      !ctx.game.selected &&
-      (!pressed ||
-      !pressed.piece ||
-      (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
-      (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves)))
-    ) {
-      return ctx.answerCbQuery()
-    }
-
     /**
      * Selection of a destination to move
      */
@@ -145,6 +135,11 @@ module.exports = () => [
       }
 
       let makeMove
+      let topMessageText = topMessage(
+        !isWhiteTurn(gameMoves),
+        enemy,
+        ctx.from,
+      )
 
       if (ctx.game.promotion) {
         makeMove = ctx.game.allowedMoves.find(({ key, dest: { file, rank } }) => (
@@ -180,13 +175,6 @@ module.exports = () => [
       ctx.game.allowedMoves = null
       ctx.game.selected = null
 
-      const enemy = await ctx.db('users')
-        .where('id', isWhiteUser(gameEntry, ctx)
-          ? Number(gameEntry.blacks_id)
-          : Number(gameEntry.whites_id))
-        .first()
-        .catch(debug)
-
       ctx.game.lastBoard = board({
         board: status.board.squares,
         isWhite: ctx.game.config.rotation === 'dynamic'
@@ -195,20 +183,23 @@ module.exports = () => [
         actions: actions(),
       })
 
-      await ctx.editMessageText(
-        topMessage(
-          makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
-          makeMove ? ctx.from : enemy,
-          makeMove ? enemy : ctx.from,
-        ) + statusMessage(status),
-        {
-          ...ctx.game.lastBoard,
-          parse_mode: 'Markdown',
-          disable_web_page_preview: true,
-        },
-      ).catch(debug)
+      if (makeMove) {
+        await ctx.editMessageText(
+          topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+          {
+            ...ctx.game.lastBoard,
+            parse_mode: 'Markdown',
+            disable_web_page_preview: true,
+          },
+        ).catch(debug)
 
-      return ctx.answerCbQuery(`${makeMove ? makeMove.key : ''}`)
+        return ctx.answerCbQuery(makeMove.key)
+      }
+
+      await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
+        .catch(debug)
+
+      return ctx.answerCbQuery()
     }
   },
 ]
