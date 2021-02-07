@@ -175,7 +175,6 @@ Waiting for a black side`,
   } else {
     results = list
   }
-  console.log(results)
 
   await ctx.answerInlineQuery(results, {
     is_personal: true,
