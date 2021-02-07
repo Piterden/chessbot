@@ -179,8 +179,5 @@ Waiting for a black side`,
   await ctx.answerInlineQuery(results, {
     is_personal: true,
     cache_time: 0,
-    next_offset: !ctx.update.inline_query.offset
-      ? 48
-      : Number(ctx.update.inline_query.offset) + 50,
   }).catch(debug)
 }

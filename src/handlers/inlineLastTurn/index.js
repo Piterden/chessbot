@@ -52,7 +52,7 @@ module.exports = () => [
     })
 
     log(
-      preLog('LAST', `${game.id} ${moves.length - 1} ${makeUserLog(ctx.from)}`),
+      preLog('LAST', `${game.id} ${moves.length} ${makeUserLog(ctx.from)}`),
       ctx
     )
 
