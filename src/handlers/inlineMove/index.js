@@ -83,12 +83,9 @@ module.exports = () => [
           : ctx.game.config.rotation === 'whites',
         actions: actions(),
       })
-
-      if (!ctx.game.lastBoard) {
-        ctx.game.lastBoard = lastBoard
-        await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
-          .catch(debug)
-      }
+      ctx.game.lastBoard = lastBoard
+      await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
+        .catch(debug)
 
       ctx.game.allowedMoves = allowedMoves
       ctx.game.selected = pressed
@@ -192,7 +189,7 @@ module.exports = () => [
       await ctx.editMessageMedia(
         {
           type: 'photo',
-          media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&size=1024&coordinates=true&1`,
+          media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&rotate=${makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves)}`,
           caption:
             topMessage(
               makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),

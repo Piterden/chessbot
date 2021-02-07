@@ -18,12 +18,17 @@
   "dependencies": {
     "chess": "^0.4.9",
     "dotenv": "^7.0.0",
+    "express": "^4.17.1",
+    "fabric": "^4.3.1",
     "knex": "^0.20.13",
     "module-alias": "^2.2.2",
     "mysql2": "^2.2.5",
+    "sqlite3": "^5.0.1",
     "telegraf": "^3.37.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.11",
+    "@types/fabric": "^4.2.2",
     "@types/node": "^14.14.25",
     "babel-eslint": "^10.1.0",
     "eslint": "^5.16.0",
