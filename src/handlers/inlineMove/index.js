@@ -132,12 +132,8 @@ module.exports = () => [
       if (
         ctx.game.selected.piece.type === 'pawn' &&
         (
-          (isWhiteTurn(gameMoves) && ctx.game.selected.rank === 7) ||
-          (!isWhiteTurn(gameMoves) && ctx.game.selected.rank === 2)
-        ) &&
-        (
-          (isWhiteTurn(gameMoves) && pressed.rank === 8) ||
-          (!isWhiteTurn(gameMoves) && pressed.rank === 1)
+          (isWhiteTurn(gameMoves) && ctx.game.selected.rank === 7 && pressed.rank === 8) ||
+          (!isWhiteTurn(gameMoves) && ctx.game.selected.rank === 2 && pressed.rank === 1)
         ) &&
         !ctx.game.promotion
       ) {
