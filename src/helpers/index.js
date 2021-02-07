@@ -118,10 +118,20 @@ const getGame = async (ctx) => {
 
   //   return game
   // }
+  if (ctx.match && ctx.match[3]) {
+    await ctx.db('games')
+      .where('id', Number(ctx.match[3]))
+      .update({ inline_id: ctx.callbackQuery.inline_message_id })
+
+    const game = await ctx.db('games')
+      .where('id', Number(ctx.match[3]))
+      .first()
+
+    return game
+  }
 
   const game = ctx.game.entry || await ctx.db('games')
     .where('inline_id', ctx.callbackQuery.inline_message_id)
-    .select()
     .first()
 
   return game
@@ -159,6 +169,46 @@ const makeUserLog = ({
   language_code: languageCode,
 }) => `|${id}-@${username || ''}-${firstName || ''}-${lastName || ''}-(${languageCode || ''})|`
 
+const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
+
+const topMessage = (whiteTurn, player, enemy) => whiteTurn
+  ? `White (top): [${player.first_name}](tg://user?id=${player.id})
+Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+Black's turn`
+  : `Black (top): [${player.first_name}](tg://user?id=${player.id})
+White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
+White's turn`
+
+const getFen = (board) => {
+  const fen = []
+
+  for (let idx = 0; idx < board.squares.length; idx += 1) {
+    const square = board.squares[idx]
+
+    if (square.file === 'a' && idx > 0) {
+      fen.push('/')
+    }
+
+    if (square.piece) {
+      fen.push(square.piece.side.name === 'white'
+        ? (square.piece.notation || 'p').toUpperCase()
+        : (square.piece.notation || 'p').toLowerCase())
+    } else {
+      if (isNaN(Number(fen[fen.length - 1]))) {
+        fen.push(1)
+      } else {
+        if (square.file === 'a') {
+          fen.push(1)
+        } else {
+          fen[fen.length - 1] += 1
+        }
+      }
+    }
+  }
+
+  return fen.reverse().join('')
+}
+
 module.exports = {
   log,
   debug,
@@ -171,6 +221,7 @@ module.exports = {
   isPlayer,
   mainMenu,
   getGamePgn,
+  topMessage,
   isBlackTurn,
   isWhiteTurn,
   isBlackUser,
@@ -178,4 +229,6 @@ module.exports = {
   makeUserLog,
   promotionMap,
   validateGame,
+  statusMessage,
+  getFen,
 }

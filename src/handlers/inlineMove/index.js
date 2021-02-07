@@ -3,6 +3,7 @@ const chess = require('chess')
 const {
   log,
   debug,
+  getFen,
   preLog,
   getGame,
   isWhiteTurn,
@@ -140,9 +141,9 @@ module.exports = () => [
         ctx.game.promotion = pressed
 
         const makeMoves = ctx.game.allowedMoves.filter(
-          ({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank,
+          ({dest: {file, rank}}) => file === pressed.file && rank === pressed.rank,
         )
-        const keyboardRow = promotion({ makeMoves, pressed })
+        const keyboardRow = promotion({makeMoves, pressed})
         const board = ctx.game.lastBoard.reply_markup
 
         board.inline_keyboard.unshift(keyboardRow)
@@ -161,13 +162,13 @@ module.exports = () => [
       // )
 
       if (ctx.game.promotion) {
-        makeMove = ctx.game.allowedMoves.find(({ key, dest: { file, rank } }) => (
+        makeMove = ctx.game.allowedMoves.find(({key, dest: {file, rank}}) => (
           file === pressed.file && rank === pressed.rank && key.endsWith(ctx.match[3])
         ))
         ctx.game.promotion = null
       } else {
         makeMove = ctx.game.allowedMoves.find(
-          ({ dest: { file, rank } }) => file === pressed.file && rank === pressed.rank,
+          ({dest: {file, rank}}) => file === pressed.file && rank === pressed.rank,
         )
       }
 
@@ -203,8 +204,12 @@ module.exports = () => [
       })
 
       if (makeMove) {
-        await ctx.editMessageText(
-          topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+        await ctx.editMessageMedia(
+          {
+            type: 'photo',
+            media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&rotate=${makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves)}`,
+            caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+          },
           {
             ...ctx.game.lastBoard,
             parse_mode: 'Markdown',

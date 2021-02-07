@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board, actions } = require('@/keyboards')
-const { debug, preLog, log, makeUserLog } = require('@/helpers')
+const { debug, preLog, log, makeUserLog, getFen } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -63,23 +63,22 @@ module.exports = () => [
       ctx
     )
 
-    await ctx.editMessageText(
+    await ctx.editMessageCaption(
       iAmWhite
-        ? `Black (top): ${enemy.first_name}
-White (bottom): ${user.first_name}
+        ? `Black  (top): [${enemy.first_name}](tg://user?id=${enemy.id})
+White  (bottom): [${user.first_name}](tg://user?id=${user.id})
 White's turn | [Discussion](https://t.me/chessy_bot_chat)`
-        : `Black (top): ${user.first_name}
-White (bottom): ${enemy.first_name}
+        : `Black  (top): [${user.first_name}](tg://user?id=${user.id})
+White  (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         ...ctx.game.lastBoard,
         parse_mode: 'Markdown',
-        disable_web_page_preview: true,
       }
     ).catch(debug)
 
     ctx.game.joined = true
 
-    return ctx.answerCbQuery('Now play!')
+    return ctx.answerCbQuery('Now play!').catch(debug)
   },
 ]
