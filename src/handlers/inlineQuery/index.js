@@ -154,21 +154,10 @@ Waiting for a black side`,
         thumb_url: `${BOARD_VISUALIZER_URL}?fen=${fen}`,
         title: 'Play as black',
         parse_mode: 'Markdown',
-        caption: `Black (top): ?
-White (bottom): ${user.first_name}
-Waiting for a black side`,
-        ...board({
-          board: status.board.squares,
-          isWhite: false,
-          callbackOverride: `join::b::${user.id}`,
-          actions: [{
-            text: 'Join the game',
-            callback_data: `join::b::${user.id}`,
-          }, {
-            text: 'New game',
-            switch_inline_query_current_chat: '',
-          }],
-        }),
+        disable_web_page_preview: true,
+        message_text: `White (top): ?
+Black (bottom): ${user.first_name}
+Waiting for a white side | [Discussion](https://t.me/chessy_bot_chat)`,
       },
       ...list,
     ]

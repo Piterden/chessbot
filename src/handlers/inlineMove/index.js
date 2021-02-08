@@ -13,9 +13,13 @@ const {
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
-const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => (
-  `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
-)
+// eslint-disable-next-line id-length
+const sortFunction = (a, b) => JSON.stringify(a) > JSON.stringify(b) ? 1 : -1
+
+const mapFunction = ({ dest }) => dest
+
+const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
+${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
 
 const topMessage = (whiteTurn, player, enemy) => whiteTurn
   ? `White (top): ${player.first_name}
@@ -28,6 +32,12 @@ White's turn | [Discussion](https://t.me/chessy_bot_chat)`
 module.exports = () => [
   /^([a-h])([1-8])([QRNB])?$/,
   async (ctx) => {
+    if (ctx.game.busy) {
+      return ctx.answerCbQuery()
+    }
+
+    ctx.game.busy = true
+
     const gameEntry = await getGame(ctx)
 
     if (typeof gameEntry === 'boolean') {
@@ -35,6 +45,7 @@ module.exports = () => [
     }
 
     if (!isBlackUser(gameEntry, ctx) && !isWhiteUser(gameEntry, ctx)) {
+      ctx.game.busy = false
       return ctx.answerCbQuery('Sorry, this game is busy. Try to make a new one.')
     }
 
@@ -48,6 +59,7 @@ module.exports = () => [
 
     if ((isWhiteTurn(gameMoves) && isBlackUser(gameEntry, ctx)) ||
       (!isWhiteTurn(gameMoves) && isWhiteUser(gameEntry, ctx))) {
+      ctx.game.busy = false
       return ctx.answerCbQuery('Wait, please. Now is not your turn.')
     }
 
@@ -79,6 +91,7 @@ module.exports = () => [
       (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
       (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves)))
     ) {
+      ctx.game.busy = false
       return ctx.answerCbQuery()
     }
     /**
@@ -96,6 +109,19 @@ module.exports = () => [
         .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
+      if (
+        ((!ctx.game.allowedMoves || ctx.game.allowedMoves.length === 0) &&
+          allowedMoves.length === 0) ||
+        (ctx.game.allowedMoves && ctx.game.allowedMoves.length === allowedMoves.length &&
+          JSON.stringify(ctx.game.allowedMoves.map(mapFunction).sort(sortFunction)) === JSON.stringify(allowedMoves.map(mapFunction).sort(sortFunction)))
+      ) {
+        ctx.game.allowedMoves = allowedMoves
+        ctx.game.selected = pressed
+
+        ctx.game.busy = false
+        return ctx.answerCbQuery(`${pressed.piece.type} ${pressed.file}${pressed.rank}`)
+      }
+
       ctx.game.lastBoard = board({
         board: status.board.squares.map((square) => {
           const move = allowedMoves
@@ -111,22 +137,17 @@ module.exports = () => [
       })
 
       await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
-        .catch(debug)
+        .catch((error) => {
+          debug(error)
+          debug(ctx.update)
+          debug(ctx.game)
+        })
 
       ctx.game.allowedMoves = allowedMoves
       ctx.game.selected = pressed
 
+      ctx.game.busy = false
       return ctx.answerCbQuery(`${pressed.piece.type} ${pressed.file}${pressed.rank}`)
-    }
-
-    if (
-      !ctx.game.selected &&
-      (!pressed ||
-      !pressed.piece ||
-      (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
-      (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves)))
-    ) {
-      return ctx.answerCbQuery()
     }
 
     /**
@@ -136,12 +157,8 @@ module.exports = () => [
       if (
         ctx.game.selected.piece.type === 'pawn' &&
         (
-          (isWhiteTurn(gameMoves) && ctx.game.selected.rank === 7) ||
-          (!isWhiteTurn(gameMoves) && ctx.game.selected.rank === 2)
-        ) &&
-        (
-          (isWhiteTurn(gameMoves) && pressed.rank === 8) ||
-          (!isWhiteTurn(gameMoves) && pressed.rank === 1)
+          (isWhiteTurn(gameMoves) && ctx.game.selected.rank === 7 && pressed.rank === 8) ||
+          (!isWhiteTurn(gameMoves) && ctx.game.selected.rank === 2 && pressed.rank === 1)
         ) &&
         !ctx.game.promotion
       ) {
@@ -158,6 +175,7 @@ module.exports = () => [
         await ctx.editMessageReplyMarkup(board)
           .catch(debug)
 
+        ctx.game.busy = false
         return ctx.answerCbQuery()
       }
 
@@ -199,16 +217,6 @@ module.exports = () => [
 
       status = gameClient.getStatus()
 
-      ctx.game.allowedMoves = null
-      ctx.game.selected = null
-
-      const enemy = await ctx.db('users')
-        .where('id', isWhiteUser(gameEntry, ctx)
-          ? Number(gameEntry.blacks_id)
-          : Number(gameEntry.whites_id))
-        .first()
-        .catch(debug)
-
       ctx.game.lastBoard = board({
         board: status.board.squares,
         isWhite: ctx.game.config.rotation === 'dynamic'
@@ -216,18 +224,13 @@ module.exports = () => [
           : ctx.game.config.rotation === 'whites',
         actions: actions(),
       })
-      if (makeMove) {
 
+      if (makeMove) {
         await ctx.editMessageMedia(
           {
             type: 'photo',
             media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&rotate=${makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves)}`,
-            caption:
-              topMessage(
-                makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves),
-                makeMove ? ctx.from : enemy,
-                makeMove ? enemy : ctx.from,
-              ) + statusMessage(status),
+            caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
           },
           {
             ...ctx.game.lastBoard,
@@ -235,8 +238,24 @@ module.exports = () => [
             disable_web_page_preview: true,
           },
         ).catch(debug)
+
+        ctx.game.allowedMoves = null
+        ctx.game.selected = null
+
+        ctx.game.busy = false
+        return ctx.answerCbQuery(makeMove.key)
       }
-      return ctx.answerCbQuery(`${makeMove ? makeMove.key : ''}`)
+
+      if (ctx.game.allowedMoves.length > 0) {
+        await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
+          .catch(debug)
+      }
+
+      ctx.game.allowedMoves = null
+      ctx.game.selected = null
+
+      ctx.game.busy = false
+      return ctx.answerCbQuery()
     }
   },
 ]
