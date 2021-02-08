@@ -3,7 +3,6 @@ node_js:
   - 12
   - 13
   - 14
-  - 15
 script:
   - npm i -g npm
-  - npm run lint
+  - npm run lint --fix
