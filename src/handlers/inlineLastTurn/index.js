@@ -17,6 +17,11 @@ const { board, actions } = require('@/keyboards')
 module.exports = () => [
   /^last$/,
   async (ctx) => {
+    if (ctx.game.busy) {
+      return ctx.answerCbQuery()
+    }
+    ctx.game.busy = true
+
     const game = await getGame(ctx).catch(debug)
 
     if (typeof game === 'boolean') {
@@ -31,6 +36,7 @@ module.exports = () => [
 
     if (!((isWhiteUser(game, ctx) && isWhiteTurn(moves)) ||
       (isBlackUser(game, ctx) && isBlackTurn(moves)))) {
+      ctx.game.busy = false
       return ctx.answerCbQuery('Don\'t touch')
     }
 
@@ -53,7 +59,7 @@ module.exports = () => [
 
     log(
       preLog('LAST', `${game.id} ${moves.length} ${makeUserLog(ctx.from)}`),
-      ctx
+      ctx,
     )
 
     const beforeGame = chess.create({ PGN: true })
@@ -77,6 +83,8 @@ module.exports = () => [
     await ctx.editMessageReplyMarkup(beforeBoard.reply_markup).catch(debug)
     await sleep(400)
     await ctx.editMessageReplyMarkup(currentBoard.reply_markup).catch(debug)
+
+    ctx.game.busy = false
     return ctx.answerCbQuery()
   },
 ]
