@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board, actions } = require('@/keyboards')
-const { debug, preLog, log, makeUserLog, getFen } = require('@/helpers')
+const { debug, preLog, log, makeUserLog } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -72,7 +72,7 @@ White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         ...ctx.game.lastBoard,
         parse_mode: 'Markdown',
-      }
+      },
     ).catch(debug)
 
     ctx.game.joined = true
