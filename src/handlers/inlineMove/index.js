@@ -17,9 +17,8 @@ const sortFunction = (a, b) => JSON.stringify(a) > JSON.stringify(b) ? 1 : -1
 
 const mapFunction = ({ dest }) => dest
 
-const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => (
-  `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
-)
+const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
+${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
 
 const topMessage = (whiteTurn, player, enemy) => whiteTurn
   ? `White (top): ${player.first_name}
