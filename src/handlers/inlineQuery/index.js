@@ -109,7 +109,7 @@ Waiting for a black side | [Discussion](https://t.me/chessy_bot_chat)`,
       },
       ...board({
         board: status.board.squares,
-        isWhite: true,
+        isWhite: false,
         callbackOverride: `join::w::${user.id}`,
         actions: [{
           text: 'Join the game',

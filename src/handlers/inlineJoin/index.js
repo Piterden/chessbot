@@ -52,7 +52,7 @@ module.exports = () => [
 
     ctx.game.lastBoard = board({
       board: status.board.squares,
-      isWhite: iAmWhite,
+      isWhite: true,
       actions: actions(),
     })
 
