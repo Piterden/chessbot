@@ -46,21 +46,19 @@ module.exports = () => [
 
     ctx.game.entry = game
     ctx.game.config = JSON.parse(game.config) || { rotation: 'dynamic' }
-    ctx.game.inlineId = ctx.callbackQuery.inline_message_id
 
     const gameClient = chess.create({ PGN: true })
     const status = gameClient.getStatus()
 
     ctx.game.lastBoard = board({
       board: status.board.squares,
-      isWhite: ctx.game.config.rotation === 'dynamic' ||
-        ctx.game.config.rotation === 'whites',
-      actions: actions(`last::${ctx.game.entry.id}`),
+      isWhite: iAmWhite,
+      actions: actions(),
     })
 
     log(
       preLog('JOIN', `${game.id} ${makeUserLog(enemy)} ${makeUserLog(user)}`),
-      ctx
+      ctx,
     )
 
     await ctx.editMessageText(
@@ -75,7 +73,7 @@ White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
         ...ctx.game.lastBoard,
         parse_mode: 'Markdown',
         disable_web_page_preview: true,
-      }
+      },
     ).catch(debug)
 
     ctx.game.joined = true

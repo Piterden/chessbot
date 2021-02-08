@@ -6,32 +6,23 @@ const {
 } = require('@/helpers')
 
 module.exports = () => [
-  /^settings(?:::(\w+))?(?:::(\w+))?$/,
+  /^settings::(\d+)(?:::(\w+))?(?:::(\w+))?$/,
   async (ctx) => {
-    const gameEntry = await getGame(ctx)
+    const game = await getGame(ctx, ctx.match[1])
 
-    if (typeof gameEntry === 'boolean') {
-      return gameEntry
-    }
-
-    if (!isBlackUser(gameEntry, ctx) && !isWhiteUser(gameEntry, ctx)) {
+    if (!isBlackUser(game, ctx) && !isWhiteUser(game, ctx)) {
       return ctx.answerCbQuery('Sorry, this game is busy. Try to make a new one.')
     }
 
-    switch (ctx.match[1]) {
+    switch (ctx.match[2]) {
       case 'rotation':
-        switch (ctx.match[2]) {
+        switch (ctx.match[3]) {
           case 'whites':
           case 'blacks':
           case 'dynamic':
-            const game = await ctx.db('games')
-              .where('inline_id', ctx.callbackQuery.inline_message_id)
-              .first()
-              .catch(debug)
-
             if (game) {
               const config = JSON.parse(game.config) || {}
-              config.rotation = ctx.match[2]
+              config.rotation = ctx.match[3]
 
               await ctx.db('games')
                 .update({ config: JSON.stringify(config) })
@@ -39,26 +30,26 @@ module.exports = () => [
                 .catch(debug)
             }
 
-            return ctx.answerCbQuery(`You choose ${ctx.match[2]} rotation mode. It will be applied after the next turn.`)
+            return ctx.answerCbQuery(`You choose ${ctx.match[3]} rotation mode. It will be applied after the next turn.`)
 
           default:
             await ctx.editMessageReplyMarkup({
               inline_keyboard: [
                 [{
                   text: 'Whites at bottom',
-                  callback_data: 'settings::rotation::whites',
+                  callback_data: `settings::${game.id}::rotation::whites`,
                 }],
                 [{
                   text: 'Blacks at bottom',
-                  callback_data: 'settings::rotation::blacks',
+                  callback_data: `settings::${game.id}::rotation::blacks`,
                 }],
                 [{
                   text: 'Current mover at bottom',
-                  callback_data: 'settings::rotation::dynamic',
+                  callback_data: `settings::${game.id}::rotation::dynamic`,
                 }],
                 [{
                   text: '⬅️ Back to settings',
-                  callback_data: 'settings',
+                  callback_data: `settings::${game.id}`,
                 }],
               ],
             }).catch(debug)
@@ -71,11 +62,11 @@ module.exports = () => [
           inline_keyboard: [
             [{
               text: 'Board Rotation',
-              callback_data: 'settings::rotation',
+              callback_data: `settings::${game.id}::rotation`,
             }],
             [{
               text: '⬅️ Back to game',
-              callback_data: 'back',
+              callback_data: `back::${game.id}`,
             }],
           ],
         }).catch(debug)

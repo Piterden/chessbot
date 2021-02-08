@@ -12,6 +12,11 @@ const {
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
+// eslint-disable-next-line id-length
+const sortFunction = (a, b) => JSON.stringify(a) > JSON.stringify(b) ? 1 : -1
+
+const mapFunction = ({ dest }) => dest
+
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => (
   `${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '|REPETITION|' : ''}`
 )
@@ -27,6 +32,12 @@ White's turn | [Discussion](https://t.me/chessy_bot_chat)`
 module.exports = () => [
   /^([a-h])([1-8])([QRNB])?$/,
   async (ctx) => {
+    if (ctx.game.busy) {
+      return ctx.answerCbQuery()
+    }
+
+    ctx.game.busy = true
+
     const gameEntry = await getGame(ctx)
 
     if (typeof gameEntry === 'boolean') {
@@ -34,6 +45,7 @@ module.exports = () => [
     }
 
     if (!isBlackUser(gameEntry, ctx) && !isWhiteUser(gameEntry, ctx)) {
+      ctx.game.busy = false
       return ctx.answerCbQuery('Sorry, this game is busy. Try to make a new one.')
     }
 
@@ -47,6 +59,7 @@ module.exports = () => [
 
     if ((isWhiteTurn(gameMoves) && isBlackUser(gameEntry, ctx)) ||
       (!isWhiteTurn(gameMoves) && isWhiteUser(gameEntry, ctx))) {
+      ctx.game.busy = false
       return ctx.answerCbQuery('Wait, please. Now is not your turn.')
     }
 
@@ -78,6 +91,7 @@ module.exports = () => [
       (pressed.piece.side.name === 'black' && isWhiteTurn(gameMoves)) ||
       (pressed.piece.side.name === 'white' && !isWhiteTurn(gameMoves)))
     ) {
+      ctx.game.busy = false
       return ctx.answerCbQuery()
     }
     /**
@@ -95,10 +109,16 @@ module.exports = () => [
         .filter((key) => status.notatedMoves[key].src === pressed)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
-      if (allowedMoves.length === 0) {
+      if (
+        ((!ctx.game.allowedMoves || ctx.game.allowedMoves.length === 0) &&
+          allowedMoves.length === 0) ||
+        (ctx.game.allowedMoves && ctx.game.allowedMoves.length === allowedMoves.length &&
+          JSON.stringify(ctx.game.allowedMoves.map(mapFunction).sort(sortFunction)) === JSON.stringify(allowedMoves.map(mapFunction).sort(sortFunction)))
+      ) {
         ctx.game.allowedMoves = allowedMoves
         ctx.game.selected = pressed
 
+        ctx.game.busy = false
         return ctx.answerCbQuery(`${pressed.piece.type} ${pressed.file}${pressed.rank}`)
       }
 
@@ -117,11 +137,16 @@ module.exports = () => [
       })
 
       await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
-        .catch(debug)
+        .catch((error) => {
+          debug(error)
+          debug(ctx.update)
+          debug(ctx.game)
+        })
 
       ctx.game.allowedMoves = allowedMoves
       ctx.game.selected = pressed
 
+      ctx.game.busy = false
       return ctx.answerCbQuery(`${pressed.piece.type} ${pressed.file}${pressed.rank}`)
     }
 
@@ -150,6 +175,7 @@ module.exports = () => [
         await ctx.editMessageReplyMarkup(board)
           .catch(debug)
 
+        ctx.game.busy = false
         return ctx.answerCbQuery()
       }
 
@@ -191,9 +217,6 @@ module.exports = () => [
 
       status = gameClient.getStatus()
 
-      ctx.game.allowedMoves = null
-      ctx.game.selected = null
-
       ctx.game.lastBoard = board({
         board: status.board.squares,
         isWhite: ctx.game.config.rotation === 'dynamic'
@@ -212,12 +235,22 @@ module.exports = () => [
           },
         ).catch(debug)
 
+        ctx.game.allowedMoves = null
+        ctx.game.selected = null
+
+        ctx.game.busy = false
         return ctx.answerCbQuery(makeMove.key)
       }
 
-      await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
-        .catch(debug)
+      if (ctx.game.allowedMoves.length > 0) {
+        await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
+          .catch(debug)
+      }
 
+      ctx.game.allowedMoves = null
+      ctx.game.selected = null
+
+      ctx.game.busy = false
       return ctx.answerCbQuery()
     }
   },

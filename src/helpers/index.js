@@ -67,7 +67,7 @@ const log = (data, ctx) => {
   ctx.telegram.sendMessage(
     `@${LOG_INFO_CHANNEL}`,
     `\`\`\`\n${data}\n\`\`\``,
-    { parse_mode: 'Markdown' }
+    { parse_mode: 'Markdown' },
   ).catch(debug)
   console.log(data)
 }
@@ -102,11 +102,8 @@ const mainMenu = [
   [{ text: 'Play with Friend', switch_inline_query: '' }],
 ]
 
-const getGame = async (ctx) => {
+const getGame = async (ctx, id) => {
   // if (ctx.match && ctx.match[3]) {
-  //   await ctx.db('games')
-  //     .where('id', Number(ctx.match[3]))
-  //     .update({ inline_id: ctx.callbackQuery.inline_message_id })
   //   await ctx.db('games')
   //     .where('id', Number(ctx.match[3]))
   //     .update({ inline_id: ctx.callbackQuery.inline_message_id })
@@ -118,10 +115,15 @@ const getGame = async (ctx) => {
 
   //   return game
   // }
+  let game
 
-  const game = ctx.game.entry || await ctx.db('games')
+  if (id) {
+    game = await ctx.db('games').where('id', id).first()
+    return game
+  }
+
+  game = ctx.game.entry || await ctx.db('games')
     .where('inline_id', ctx.callbackQuery.inline_message_id)
-    .select()
     .first()
 
   return game
