@@ -225,11 +225,13 @@ module.exports = () => [
         actions: actions(),
       })
 
+      const fen = getFen(gameClient.game.board, makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves))
+
       if (makeMove) {
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `${process.env.BOARD_VISUALIZER_URL}?fen=${getFen(gameClient.game.board)}&rotate=${makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves)}`,
+            media: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
             caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
           },
           {

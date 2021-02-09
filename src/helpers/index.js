@@ -171,7 +171,7 @@ Black's turn`
 White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn`
 
-const getFen = (board) => {
+const getFen = (board, reversed) => {
   const fen = []
 
   for (let idx = 0; idx < board.squares.length; idx += 1) {
@@ -198,7 +198,7 @@ const getFen = (board) => {
     }
   }
 
-  return fen.reverse().join('')
+  return reversed ? fen.join('') : fen.reverse().join('')
 }
 
 module.exports = {

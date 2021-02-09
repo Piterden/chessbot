@@ -3,8 +3,6 @@ const chess = require('chess')
 const { board } = require('@/keyboards')
 const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
 
-const { BOARD_VISUALIZER_URL } = process.env
-
 module.exports = () => async (ctx) => {
   let user = await ctx.db('users')
     .where('id', Number(ctx.from.id))
@@ -128,8 +126,8 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         id: 1,
         type: 'photo',
-        photo_url: `${BOARD_VISUALIZER_URL}`,
-        thumb_url: `${BOARD_VISUALIZER_URL}`,
+        photo_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
+        thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
         title: 'Play as white',
         caption: `Black (top): ?
 White (bottom): ${user.first_name}
@@ -150,8 +148,8 @@ Waiting for a black side`,
       {
         id: 2,
         type: 'photo',
-        photo_url: `${BOARD_VISUALIZER_URL}?fen=${fen}`,
-        thumb_url: `${BOARD_VISUALIZER_URL}?fen=${fen}`,
+        photo_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
+        thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
         title: 'Play as black',
         parse_mode: 'Markdown',
         disable_web_page_preview: true,
