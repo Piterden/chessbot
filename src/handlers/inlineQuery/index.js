@@ -90,7 +90,7 @@ module.exports = () => async (ctx) => {
       type: 'article',
       title: `You vs ${enemy.first_name}`,
       description: `Started ${createdAt.getDate()}.${createdAt.getMonth()}.${createdAt.getFullYear()} | ${moves.length} turns`,
-      thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
+      thumb_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg`,
       thumb_width: 418,
       thumb_height: 418,
       input_message_content: {
@@ -126,12 +126,14 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         id: 1,
         type: 'photo',
-        photo_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
-        thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
+        photo_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg`,
+        thumb_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg`,
         title: 'Play as white',
+        parse_mode: 'Markdown',
+        disable_web_page_preview: true,
         caption: `Black (top): ?
 White (bottom): ${user.first_name}
-Waiting for a black side`,
+Waiting for a black side | [Discussion](https://t.me/chessy_bot_chat)`,
         ...board({
           board: status.board.squares,
           isWhite: true,
@@ -148,14 +150,26 @@ Waiting for a black side`,
       {
         id: 2,
         type: 'photo',
-        photo_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
-        thumb_url: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
+        photo_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg?rotate=1`,
+        thumb_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg?rotate=1`,
         title: 'Play as black',
         parse_mode: 'Markdown',
         disable_web_page_preview: true,
-        message_text: `White (top): ?
+        caption: `White (top): ?
 Black (bottom): ${user.first_name}
 Waiting for a white side | [Discussion](https://t.me/chessy_bot_chat)`,
+        ...board({
+          board: status.board.squares,
+          isWhite: false,
+          callbackOverride: `join::b::${user.id}`,
+          actions: [{
+            text: 'Join the game',
+            callback_data: `join::b::${user.id}`,
+          }, {
+            text: 'New game',
+            switch_inline_query_current_chat: '',
+          }],
+        }),
       },
       ...list,
     ]

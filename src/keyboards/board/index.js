@@ -16,7 +16,7 @@ let pieces = (NIL !== 0) ? letters : emodji
  * @return {Extra}
  */
 module.exports = ({ board = [], isWhite, actions, callbackOverride }) => {
-  const horizontal = 'abcdefgh'.split('').reverse()
+  const horizontal = 'abcdefgh'.split('')
   const vertical = Array.from({ length: 8 }, (item, idx) => idx + 1).reverse()
 
   /**

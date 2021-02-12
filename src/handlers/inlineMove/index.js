@@ -15,7 +15,6 @@ const { board, actions, promotion } = require('@/keyboards')
 
 // eslint-disable-next-line id-length
 const sortFunction = (a, b) => JSON.stringify(a) > JSON.stringify(b) ? 1 : -1
-
 const mapFunction = ({ dest }) => dest
 
 const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
@@ -110,8 +109,7 @@ module.exports = () => [
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
       if (
-        ((!ctx.game.allowedMoves || ctx.game.allowedMoves.length === 0) &&
-          allowedMoves.length === 0) ||
+        ((!ctx.game.allowedMoves || ctx.game.allowedMoves.length === 0) && allowedMoves.length === 0) ||
         (ctx.game.allowedMoves && ctx.game.allowedMoves.length === allowedMoves.length &&
           JSON.stringify(ctx.game.allowedMoves.map(mapFunction).sort(sortFunction)) === JSON.stringify(allowedMoves.map(mapFunction).sort(sortFunction)))
       ) {
@@ -130,13 +128,27 @@ module.exports = () => [
 
           return move ? { ...square, move } : square
         }),
-        isWhite: ctx.game.config.rotation === 'dynamic'
-          ? isWhiteTurn(gameMoves)
-          : ctx.game.config.rotation === 'whites',
+        isWhite: isWhiteTurn(gameMoves),
         actions: actions(),
       })
 
-      await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
+      const marks = allowedMoves.map(({ key }) => key).join(',')
+      const fen = getFen(gameClient.game.board)
+
+      debug(allowedMoves)
+
+      await ctx.editMessageMedia(
+        {
+          type: 'photo',
+          media: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg?rotate=${isWhiteTurn(gameMoves) ? 0 : 1}&marks=${marks}`,
+          caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+        },
+        {
+          ...ctx.game.lastBoard,
+          parse_mode: 'Markdown',
+          disable_web_page_preview: true,
+        },
+      )
         .catch((error) => {
           debug(error)
           debug(ctx.update)
@@ -219,19 +231,17 @@ module.exports = () => [
 
       ctx.game.lastBoard = board({
         board: status.board.squares,
-        isWhite: ctx.game.config.rotation === 'dynamic'
-          ? (makeMove ? !isWhiteTurn(gameMoves) : isWhiteTurn(gameMoves))
-          : ctx.game.config.rotation === 'whites',
+        isWhite: isWhiteTurn(gameMoves),
         actions: actions(),
       })
 
-      const fen = getFen(gameClient.game.board, makeMove ? isWhiteTurn(gameMoves) : !isWhiteTurn(gameMoves))
+      const fen = getFen(gameClient.game.board)
 
       if (makeMove) {
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `https://chessboardimage.com/${fen.replace(/\//g, '')}.png`,
+            media: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(gameMoves) ? 0 : 1}`,
             caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
           },
           {
