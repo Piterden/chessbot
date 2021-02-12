@@ -3,7 +3,6 @@ const chess = require('chess')
 const {
   log,
   debug,
-  getFen,
   preLog,
   getGame,
   isWhiteTurn,
@@ -132,15 +131,14 @@ module.exports = () => [
         actions: actions(),
       })
 
-      const marks = allowedMoves.map(({ key }) => key).join(',')
-      const fen = getFen(gameClient.game.board)
+      const marks = allowedMoves.map(({ dest: { file, rank } }) => `${file}${rank}`).join(',')
 
       debug(allowedMoves)
 
       await ctx.editMessageMedia(
         {
           type: 'photo',
-          media: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg?rotate=${isWhiteTurn(gameMoves) ? 0 : 1}&marks=${marks}`,
+          media: `http://chess.bushuev.wtf/${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${isWhiteTurn(gameMoves) ? 0 : 1}&marks=${marks}`,
           caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
         },
         {
@@ -229,23 +227,19 @@ module.exports = () => [
 
       status = gameClient.getStatus()
 
-      ctx.game.lastBoard = board({
-        board: status.board.squares,
-        isWhite: isWhiteTurn(gameMoves),
-        actions: actions(),
-      })
-
-      const fen = getFen(gameClient.game.board)
-
       if (makeMove) {
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(gameMoves) ? 0 : 1}`,
-            caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+            media: `http://chess.bushuev.wtf/${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(gameMoves) ? 0 : 1}`,
+            caption: topMessage(!isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
           },
           {
-            ...ctx.game.lastBoard,
+            ...board({
+              board: status.board.squares,
+              isWhite: !isWhiteTurn(gameMoves),
+              actions: actions(),
+            }),
             parse_mode: 'Markdown',
             disable_web_page_preview: true,
           },
@@ -259,8 +253,22 @@ module.exports = () => [
       }
 
       if (ctx.game.allowedMoves.length > 0) {
-        await ctx.editMessageReplyMarkup(ctx.game.lastBoard.reply_markup)
-          .catch(debug)
+        await ctx.editMessageMedia(
+          {
+            type: 'photo',
+            media: `http://chess.bushuev.wtf/${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${isWhiteTurn(gameMoves) ? 0 : 1}`,
+            caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+          },
+          {
+            ...board({
+              board: status.board.squares,
+              isWhite: isWhiteTurn(gameMoves),
+              actions: actions(),
+            }),
+            parse_mode: 'Markdown',
+            disable_web_page_preview: true,
+          },
+        ).catch(debug)
       }
 
       ctx.game.allowedMoves = null

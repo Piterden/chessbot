@@ -28,36 +28,6 @@ module.exports = () => async (ctx) => {
     .limit(!ctx.update.inline_query.offset ? 48 : 50)
     .catch(debug)
 
-  function getFen (board) {
-    const fen = []
-
-    for (let idx = 0; idx < board.squares.length; idx += 1) {
-      const square = board.squares[idx]
-
-      if (square.file === 'a' && idx > 0) {
-        fen.push('/')
-      }
-
-      if (square.piece) {
-        fen.push(square.piece.side.name === 'white'
-          ? (square.piece.notation || 'p').toUpperCase()
-          : (square.piece.notation || 'p').toLowerCase())
-      } else {
-        if (isNaN(Number(fen[fen.length - 1]))) {
-          fen.push(1)
-        } else {
-          if (square.file === 'a') {
-            fen.push(1)
-          } else {
-            fen[fen.length - 1] += 1
-          }
-        }
-      }
-    }
-
-    return fen.reverse().join('')
-  }
-
   const list = await Promise.all(games.map(async (game, idx) => {
     const gameClient = chess.create({ PGN: true })
     let status
@@ -81,7 +51,7 @@ module.exports = () => async (ctx) => {
     })
 
     status = gameClient.getStatus()
-    const fen = getFen(gameClient.game.board)
+    const fen = gameClient.getFen()
     const createdAt = new Date(Date.parse(game.created_at))
     return {
       id: !ctx.update.inline_query.offset
@@ -120,7 +90,7 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
   let results = []
 
   if (!ctx.update.inline_query.offset) {
-    const fen = getFen(gameClient.game.board)
+    const fen = gameClient.getFen()
 
     results = [
       {
