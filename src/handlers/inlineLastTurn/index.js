@@ -74,6 +74,8 @@ module.exports = () => [
       actions: actions(),
     })
     const prevFen = gameClient.getFen()
+    const move = prevStatus.notatedMoves[lastMove.entry]
+    const arrow = `${move.src.file}${move.src.rank}${move.dest.file}${move.dest.rank}`
 
     try {
       gameClient.move(lastMove.entry)
@@ -92,7 +94,7 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `${BOARD_IMAGE_BASE_URL}${prevFen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(moves) ? 0 : 1}`,
+        media: `${BOARD_IMAGE_BASE_URL}${prevFen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(moves) ? 0 : 1}&arrows[]=${arrow}`,
         caption: topMessage(isWhiteTurn(moves), enemy, ctx.from) + statusMessage(currentStatus),
       },
       {
@@ -102,7 +104,7 @@ module.exports = () => [
       },
     ).catch(debug)
 
-    await sleep(600)
+    await sleep(1000)
 
     await ctx.editMessageMedia(
       {
