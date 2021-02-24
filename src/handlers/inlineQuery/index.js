@@ -26,8 +26,8 @@ module.exports = () => async (ctx) => {
     .where({ whites_id: ctx.from.id })
     .orWhere({ blacks_id: ctx.from.id })
     .orderBy('created_at', 'desc')
-    .offset(Number(ctx.update.inline_query.offset))
-    .limit(!ctx.update.inline_query.offset ? 48 : 50)
+    .offset(Number(ctx.inlineQuery.offset))
+    .limit(!ctx.inlineQuery.offset ? 48 : 50)
     .catch(debug)
 
   const list = await Promise.all(games.map(async (game, idx) => {
@@ -56,9 +56,9 @@ module.exports = () => async (ctx) => {
     const fen = gameClient.getFen()
     const createdAt = new Date(Date.parse(game.created_at))
     return {
-      id: !ctx.update.inline_query.offset
+      id: !ctx.inlineQuery.offset
         ? idx + 3
-        : idx + Number(ctx.update.inline_query.offset) + 2,
+        : idx + Number(ctx.inlineQuery.offset) + 2,
       type: 'article',
       title: `You vs ${enemy.first_name}`,
       description: `Started ${createdAt.getDate()}.${createdAt.getMonth()}.${createdAt.getFullYear()} | ${moves.length} turns`,
@@ -91,7 +91,7 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
   let status = gameClient.getStatus()
   let results = []
 
-  if (!ctx.update.inline_query.offset) {
+  if (!ctx.inlineQuery.offset) {
     const fen = gameClient.getFen()
 
     results = [
