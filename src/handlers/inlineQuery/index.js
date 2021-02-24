@@ -59,19 +59,18 @@ module.exports = () => async (ctx) => {
       id: !ctx.inlineQuery.offset
         ? idx + 3
         : idx + Number(ctx.inlineQuery.offset) + 2,
-      type: 'article',
+      type: 'photo',
       title: `You vs ${enemy.first_name}`,
       description: `Started ${createdAt.getDate()}.${createdAt.getMonth()}.${createdAt.getFullYear()} | ${moves.length} turns`,
-      thumb_url: `${BOARD_IMAGE_BASE_URL}${fen.replace(/\//g, '%2F')}.jpeg`,
-      thumb_width: 418,
-      thumb_height: 418,
-      input_message_content: {
-        parse_mode: 'Markdown',
-        disable_web_page_preview: true,
-        message_text: `Waiting for confirmation by [${enemy.first_name}](tg://user?id=${enemy.id})!
+      photo_url: `${BOARD_IMAGE_BASE_URL}${fen.replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(moves))}`,
+      thumb_url: `${BOARD_IMAGE_BASE_URL}${fen.replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(moves))}&board_size=100`,
+      photo_width: 512,
+      photo_height: 512,
+      parse_mode: 'Markdown',
+      disable_web_page_preview: true,
+      caption: `Waiting for confirmation by [${enemy.first_name}](tg://user?id=${enemy.id})!
 ${topMessage(!isWhiteTurn(moves), user, enemy)}
 ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
-      },
       ...board({
         board: status.board.squares,
         isWhite: isWhiteTurn(moves),
