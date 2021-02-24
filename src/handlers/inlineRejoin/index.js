@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board, actions } = require('@/keyboards')
-const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
+const { debug, getGame, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
 
 const { BOARD_IMAGE_BASE_URL } = process.env
 
@@ -22,20 +22,17 @@ module.exports = () => [
       return ctx.answerCbQuery('You can\'t rejoin yourself!')
     }
 
-    const game = await ctx.db('games')
-      .where('id', gameId)
-      .first()
-      .catch(debug)
+    const game = await getGame(ctx, gameId).catch(debug)
 
     if (!game) {
       ctx.game.busy = false
       return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
     }
 
-    if ([Number(game.whites_id), Number(game.blacks_id)]
+    if (![Number(game.whites_id), Number(game.blacks_id)]
       .includes(Number(ctx.from.id))) {
       ctx.game.busy = false
-      return ctx.answerCbQuery('You can\'t join this game!')
+      return ctx.answerCbQuery('Sorry, you can\'t join this game!')
     }
 
     await ctx.db('games')
