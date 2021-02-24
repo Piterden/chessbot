@@ -16,6 +16,8 @@ const {
 } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
 
+const { BOARD_IMAGE_BASE_URL } = process.env
+
 module.exports = () => [
   /^last$/,
   async (ctx) => {
@@ -90,8 +92,8 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `http://chess.bushuev.wtf/${prevFen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(moves) ? 0 : 1}`,
-        caption: topMessage(isWhiteTurn(moves), ctx.from, enemy) + statusMessage(currentStatus),
+        media: `${BOARD_IMAGE_BASE_URL}${prevFen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(moves) ? 0 : 1}`,
+        caption: topMessage(isWhiteTurn(moves), enemy, ctx.from) + statusMessage(currentStatus),
       },
       {
         ...prevBoard,
@@ -105,8 +107,8 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `http://chess.bushuev.wtf/${currentFen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(moves) ? 0 : 1}`,
-        caption: topMessage(isWhiteTurn(moves), ctx.from, enemy) + statusMessage(currentStatus),
+        media: `${BOARD_IMAGE_BASE_URL}${currentFen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(moves) ? 0 : 1}`,
+        caption: topMessage(isWhiteTurn(moves), enemy, ctx.from) + statusMessage(currentStatus),
       },
       {
         ...currentBoard,

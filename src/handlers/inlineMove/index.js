@@ -12,6 +12,8 @@ const {
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
 
+const { BOARD_IMAGE_BASE_URL } = process.env
+
 // eslint-disable-next-line id-length
 const sortFunction = (a, b) => JSON.stringify(a) > JSON.stringify(b) ? 1 : -1
 const mapFunction = ({ dest }) => dest
@@ -119,38 +121,34 @@ module.exports = () => [
         return ctx.answerCbQuery(`${pressed.piece.type} ${pressed.file}${pressed.rank}`)
       }
 
-      ctx.game.lastBoard = board({
-        board: status.board.squares.map((square) => {
-          const move = allowedMoves
-            .find((({ file, rank }) => ({ dest }) => dest.file === file &&
-              dest.rank === rank)(square))
-
-          return move ? { ...square, move } : square
-        }),
-        isWhite: isWhiteTurn(gameMoves),
-        actions: actions(),
-      })
-
       const marks = allowedMoves.map(({ dest: { file, rank } }) => `${file}${rank}`).join(',')
-
-      debug(allowedMoves)
 
       await ctx.editMessageMedia(
         {
           type: 'photo',
-          media: `http://chess.bushuev.wtf/${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${isWhiteTurn(gameMoves) ? 0 : 1}&marks=${marks}`,
-          caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+          media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(gameMoves))}&marks=${marks}`,
+          caption: topMessage(!isWhiteTurn(gameMoves), enemy, ctx.from) + statusMessage(status),
         },
         {
-          ...ctx.game.lastBoard,
+          ...board({
+            board: status.board.squares.map((square) => {
+              const move = allowedMoves
+                .find((({ file, rank }) => ({ dest }) => dest.file === file &&
+                  dest.rank === rank)(square))
+
+              return move ? { ...square, move } : square
+            }),
+            isWhite: isWhiteTurn(gameMoves),
+            actions: actions(),
+          }),
           parse_mode: 'Markdown',
           disable_web_page_preview: true,
         },
       )
         .catch((error) => {
           debug(error)
-          debug(ctx.update)
-          debug(ctx.game)
+          // debug(ctx.update)
+          // debug(ctx.game)
         })
 
       ctx.game.allowedMoves = allowedMoves
@@ -231,8 +229,8 @@ module.exports = () => [
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `http://chess.bushuev.wtf/${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(gameMoves) ? 0 : 1}`,
-            caption: topMessage(!isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+            media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(isWhiteTurn(gameMoves))}`,
+            caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
           },
           {
             ...board({
@@ -256,8 +254,8 @@ module.exports = () => [
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `http://chess.bushuev.wtf/${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${isWhiteTurn(gameMoves) ? 0 : 1}`,
-            caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
+            media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(gameMoves))}`,
+            caption: topMessage(!isWhiteTurn(gameMoves), enemy, ctx.from) + statusMessage(status),
           },
           {
             ...board({

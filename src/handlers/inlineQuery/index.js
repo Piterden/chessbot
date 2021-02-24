@@ -3,6 +3,8 @@ const chess = require('chess')
 const { board } = require('@/keyboards')
 const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
 
+const { BOARD_IMAGE_BASE_URL } = process.env
+
 module.exports = () => async (ctx) => {
   let user = await ctx.db('users')
     .where('id', Number(ctx.from.id))
@@ -60,7 +62,7 @@ module.exports = () => async (ctx) => {
       type: 'article',
       title: `You vs ${enemy.first_name}`,
       description: `Started ${createdAt.getDate()}.${createdAt.getMonth()}.${createdAt.getFullYear()} | ${moves.length} turns`,
-      thumb_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg`,
+      thumb_url: `${BOARD_IMAGE_BASE_URL}${fen.replace(/\//g, '%2F')}.jpeg`,
       thumb_width: 418,
       thumb_height: 418,
       input_message_content: {
@@ -96,8 +98,8 @@ ${statusMessage(status)} | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         id: 1,
         type: 'photo',
-        photo_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg`,
-        thumb_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg`,
+        photo_url: `${BOARD_IMAGE_BASE_URL}${fen.replace(/\//g, '%2F')}.jpeg`,
+        thumb_url: `${BOARD_IMAGE_BASE_URL}${fen.replace(/\//g, '%2F')}.jpeg`,
         title: 'Play as white',
         parse_mode: 'Markdown',
         disable_web_page_preview: true,
@@ -120,8 +122,8 @@ Waiting for a black side | [Discussion](https://t.me/chessy_bot_chat)`,
       {
         id: 2,
         type: 'photo',
-        photo_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg?rotate=1`,
-        thumb_url: `http://chess.bushuev.wtf/${fen.replace(/\//g, '%2F')}.jpeg?rotate=1`,
+        photo_url: `${BOARD_IMAGE_BASE_URL}${fen.replace(/\//g, '%2F')}.jpeg?rotate=1`,
+        thumb_url: `${BOARD_IMAGE_BASE_URL}${fen.replace(/\//g, '%2F')}.jpeg?rotate=1`,
         title: 'Play as black',
         parse_mode: 'Markdown',
         disable_web_page_preview: true,
