@@ -70,6 +70,7 @@ White's turn | [Discussion](https://t.me/chessy_bot_chat)`,
           actions: actions(),
         }),
         parse_mode: 'Markdown',
+        disable_web_page_preview: true,
       },
     ).catch(debug)
 

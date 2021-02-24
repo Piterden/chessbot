@@ -43,10 +43,6 @@ module.exports = () => [
       .where({ id: gameId })
       .catch(debug)
 
-    ctx.game.entry = game
-    ctx.game.config = JSON.parse(game.config) || { rotation: 'dynamic' }
-    ctx.game.inlineId = ctx.callbackQuery.inline_message_id
-
     const moves = await ctx.db('moves')
       .where('game_id', gameId)
       .orderBy('created_at', 'asc')
@@ -74,13 +70,11 @@ module.exports = () => [
       .first()
       .catch(debug)
 
-    ctx.game.busy = false
-
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(moves))}`,
-        caption: topMessage(!isWhiteTurn(moves), whites, blacks) + statusMessage(status),
+        media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(isWhiteTurn(moves))}`,
+        caption: topMessage(isWhiteTurn(moves), whites, blacks) + statusMessage(status),
       },
       {
         ...board({
@@ -92,6 +86,8 @@ module.exports = () => [
         disable_web_page_preview: true,
       },
     ).catch(debug)
+
+    ctx.game.busy = false
 
     return ctx.answerCbQuery('Now play!')
   },
