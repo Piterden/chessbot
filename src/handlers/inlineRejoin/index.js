@@ -3,26 +3,38 @@ const chess = require('chess')
 const { board, actions } = require('@/keyboards')
 const { debug, isWhiteTurn, topMessage, statusMessage } = require('@/helpers')
 
+const { BOARD_IMAGE_BASE_URL } = process.env
+
 module.exports = () => [
   /^rejoin::(\d+)::(\d+)/,
   async (ctx) => {
-    const enemyId = Number(ctx.match[2])
+    if (ctx.game.busy) {
+      return ctx.answerCbQuery()
+    }
+    ctx.game.busy = true
+    let [, gameId, enemyId] = ctx.match
+
+    gameId = Number(gameId)
+    enemyId = Number(enemyId)
 
     if (ctx.from.id === enemyId) {
-      return ctx.answerCbQuery('You can\'t join yourself!')
+      ctx.game.busy = false
+      return ctx.answerCbQuery('You can\'t rejoin yourself!')
     }
 
-    const gameId = Number(ctx.match[1])
     const game = await ctx.db('games')
       .where('id', gameId)
       .first()
       .catch(debug)
 
     if (!game) {
+      ctx.game.busy = false
       return ctx.answerCbQuery('Game was removed, sorry. Please try to start a new one, typing @chessy_bot to your message input.')
     }
 
-    if (ctx.from.id !== game.whites_id && ctx.from.id !== game.blacks_id) {
+    if ([Number(game.whites_id), Number(game.blacks_id)]
+      .includes(Number(ctx.from.id))) {
+      ctx.game.busy = false
       return ctx.answerCbQuery('You can\'t join this game!')
     }
 
@@ -55,30 +67,34 @@ module.exports = () => [
 
     const status = gameClient.getStatus()
 
-    const enemy = await ctx.db('users')
-      .where('id', enemyId)
+    const whites = await ctx.db('users')
+      .where('id', game.whites_id)
       .first()
       .catch(debug)
 
-    const user = await ctx.db('users')
-      .where({ id: ctx.from.id })
+    const blacks = await ctx.db('users')
+      .where('id', game.blacks_id)
       .first()
       .catch(debug)
 
-    ctx.game.lastBoard = board({
-      board: status.board.squares,
-      isWhite: isWhiteTurn(moves),
-      actions: actions(),
-    })
+    ctx.game.busy = false
 
-    await ctx.editMessageText(
-      `${topMessage(!isWhiteTurn(moves), user, enemy)}
-${statusMessage(status)}`,
+    await ctx.editMessageMedia(
       {
-        ...ctx.game.lastBoard,
+        type: 'photo',
+        media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(moves))}`,
+        caption: topMessage(!isWhiteTurn(moves), whites, blacks) + statusMessage(status),
+      },
+      {
+        ...board({
+          board: status.board.squares,
+          isWhite: isWhiteTurn(moves),
+          actions: actions(),
+        }),
         parse_mode: 'Markdown',
-      }
-    )
+        disable_web_page_preview: true,
+      },
+    ).catch(debug)
 
     return ctx.answerCbQuery('Now play!')
   },
