@@ -170,36 +170,6 @@ Black's turn`
 White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
 White's turn`
 
-const getFen = (board, reversed) => {
-  const fen = []
-
-  for (let idx = 0; idx < board.squares.length; idx += 1) {
-    const square = board.squares[idx]
-
-    if (square.file === 'a' && idx > 0) {
-      fen.push('/')
-    }
-
-    if (square.piece) {
-      fen.push(square.piece.side.name === 'white'
-        ? (square.piece.notation || 'p').toUpperCase()
-        : (square.piece.notation || 'p').toLowerCase())
-    } else {
-      if (isNaN(Number(fen[fen.length - 1]))) {
-        fen.push(1)
-      } else {
-        if (square.file === 'a') {
-          fen.push(1)
-        } else {
-          fen[fen.length - 1] += 1
-        }
-      }
-    }
-  }
-
-  return reversed ? fen.join('') : fen.reverse().join('')
-}
-
 module.exports = {
   log,
   debug,
@@ -221,5 +191,4 @@ module.exports = {
   promotionMap,
   validateGame,
   statusMessage,
-  getFen,
 }
