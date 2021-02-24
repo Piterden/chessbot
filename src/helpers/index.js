@@ -115,18 +115,17 @@ const getGame = async (ctx, id) => {
 
   //   return game
   // }
-  let game
-
-  if (id) {
-    game = await ctx.db('games').where('id', id).first()
-    return game
+  if (!ctx.game.entry) {
+    ctx.game.entry = id
+      ? ctx.db('games')
+        .where('id', id)
+        .first()
+      : ctx.db('games')
+        .where('inline_id', ctx.callbackQuery.inline_message_id)
+        .first()
   }
 
-  game = ctx.game.entry || await ctx.db('games')
-    .where('inline_id', ctx.callbackQuery.inline_message_id)
-    .first()
-
-  return game
+  return ctx.game.entry
 }
 
 const validateGame = (game, ctx) => {
