@@ -1,6 +1,6 @@
 const { inspect } = require('util')
 
-const { LOG_INFO_CHANNEL } = process.env
+const { LOG_INFO_CHANNEL, BOARD_IMAGE_BASE_URL } = process.env
 
 const emodji = {
   white: {
@@ -102,6 +102,12 @@ const mainMenu = [
   [{ text: 'Play with Friend', switch_inline_query: '' }],
 ]
 
+const makeBoardImageUrl = (fen, options) => `
+${BOARD_IMAGE_BASE_URL}
+${fen.replace(/\//g, '%2F')}.jpg?
+${Object.entries(options).map((pair) => pair.join('=')).join('&')}
+`.split('\n').join('')
+
 const getGame = async (ctx, id) => {
   // if (ctx.match && ctx.match[3]) {
   //   await ctx.db('games')
@@ -191,4 +197,5 @@ module.exports = {
   promotionMap,
   validateGame,
   statusMessage,
+  makeBoardImageUrl,
 }

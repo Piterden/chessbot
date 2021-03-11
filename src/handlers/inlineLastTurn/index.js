@@ -94,7 +94,7 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `${BOARD_IMAGE_BASE_URL}${prevFen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(moves) ? 0 : 1}&arrows[]=${arrow}`,
+        media: `${BOARD_IMAGE_BASE_URL}${prevFen.replace(/\//g, '%2F')}.jpg?rotate=${!isWhiteTurn(moves) ? 0 : 1}&arrows[]=${arrow}`,
         caption: topMessage(isWhiteTurn(moves), enemy, ctx.from) + statusMessage(currentStatus),
       },
       {
@@ -109,7 +109,7 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `${BOARD_IMAGE_BASE_URL}${currentFen.replace(/\//g, '%2F')}.jpeg?rotate=${!isWhiteTurn(moves) ? 0 : 1}`,
+        media: `${BOARD_IMAGE_BASE_URL}${currentFen.replace(/\//g, '%2F')}.jpg?rotate=${!isWhiteTurn(moves) ? 0 : 1}`,
         caption: topMessage(isWhiteTurn(moves), enemy, ctx.from) + statusMessage(currentStatus),
       },
       {

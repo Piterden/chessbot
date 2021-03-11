@@ -123,24 +123,26 @@ module.exports = () => [
 
       const marks = allowedMoves.map(({ dest: { file, rank } }) => `${file}${rank}`).join(',')
 
+      ctx.game.lastBoard = board({
+        board: status.board.squares.map((square) => {
+          const move = allowedMoves
+            .find((({ file, rank }) => ({ dest }) => dest.file === file &&
+              dest.rank === rank)(square))
+
+          return move ? { ...square, move } : square
+        }),
+        isWhite: isWhiteTurn(gameMoves),
+        actions: actions(),
+      })
+
       await ctx.editMessageMedia(
         {
           type: 'photo',
-          media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(gameMoves))}&marks=${marks}`,
+          media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpg?rotate=${Number(!isWhiteTurn(gameMoves))}&marks=${marks}`,
           caption: topMessage(!isWhiteTurn(gameMoves), enemy, ctx.from) + statusMessage(status),
         },
         {
-          ...board({
-            board: status.board.squares.map((square) => {
-              const move = allowedMoves
-                .find((({ file, rank }) => ({ dest }) => dest.file === file &&
-                  dest.rank === rank)(square))
-
-              return move ? { ...square, move } : square
-            }),
-            isWhite: isWhiteTurn(gameMoves),
-            actions: actions(),
-          }),
+          ...ctx.game.lastBoard,
           parse_mode: 'Markdown',
           disable_web_page_preview: true,
         },
@@ -184,15 +186,10 @@ module.exports = () => [
           .catch(debug)
 
         ctx.game.busy = false
-        return ctx.answerCbQuery()
+        return ctx.answerCbQuery('Please choose the piece to promote the pawn!')
       }
 
       let makeMove
-      // let topMessageText = topMessage(
-      //   !isWhiteTurn(gameMoves),
-      //   enemy,
-      //   ctx.from,
-      // )
 
       if (ctx.game.promotion) {
         makeMove = ctx.game.allowedMoves.find(({ key, dest: { file, rank } }) => (
@@ -229,7 +226,7 @@ module.exports = () => [
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(isWhiteTurn(gameMoves))}`,
+            media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpg?rotate=${Number(isWhiteTurn(gameMoves))}`,
             caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
           },
           {
@@ -254,7 +251,7 @@ module.exports = () => [
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(gameMoves))}`,
+            media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpg?rotate=${Number(!isWhiteTurn(gameMoves))}`,
             caption: topMessage(!isWhiteTurn(gameMoves), enemy, ctx.from) + statusMessage(status),
           },
           {

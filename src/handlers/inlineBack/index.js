@@ -52,7 +52,7 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpeg?rotate=${Number(!isWhiteTurn(gameMoves))}`,
+        media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpg?rotate=${Number(!isWhiteTurn(gameMoves))}`,
         caption: topMessage(!isWhiteTurn(gameMoves), enemy, ctx.from) + statusMessage(status),
       },
       {
