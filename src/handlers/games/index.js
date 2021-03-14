@@ -17,7 +17,7 @@ module.exports = () => [
       .select()
       .catch(debug)
 
-    let ids = games.reduce(
+    const ids = games.reduce(
       // eslint-disable-next-line camelcase
       (acc, { blacks_id, whites_id }) => {
         if (!acc.includes(blacks_id)) {
@@ -38,30 +38,32 @@ module.exports = () => [
       return acc
     }, {})
 
-    ctx.editMessageReplyMarkup({ inline_keyboard: [
-      ...await Promise.all(games.map(async (game) => {
-        const whites = game.whites_id === ctx.from.id
-          ? ctx.from.first_name
-          : enemies[game.whites_id].first_name
-        const blacks = game.blacks_id === ctx.from.id
-          ? ctx.from.first_name
-          : enemies[game.blacks_id].first_name
-        const time = game.created_at.toUTCString()
-          .replace(/^\w{3}, /, '')
-          .replace(/:\d{2} GMT$/, '')
-        const movesLength = await ctx.db('moves')
-          .where('game_id', game.id)
-          .count()
+    ctx.editMessageReplyMarkup({
+      inline_keyboard: [
+        ...await Promise.all(games.map(async (game) => {
+          const whites = game.whites_id === ctx.from.id
+            ? ctx.from.first_name
+            : enemies[game.whites_id].first_name
+          const blacks = game.blacks_id === ctx.from.id
+            ? ctx.from.first_name
+            : enemies[game.blacks_id].first_name
+          const time = game.created_at.toUTCString()
+            .replace(/^\w{3}, /, '')
+            .replace(/:\d{2} GMT$/, '')
+          const movesLength = await ctx.db('moves')
+            .where('game_id', game.id)
+            .count()
 
-        return [{
-          text: `${time} || ${whites} vs ${blacks} || ${movesLength[0]['count(*)']} moves`,
-          switch_inline_query: `${game.whites_id}::${game.blacks_id}::${game.id}`,
-        }]
-      })),
-      [{
-        text: '⬅️ Back to menu',
-        callback_data: 'main_menu',
-      }],
-    ] })
+          return [{
+            text: `${time} || ${whites} vs ${blacks} || ${movesLength[0]['count(*)']} moves`,
+            switch_inline_query: `${game.whites_id}::${game.blacks_id}::${game.id}`,
+          }]
+        })),
+        [{
+          text: '⬅️ Back to menu',
+          callback_data: 'main_menu',
+        }],
+      ],
+    })
   },
 ]

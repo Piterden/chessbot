@@ -46,7 +46,7 @@ bot.action(...inlineSettingsHandler())
 bot.on('chosen_inline_result', async (ctx) => {
   log(
     preLog('BORD', `${makeUserLog(ctx.update.chosen_inline_result.from)}| [${ctx.update.chosen_inline_result.result_id === 2 ? 'black' : 'white'}] {${ctx.update.chosen_inline_result.inline_message_id}}`),
-    ctx
+    ctx,
   )
 })
 

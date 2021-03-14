@@ -1,10 +1,11 @@
 root: true
-parser: babel-eslint
+parser: '@babel/eslint-parser'
 extends:
   - standard
 env:
   node: true
 parserOptions:
+  requireConfigFile: false
   sourceType: module
   ecmaVersion: 2018
   ecmaFeatures:

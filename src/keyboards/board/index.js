@@ -5,7 +5,7 @@ const { emodji, letters } = require('@/helpers')
 const { Markup } = Telegraf
 
 const NIL = 0
-let pieces = (NIL !== 0) ? letters : emodji
+const pieces = (NIL !== 0) ? letters : emodji
 
 /**
  * Board generator function.

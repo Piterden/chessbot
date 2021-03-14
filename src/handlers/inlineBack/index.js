@@ -46,7 +46,7 @@ module.exports = () => [
       }
     })
 
-    let status = gameClient.getStatus()
+    const status = gameClient.getStatus()
 
     await ctx.editMessageMedia(
       {
