@@ -13,10 +13,9 @@ const {
   isBlackUser,
   makeUserLog,
   statusMessage,
+  makeBoardImageUrl,
 } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
-
-const { BOARD_IMAGE_BASE_URL } = process.env
 
 module.exports = () => [
   /^last$/,
@@ -94,7 +93,7 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `${BOARD_IMAGE_BASE_URL}${prevFen.replace(/\//g, '%2F')}.jpg?rotate=${!isWhiteTurn(moves) ? 0 : 1}&arrows[]=${arrow}`,
+        media: makeBoardImageUrl(prevFen, { rotate: Number(isWhiteTurn(moves)), 'arrows[]': arrow }),
         caption: topMessage(isWhiteTurn(moves), enemy, ctx.from) + statusMessage(currentStatus),
       },
       {
@@ -109,7 +108,7 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `${BOARD_IMAGE_BASE_URL}${currentFen.replace(/\//g, '%2F')}.jpg?rotate=${!isWhiteTurn(moves) ? 0 : 1}`,
+        media: makeBoardImageUrl(currentFen, { rotate: Number(isWhiteTurn(moves)) }),
         caption: topMessage(isWhiteTurn(moves), enemy, ctx.from) + statusMessage(currentStatus),
       },
       {

@@ -28,7 +28,7 @@ module.exports = () => [
         }
         return acc
       },
-      []
+      [],
     ).filter((id) => id !== ctx.from.id)
 
     let enemies = await ctx.db('users').whereIn('id', ids).select().catch(debug)

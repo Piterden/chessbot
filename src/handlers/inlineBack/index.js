@@ -8,10 +8,9 @@ const {
   isWhiteTurn,
   isWhiteUser,
   statusMessage,
+  makeBoardImageUrl,
 } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
-
-const { BOARD_IMAGE_BASE_URL } = process.env
 
 module.exports = () => [
   /^back::(\d+)$/,
@@ -52,7 +51,7 @@ module.exports = () => [
     await ctx.editMessageMedia(
       {
         type: 'photo',
-        media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpg?rotate=${Number(!isWhiteTurn(gameMoves))}`,
+        media: makeBoardImageUrl(gameClient.getFen(), { rotate: Number(!isWhiteTurn(gameMoves)) }),
         caption: topMessage(!isWhiteTurn(gameMoves), enemy, ctx.from) + statusMessage(status),
       },
       {

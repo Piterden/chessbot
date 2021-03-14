@@ -9,10 +9,9 @@ const {
   isWhiteUser,
   isBlackUser,
   makeUserLog,
+  makeBoardImageUrl,
 } = require('@/helpers')
 const { board, actions, promotion } = require('@/keyboards')
-
-const { BOARD_IMAGE_BASE_URL } = process.env
 
 // eslint-disable-next-line id-length
 const sortFunction = (a, b) => JSON.stringify(a) > JSON.stringify(b) ? 1 : -1
@@ -138,7 +137,7 @@ module.exports = () => [
       await ctx.editMessageMedia(
         {
           type: 'photo',
-          media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpg?rotate=${Number(!isWhiteTurn(gameMoves))}&marks=${marks}`,
+          media: makeBoardImageUrl(gameClient.getFen(), { rotate: Number(!isWhiteTurn(gameMoves)), marks }),
           caption: topMessage(!isWhiteTurn(gameMoves), enemy, ctx.from) + statusMessage(status),
         },
         {
@@ -226,7 +225,7 @@ module.exports = () => [
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpg?rotate=${Number(isWhiteTurn(gameMoves))}`,
+            media: makeBoardImageUrl(gameClient.getFen(), { rotate: Number(isWhiteTurn(gameMoves)) }),
             caption: topMessage(isWhiteTurn(gameMoves), ctx.from, enemy) + statusMessage(status),
           },
           {
@@ -251,7 +250,7 @@ module.exports = () => [
         await ctx.editMessageMedia(
           {
             type: 'photo',
-            media: `${BOARD_IMAGE_BASE_URL}${gameClient.getFen().replace(/\//g, '%2F')}.jpg?rotate=${Number(!isWhiteTurn(gameMoves))}`,
+            media: makeBoardImageUrl(gameClient.getFen(), { rotate: Number(!isWhiteTurn(gameMoves)) }),
             caption: topMessage(!isWhiteTurn(gameMoves), enemy, ctx.from) + statusMessage(status),
           },
           {

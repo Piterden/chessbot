@@ -102,7 +102,7 @@ const mainMenu = [
   [{ text: 'Play with Friend', switch_inline_query: '' }],
 ]
 
-const makeBoardImageUrl = (fen, options) => `
+const makeBoardImageUrl = (fen, options = {}) => `
 ${BOARD_IMAGE_BASE_URL}
 ${fen.replace(/\//g, '%2F')}.jpg?
 ${Object.entries(options).map((pair) => pair.join('=')).join('&')}
