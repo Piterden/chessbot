@@ -63,5 +63,5 @@ files/
 
 db.sqlite3
 
-package-lock.json
-yarn.lock
+# package-lock.json
+# yarn.lock
