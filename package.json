@@ -33,7 +33,7 @@
     "eslint-config-standard": "latest",
     "eslint-plugin-import": "latest",
     "eslint-plugin-node": "next",
-    "eslint-plugin-promise": "next",
+    "eslint-plugin-promise": "^4.3.1",
     "husky": "^3.1.0",
     "nodemon": "^2.0.7"
   },
