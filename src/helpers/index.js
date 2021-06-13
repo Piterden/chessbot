@@ -3,7 +3,7 @@ const { inspect } = require('util')
 const { LOG_INFO_CHANNEL } = process.env
 
 const emodji = {
-  white: {
+  black: {
     rook: '♜',
     knight: '♞',
     bishop: '♝',
@@ -11,7 +11,7 @@ const emodji = {
     king: '♚',
     pawn: '♟',
   },
-  black: {
+  white: {
     rook: '♖',
     knight: '♘',
     bishop: '♗',
