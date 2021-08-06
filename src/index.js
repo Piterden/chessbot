@@ -17,6 +17,8 @@ const {
 } = require('@/handlers')
 const { debug, log, preLog, makeUserLog } = require('@/helpers')
 const knexConfig = require('@/../knexfile')
+const { pay } = require('@/billing')
+const { isPayed } = require('./billing')
 
 const { BOT_NAME, BOT_TOKEN } = process.env
 
@@ -53,6 +55,8 @@ bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
 bot.action(...inlineSettingsHandler())
 bot.action(...inlineLastTurn())
+
+bot.command('pay', async ctx => await isPayed(ctx) ? ctx.reply('payed') : pay(ctx))
 
 bot.on('chosen_inline_result', async (ctx) => {
   log(
