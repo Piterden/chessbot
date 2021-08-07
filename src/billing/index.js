@@ -1,6 +1,7 @@
 const { debug, getOrCreateUser } = require('@/helpers')
 
-// TODO use after receiving payment
+// TODO remove eslint disable and use object after receiving payments for calculating enough flag
+// eslint-disable-next-line no-unused-vars
 const minimalAmount = {
   usd: 10,
   rub: 100,
