@@ -153,6 +153,19 @@ const preLog = (type = 'UNKN', data = {}, delimiter = ' ', date = new Date().toI
   `[${type}] ${date}:${delimiter}${data}`
 )
 
+const getOrCreateUser = async (ctx) => {
+  let user = await ctx.db('users')
+    .where({ id: ctx.from.id })
+    .first()
+    .catch(debug)
+
+  if (!user) {
+    await ctx.db('users').insert(ctx.from).catch(debug)
+    user = await ctx.db('users').where('id', ctx.from.id).first().catch(debug)
+  }
+  return user
+}
+
 const makeUserLog = ({
   id,
   username,
@@ -180,4 +193,5 @@ module.exports = {
   makeUserLog,
   promotionMap,
   validateGame,
+  getOrCreateUser,
 }

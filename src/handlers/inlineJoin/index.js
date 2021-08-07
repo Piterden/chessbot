@@ -1,7 +1,7 @@
 const chess = require('chess')
 
 const { board, actions } = require('@/keyboards')
-const { debug, preLog, log, makeUserLog } = require('@/helpers')
+const { debug, preLog, log, makeUserLog, getOrCreateUser } = require('@/helpers')
 
 module.exports = () => [
   /^join::([wb])::(\d+)/,
@@ -16,15 +16,7 @@ module.exports = () => [
       return ctx.answerCbQuery('You can\'t join yourself!')
     }
 
-    let user = await ctx.db('users')
-      .where({ id: ctx.from.id })
-      .first()
-      .catch(debug)
-
-    if (!user) {
-      await ctx.db('users').insert(ctx.from).catch(debug)
-      user = await ctx.db('users').where('id', ctx.from.id).first().catch(debug)
-    }
+    let user = await getOrCreateUser(ctx)
 
     const enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
 

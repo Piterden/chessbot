@@ -9,6 +9,7 @@ exports.up = async (knex, Promise) => (await knex.schema.hasTable('payments'))
     table.string('currency').notNullable()
     table.string('method').notNullable()
     table.bigInteger('transaction_id')
+    table.boolean('enough').notNullable()
     table.timestamp('created_at').defaultTo(knex.fn.now())
   })
 
