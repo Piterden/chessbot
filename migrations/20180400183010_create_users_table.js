@@ -9,6 +9,7 @@ exports.up = async (knex, Promise) => (await knex.schema.hasTable('users'))
     table.string('last_name')
     table.string('username')
     table.string('language_code')
+    table.boolean('is_premium')
     table.timestamp('created_at').defaultTo(knex.fn.now())
 
     table.primary('id')

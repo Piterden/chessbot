@@ -18,9 +18,10 @@
   "dependencies": {
     "chess": "^0.4.9",
     "dotenv": "^7.0.0",
-    "knex": "^0.20.13",
+    "knex": "^2.2.0",
     "module-alias": "^2.2.2",
     "mysql2": "^2.2.5",
+    "pg": "^8.7.3",
     "telegraf": "^3.37.0"
   },
   "devDependencies": {
