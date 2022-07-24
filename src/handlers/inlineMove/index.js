@@ -43,6 +43,11 @@ module.exports = () => [
       return gameEntry
     }
 
+    if (gameEntry === null) {
+      // TODO add function to say user about error
+      return
+    }
+
     if (!isBlackUser(gameEntry, ctx) && !isWhiteUser(gameEntry, ctx)) {
       ctx.game.busy = false
       return ctx.answerCbQuery('Sorry, this game is busy. Try to make a new one.')

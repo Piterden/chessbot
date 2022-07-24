@@ -10,6 +10,11 @@ module.exports = () => [
   async (ctx) => {
     const game = await getGame(ctx, ctx.match[1])
 
+    if (game === null) {
+      // TODO add function to say user about error
+      return
+    }
+
     if (!isBlackUser(game, ctx) && !isWhiteUser(game, ctx)) {
       return ctx.answerCbQuery('Sorry, this game is busy. Try to make a new one.')
     }

@@ -28,6 +28,11 @@ module.exports = () => [
 
     const enemy = await ctx.db('users').where('id', enemyId).first().catch(debug)
 
+    if (enemy === null) {
+      // TODO add function to say user about error
+      return
+    }
+
     await ctx.db('games').insert({
       whites_id: iAmWhite ? ctx.from.id : enemy.id,
       blacks_id: iAmWhite ? enemy.id : ctx.from.id,

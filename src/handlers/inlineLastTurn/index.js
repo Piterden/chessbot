@@ -28,6 +28,11 @@ module.exports = () => [
       return game
     }
 
+    if (game === null) {
+      // TODO add function to say user about error
+      return
+    }
+
     const moves = await ctx.db('moves')
       .where('game_id', game.id)
       .orderBy('created_at', 'asc')
