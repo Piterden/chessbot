@@ -15,7 +15,7 @@ A simple PvP chess game based on inline message and edit a reply markup of a che
 - Bot works in any group or private chat.
 - All moves stored in the DB, so you can play a few games simultaneously.
 
-**[Demo]**(https://t.me/chessy_bot) (WIP version)
+[**Demo**](https://t.me/chessy_bot) (WIP version)
 
 ## Usage
 
