@@ -105,7 +105,7 @@ module.exports = () => async (ctx) => {
         disable_web_page_preview: true,
         message_text: `Black (top): ?
 White (bottom): ${user.first_name}
-Waiting for a black side | [Discussion](https://t.me/chessy_bot_chat)`,
+Waiting for a black side | [Discussion](https://t.me/${process.env.DISCUSSION_GROUP})`,
       },
       ...board({
         board: status.board.squares,
@@ -129,7 +129,7 @@ Waiting for a black side | [Discussion](https://t.me/chessy_bot_chat)`,
         disable_web_page_preview: true,
         message_text: `White (top): ?
 Black (bottom): ${user.first_name}
-Waiting for a white side | [Discussion](https://t.me/chessy_bot_chat)`,
+Waiting for a white side | [Discussion](https://t.me/${process.env.DISCUSSION_GROUP})`,
       },
       ...board({
         board: status.board.squares,

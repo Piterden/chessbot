@@ -23,10 +23,10 @@ ${isCheck ? '|CHECK|' : ''}${isCheckmate ? '|CHECKMATE|' : ''}${isRepetition ? '
 const topMessage = (whiteTurn, player, enemy) => whiteTurn
   ? `White (top): ${player.first_name}
 Black (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
-Black's turn | [Discussion](https://t.me/chessy_bot_chat)`
+Black's turn | [Discussion](https://t.me/${process.env.DISCUSSION_GROUP})`
   : `Black (top): ${player.first_name}
 White (bottom): [${enemy.first_name}](tg://user?id=${enemy.id})
-White's turn | [Discussion](https://t.me/chessy_bot_chat)`
+White's turn | [Discussion](https://t.me/${process.env.DISCUSSION_GROUP})`
 
 module.exports = () => [
   /^([a-h])([1-8])([QRNB])?$/,
