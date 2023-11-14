@@ -7,7 +7,12 @@
     "lint": "eslint --ext .js src",
     "lint:fix": "eslint --fix --ext .js src",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -w src src/index.js"
+    "dev": "nodemon -w src src/index.js",
+    "migrate:make": "knex migrate:make",
+    "migrate": "npm run migrate:up",
+    "migrate:up": "knex migrate:latest",
+    "migrate:down": "knex migrate:rollback",
+    "migrate:refresh": "knex migrate:rollback && knex migrate:latest"
   },
   "author": "Denis Efremov <efremov.a.denis@gmail.com>",
   "repository": {
@@ -18,7 +23,7 @@
   "dependencies": {
     "chess": "^0.4.9",
     "dotenv": "^7.0.0",
-    "knex": "^2.2.0",
+    "knex": "^2.5.1",
     "module-alias": "^2.2.2",
     "mysql2": "^2.2.5",
     "pg": "^8.7.3",

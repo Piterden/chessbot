@@ -65,3 +65,4 @@ db.sqlite3
 
 package-lock.json
 yarn.lock
+db_password.txt

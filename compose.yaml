@@ -1,0 +1,39 @@
+services:
+  bot:
+    build:
+      context: .
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - BOT_TOKEN=${BOT_TOKEN}
+      - BOT_NAME=${BOT_NAME}
+      - LOG_INFO_CHANNEL=${LOG_INFO_CHANNEL}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_CLIENT=${DB_CLIENT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_MIGRATIONS_TABLE=${DB_MIGRATIONS_TABLE}
+    # ports:
+    #   - 3000:3000
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres
+    hostname: ${DB_HOST}
+    container_name: ${DB_HOST}
+    restart: always
+    user: postgres
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  pg-data:
