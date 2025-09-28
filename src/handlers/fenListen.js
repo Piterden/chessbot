@@ -9,7 +9,7 @@ module.exports = () => [
 
     const game = chess.fromFEN(ctx.message.text)
     const status = game.getStatus()
-    const [position, side] = ctx.message.text.split(/\s+/)
+    const [, side] = ctx.message.text.split(/\s+/)
 
     ctx.game.game = game
     ctx.game.fen = ctx.message.text
@@ -24,5 +24,5 @@ module.exports = () => [
       parse_mode: 'Markdown',
       disable_web_page_preview: true,
     })
-  }
+  },
 ]

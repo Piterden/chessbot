@@ -1,23 +1,16 @@
-const chess = require('chess')
+// const chess = require('chess')
 
 const { board, actions } = require('@/keyboards')
 const {
-  log,
   debug,
-  preLog,
-  getGame,
-  isWhiteTurn,
-  isWhiteUser,
-  isBlackUser,
-  makeUserLog,
 } = require('@/helpers')
 
 module.exports = () => [
-  /^fen::([a-h])([1-8])([QRNB])?$/,
+  /^fen::([a-h])([1-8])$/,
   async (ctx) => {
     const game = ctx.game.game
     const status = game?.getStatus()
-    const [position, side] = ctx.game.fen.split(/\s+/)
+    const [, side] = ctx.game.fen.split(/\s+/)
 
     const pressed = status.board.squares
       .find(({ file, rank }) => file === ctx.match[1] && rank === Number(ctx.match[2]))
@@ -45,5 +38,5 @@ module.exports = () => [
 
       ctx.game.selected = pressed
     }
-  }
+  },
 ]

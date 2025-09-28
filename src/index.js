@@ -1,10 +1,10 @@
 require('dotenv').config()
 require('module-alias/register')
 
-const fs = require('fs')
+// const fs = require('fs')
 const knex = require('knex')
-const path = require('path')
-const crypto = require('crypto')
+// const path = require('path')
+// const crypto = require('crypto')
 const { default: Telegraf, session } = require('telegraf')
 
 const {
@@ -35,6 +35,8 @@ bot.use(session({
     `${ctx.chat?.id}:${ctx.callbackQuery?.message?.message_id || ctx.message?.message_id + 1}`,
 }))
 
+bot.use((ctx) => debug(ctx))
+
 // bot.hears(/^\d+$/, async (ctx) => {
 //   if (ctx.from.id !== ctx.chat.id) return
 //   ctx.reply(`<a href="tg://user?id=${ctx.match[0]}">${ctx.match[0]}</a>`, { parse_mode: 'HTML' })
@@ -57,14 +59,14 @@ bot.action(...inlineLastTurn())
 bot.on('chosen_inline_result', async (ctx) => {
   log(
     preLog('BORD', `${makeUserLog(ctx.update.chosen_inline_result.from)}| [${ctx.update.chosen_inline_result.result_id === 2 ? 'black' : 'white'}] {${ctx.update.chosen_inline_result.inline_message_id}}`),
-    ctx
+    ctx,
   )
 })
 
 bot.catch((err) => debug(err))
 
 bot
-  .launch(/*{ webhook: {
+  .launch(/* { webhook: {
     domain: 'https://s1067490.srvape.com',
     port: 443,
     secretToken: crypto.randomBytes(64).toString("hex"),
@@ -72,5 +74,5 @@ bot
       key: fs.readFileSync(path.resolve('./certs/YOURPRIVATE.key')),
       cert: fs.readFileSync(path.resolve('./certs/YOURPUBLIC.pem')),
     },
-  }}*/)
-   .then(() => debug("Webhook bot listening on port 443"))
+  }} */)
+  .then(() => debug('Webhook bot listening on port 443'))
