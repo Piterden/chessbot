@@ -1,13 +1,12 @@
 // const chess = require('chess')
 
+const { debug } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
-const {
-  debug,
-} = require('@/helpers')
 
 module.exports = () => [
   /^fen::([a-h])([1-8])$/,
   async (ctx) => {
+    debug(ctx.game)
     const game = ctx.game.game
     const status = game?.getStatus()
     const [, side] = ctx.game.fen.split(/\s+/)

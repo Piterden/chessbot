@@ -1,12 +1,13 @@
 const chess = require('chess')
 
+const { debug } = require('@/helpers')
 const { board, actions } = require('@/keyboards')
 
 module.exports = () => [
   /^\s*(?:[rnbqkp1-8]{1,8}\/){7}[rnbqkp1-8]+\s+[wb]\s*$/i,
   async (ctx) => {
     if (ctx.from.id !== ctx.chat.id) return
-
+    debug(ctx)
     const game = chess.fromFEN(ctx.message.text)
     const status = game.getStatus()
     const [, side] = ctx.message.text.split(/\s+/)
