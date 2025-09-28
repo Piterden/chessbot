@@ -20,7 +20,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgres
+    image: postgres:17
     hostname: ${DB_HOST}
     container_name: ${DB_HOST}
     restart: always

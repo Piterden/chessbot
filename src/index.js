@@ -35,6 +35,11 @@ bot.use(session({
     `${ctx.chat?.id}:${ctx.callbackQuery?.message?.message_id || ctx.message?.message_id + 1}`,
 }))
 
+// bot.hears(/^\d+$/, async (ctx) => {
+//   if (ctx.from.id !== ctx.chat.id) return
+//   ctx.reply(`<a href="tg://user?id=${ctx.match[0]}">${ctx.match[0]}</a>`, { parse_mode: 'HTML' })
+// })
+
 // bot.command('start', startHandler())
 // bot.action(...mainMenuHandler())
 // bot.action(...gamesHandler())
