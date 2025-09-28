@@ -15,7 +15,7 @@ const {
 module.exports = () => [
   /^fen::([a-h])([1-8])([QRNB])?$/,
   async (ctx) => {
-    debug(ctx.message)
+    debug(ctx.callbackQuery.message)
     const game = ctx.game.game
     const status = game.getStatus()
     const [position, side] = ctx.game.fen.split(/\s+/)
