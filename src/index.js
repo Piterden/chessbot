@@ -35,6 +35,12 @@ bot.use(session({
     `${ctx.chat?.id}:${ctx.callbackQuery?.message_id || ctx.message?.message_id + 1}`,
 }))
 
+bot.use((ctx, next) => {
+  debug(ctx.callbackQuery?.inline_message_id ||
+    `${ctx.chat?.id}:${ctx.callbackQuery?.message_id || ctx.message?.message_id + 1}`)
+  next()
+})
+
 // bot.command('start', startHandler())
 // bot.action(...mainMenuHandler())
 // bot.action(...gamesHandler())
