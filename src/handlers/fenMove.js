@@ -7,6 +7,7 @@ module.exports = () => [
   /^fen::([a-h])([1-8])$/,
   async (ctx) => {
     debug(ctx.game)
+    debug(ctx.update)
     const game = ctx.game.game
     const status = game?.getStatus()
     const [, side] = ctx.game.fen.split(/\s+/)

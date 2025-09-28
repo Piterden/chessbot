@@ -7,7 +7,7 @@ module.exports = () => [
   /^\s*(?:[rnbqkp1-8]{1,8}\/){7}[rnbqkp1-8]+\s+[wb]\s*$/i,
   async (ctx) => {
     if (ctx.from.id !== ctx.chat.id) return
-    debug(ctx)
+    debug(ctx.update)
     const game = chess.fromFEN(ctx.message.text)
     const status = game.getStatus()
     const [, side] = ctx.message.text.split(/\s+/)
