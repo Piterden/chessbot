@@ -32,7 +32,7 @@ bot.context.db = knex(knexConfig)
 bot.use(session({
   property: 'game',
   getSessionKey: (ctx) => (ctx.callbackQuery && ctx.callbackQuery.inline_message_id) ||
-    (ctx.message && ctx.from && ctx.chat && `${ctx.from.id}:${ctx.chat.id}:${ctx.message.message_id}`),
+    (ctx.from && ctx.chat && `${ctx.from.id}:${ctx.chat.id}:${ctx.message?.message_id || ctx.callbackQuery.message?.message_id}`),
 }))
 
 // bot.command('start', startHandler())
