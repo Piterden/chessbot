@@ -10,13 +10,14 @@ const { default: Telegraf, session } = require('telegraf')
 const {
   // gamesHandler,
   // startHandler,
-  inlineLastTurn,
   // mainMenuHandler,
-  inlineBackHandler,
+  // inlineBackHandler,
+  inlineLastTurn,
+  fenListenHandler,
   inlineJoinHandler,
   inlineMoveHandler,
   inlineQueryHandler,
-  inlineSettingsHandler,
+  // inlineSettingsHandler,
 } = require('@/handlers')
 const { debug, log, preLog, makeUserLog } = require('@/helpers')
 const knexConfig = require('@/../knexfile')
@@ -45,19 +46,14 @@ bot.use(session({
 
 // bot.action(...mainMenuHandler())
 // bot.action(...gamesHandler())
-bot.hears(/^\s*(?:[rnbqkp1-8]{1,8}\/){7}[rnbqkp1-8]+\s+[wb]\s*$/i, (ctx) => {
-  ctx.reply(ctx.message)
-})
+bot.hears(...fenListenHandler())
 
 bot.on('inline_query', inlineQueryHandler())
-// bot.on('chosen_inline_result', async (ctx) => {
-//   debug(Object.keys(ctx))
-// })
 
-bot.action(...inlineBackHandler())
+// bot.action(...inlineBackHandler())
+// bot.action(...inlineSettingsHandler())
 bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
-bot.action(...inlineSettingsHandler())
 bot.action(...inlineLastTurn())
 
 bot.on('chosen_inline_result', async (ctx) => {

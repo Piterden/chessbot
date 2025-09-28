@@ -41,7 +41,7 @@ module.exports = ({ board, isWhite, actions, callbackOverride }) => {
 
       return {
         text: `${square.move ? 'X' : ''}${piece}`,
-        callback_data: callbackOverride || `${col}${row}`,
+        callback_data: `${callbackOverride}${col}${row}`,
       }
     }
 
@@ -50,7 +50,7 @@ module.exports = ({ board, isWhite, actions, callbackOverride }) => {
      */
     return {
       text: square.move ? '·' : unescape('%u0020'),
-      callback_data: callbackOverride || `${col}${row}`,
+      callback_data: `${callbackOverride}${col}${row}`,
     }
   }))
 

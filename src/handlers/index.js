@@ -1,6 +1,7 @@
 const gamesHandler = require('./games')
 const startHandler = require('./start')
 const mainMenuHandler = require('./mainMenu')
+const fenListenHandler = require('./fenListen')
 const inlineBackHandler = require('./inlineBack')
 const inlineJoinHandler = require('./inlineJoin')
 const inlineMoveHandler = require('./inlineMove')
@@ -13,6 +14,7 @@ module.exports = {
   startHandler,
   inlineLastTurn,
   mainMenuHandler,
+  fenListenHandler,
   inlineBackHandler,
   inlineJoinHandler,
   inlineMoveHandler,
