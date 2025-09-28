@@ -13,8 +13,9 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_MIGRATIONS_TABLE=${DB_MIGRATIONS_TABLE}
-    # ports:
-    #   - 3000:3000
+    ports:
+      - 80:80
+      - 443:443
     depends_on:
       db:
         condition: service_healthy

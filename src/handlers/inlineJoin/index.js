@@ -63,12 +63,14 @@ module.exports = () => [
 
     await ctx.editMessageText(
       iAmWhite
-        ? `Black (top): ${enemy.first_name}
+        ? `🇷🇺🇷🇺🇷🇺
+Black (top): ${enemy.first_name}
 White (bottom): ${user.first_name}
-White's turn | [Discussion](https://t.me/${process.env.DISCUSSION_GROUP})`
-        : `Black (top): ${user.first_name}
+White's turn`
+        : `🇷🇺🇷🇺🇷🇺
+Black (top): ${user.first_name}
 White (bottom): ${enemy.first_name}
-White's turn | [Discussion](https://t.me/${process.env.DISCUSSION_GROUP})`,
+White's turn`,
       {
         ...ctx.game.lastBoard,
         parse_mode: 'Markdown',

@@ -1,7 +1,10 @@
 require('dotenv').config()
 require('module-alias/register')
 
+const fs = require('fs')
 const knex = require('knex')
+const path = require('path')
+const crypto = require('crypto')
 const { default: Telegraf, session } = require('telegraf')
 
 const {
@@ -42,6 +45,9 @@ bot.use(session({
 
 // bot.action(...mainMenuHandler())
 // bot.action(...gamesHandler())
+bot.hears(/^\s*(?:[rnbqkp1-8]{1,8}\/){7}[rnbqkp1-8]+\s+[wb]\s*$/i, (ctx) => {
+  ctx.reply(ctx.message)
+})
 
 bot.on('inline_query', inlineQueryHandler())
 // bot.on('chosen_inline_result', async (ctx) => {
@@ -63,4 +69,14 @@ bot.on('chosen_inline_result', async (ctx) => {
 
 bot.catch((err) => debug(err))
 
-bot.telegram.getUpdates(1, -1).then(() => bot.launch())
+bot
+  .launch(/*{ webhook: {
+    domain: 'https://s1067490.srvape.com',
+    port: 443,
+    secretToken: crypto.randomBytes(64).toString("hex"),
+    tlsOptions: {
+      key: fs.readFileSync(path.resolve('./certs/YOURPRIVATE.key')),
+      cert: fs.readFileSync(path.resolve('./certs/YOURPUBLIC.pem')),
+    },
+  }}*/)
+   .then(() => debug("Webhook bot listening on port 443"))
