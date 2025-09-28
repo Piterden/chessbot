@@ -12,6 +12,7 @@ const {
   // startHandler,
   // mainMenuHandler,
   // inlineBackHandler,
+  fenMoveHandler,
   inlineLastTurn,
   fenListenHandler,
   inlineJoinHandler,
@@ -34,24 +35,16 @@ bot.use(session({
     (ctx.message && ctx.from && ctx.chat && `${ctx.from.id}:${ctx.chat.id}:${ctx.message.message_id}`),
 }))
 
-// bot.use(async (ctx, next) => {
-//   debug(ctx.update)
-//   // debug(ctx.game)
-//   next(ctx)
-//   // if (ctx.chat && ctx.chat.type === 'private') {
-//   // }
-// })
-
 // bot.command('start', startHandler())
-
 // bot.action(...mainMenuHandler())
 // bot.action(...gamesHandler())
 bot.hears(...fenListenHandler())
-
-bot.on('inline_query', inlineQueryHandler())
+bot.action(...fenMoveHandler())
 
 // bot.action(...inlineBackHandler())
 // bot.action(...inlineSettingsHandler())
+
+bot.on('inline_query', inlineQueryHandler())
 bot.action(...inlineJoinHandler())
 bot.action(...inlineMoveHandler())
 bot.action(...inlineLastTurn())
