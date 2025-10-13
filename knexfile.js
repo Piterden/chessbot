@@ -1,8 +1,8 @@
 require('dotenv').config()
 
 const {
+  DB_HOST,
   DB_CLIENT,
-  DB_CHARSET,
   DB_DATABASE,
   DB_PASSWORD,
   DB_USERNAME,
@@ -14,6 +14,7 @@ const params = DB_CLIENT === 'sqlite3'
     filename: DB_DATABASE,
   }
   : {
+    host: DB_HOST,
     database: DB_DATABASE,
     user: DB_USERNAME,
     password: DB_PASSWORD,
@@ -23,7 +24,6 @@ module.exports = {
   client: DB_CLIENT,
   connection: {
     ...params,
-    charset: DB_CHARSET,
   },
   pool: {
     min: 2,

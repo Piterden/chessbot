@@ -1,7 +1,6 @@
 root: true
 parser: babel-eslint
 extends:
-  # - '@atomix'
   - standard
 env:
   node: true
@@ -11,7 +10,6 @@ parserOptions:
   ecmaFeatures:
     globalReturn: false
     modules: false
-    experimentalObjectRestSpread: true
 rules:
   max-len: off
   prefer-rest-params: off

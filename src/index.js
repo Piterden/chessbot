@@ -9,14 +9,14 @@ const Telegraf = require('telegraf')
 // const { gameScene } = require('@/scenes')
 const knexConfig = require('@/../knexfile')
 const {
-  // newHandler,
-  // joinHandler,
-  // loadHandler,
-  inlineJoinHandler,
-  inlineMoveHandler,
-  inlineQueryHandler,
+  newHandler,
+  joinHandler,
+  loadHandler,
+  // inlineJoinHandler,
+  // inlineMoveHandler,
+  // inlineQueryHandler,
 } = require('@/handlers')
-const seqDb = require('@/models')
+//const seqDb = require('@/models')
 
 const { session } = Telegraf
 const { BOT_NAME, BOT_TOKEN } = process.env
@@ -25,8 +25,7 @@ const { BOT_NAME, BOT_TOKEN } = process.env
 
 const bot = new Telegraf(BOT_TOKEN, { username: BOT_NAME })
 
-// TODO: remove knex rename to db and
-bot.context.seqDb = seqDb
+//bot.context.seqDb = seqDb
 bot.context.db = knex(knexConfig)
 
 bot.use(session({
@@ -36,12 +35,12 @@ bot.use(session({
 }))
 // bot.use(stage.middleware())
 
-// bot.start(...loadHandler())
-// bot.action(...newHandler())
-// bot.action(...joinHandler())
+bot.start(...loadHandler())
+bot.action(...newHandler())
+bot.action(...joinHandler())
 
-bot.action(...inlineJoinHandler())
-bot.action(...inlineMoveHandler())
-bot.on('inline_query', inlineQueryHandler())
+// bot.action(...inlineJoinHandler())
+// bot.action(...inlineMoveHandler())
+// bot.on('inline_query', inlineQueryHandler())
 
-bot.startPolling()
+bot.launch().catch(console.log)
