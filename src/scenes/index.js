@@ -1,5 +1,2 @@
-const gameScene = require('./game')
-
-module.exports = {
-  gameScene,
-}
+export { default as gameScene } from './gameScene.js'
+export { default as lobbyScene } from './lobbyScene.js'

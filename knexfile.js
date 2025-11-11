@@ -1,4 +1,6 @@
-require('dotenv').config()
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const {
   DB_HOST,
@@ -9,21 +11,13 @@ const {
   DB_MIGRATIONS_TABLE,
 } = process.env
 
-const params = DB_CLIENT === 'sqlite3'
-  ? {
-    filename: DB_DATABASE,
-  }
-  : {
-    host: DB_HOST,
-    database: DB_DATABASE,
-    user: DB_USERNAME,
-    password: DB_PASSWORD,
-  }
-
-module.exports = {
+export default {
   client: DB_CLIENT,
   connection: {
-    ...params,
+    host: DB_HOST,
+    user: DB_USERNAME,
+    password: DB_PASSWORD,
+    database: DB_DATABASE,
   },
   pool: {
     min: 2,

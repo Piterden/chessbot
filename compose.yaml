@@ -1,4 +1,7 @@
+name: chessbot
+
 services:
+
   bot:
     build:
       context: .
@@ -19,6 +22,18 @@ services:
     networks:
       inner-net:
         ipv4_address: 10.3.3.4
+    command: [ "npm", "run", "dev" ]
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          initial_sync: true
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+
   psql:
     image: postgres:17
     hostname: ${DB_HOST}
@@ -39,8 +54,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
 volumes:
   pg-data-2:
+
 networks:
   inner-net:
     ipam:

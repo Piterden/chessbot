@@ -1,46 +1,32 @@
-require('dotenv').config()
-require('module-alias/register')
+import dotenv from 'dotenv'
+import Telegraf from 'telegraf'
+import Stage from 'telegraf/stage.js'
 
-const knex = require('knex')
-const Telegraf = require('telegraf')
-// const Sequelize = require('sequelize')
-// const Stage = require('telegraf/stage')
+import { debug } from './helpers.js'
+import { addOrUpdateUser } from './database.js'
+import { gameScene, lobbyScene } from './scenes/index.js'
+import { newHandler, joinHandler, startHandler } from './handlers/index.js'
 
-// const { gameScene } = require('@/scenes')
-const knexConfig = require('@/../knexfile')
-const {
-  newHandler,
-  joinHandler,
-  loadHandler,
-  // inlineJoinHandler,
-  // inlineMoveHandler,
-  // inlineQueryHandler,
-} = require('@/handlers')
-//const seqDb = require('@/models')
+dotenv.config()
 
 const { session } = Telegraf
 const { BOT_NAME, BOT_TOKEN } = process.env
 
-// const stage = new Stage([gameScene])
-
+const stage = new Stage([gameScene, lobbyScene])
 const bot = new Telegraf(BOT_TOKEN, { username: BOT_NAME })
 
-//bot.context.seqDb = seqDb
-bot.context.db = knex(knexConfig)
-
 bot.use(session({
-  property: 'game',
-  getSessionKey: (ctx) => (ctx.callbackQuery && ctx.callbackQuery.inline_message_id) ||
-    (ctx.from && ctx.chat && `${ctx.from.id}:${ctx.chat.id}`),
+  property: 'session',
+  getSessionKey: (ctx) => ctx.from && ctx.chat && `${ctx.from.id}:${ctx.chat.id}`,
 }))
-// bot.use(stage.middleware())
+bot.use(stage.middleware())
+bot.use((ctx, next) => {
+  addOrUpdateUser(ctx.from)
+  next()
+})
 
-bot.start(...loadHandler())
+bot.start(...startHandler())
 bot.action(...newHandler())
 bot.action(...joinHandler())
 
-// bot.action(...inlineJoinHandler())
-// bot.action(...inlineMoveHandler())
-// bot.on('inline_query', inlineQueryHandler())
-
-bot.launch().catch(console.log)
+bot.launch().catch(debug)

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-exports.up = async (knex, Promise) => (await knex.schema.hasTable('users'))
+export const up = async (knex) => (await knex.schema.hasTable('users'))
   ? null
   : knex.schema.createTable('users', (table) => {
     table.bigInteger('id').unsigned()
@@ -11,10 +11,11 @@ exports.up = async (knex, Promise) => (await knex.schema.hasTable('users'))
     table.boolean('is_bot')
     table.boolean('is_premium')
     table.timestamp('created_at').defaultTo(knex.fn.now())
+    table.timestamp('updated_at')
 
     table.primary('id')
   })
 
-exports.down = async (knex, Promise) => (await knex.schema.hasTable('users'))
+export const down = async (knex) => (await knex.schema.hasTable('users'))
   ? knex.schema.dropTable('users')
   : null

@@ -1,27 +1,11 @@
-const newHandler = require('./new')
-const joinHandler = require('./join')
-const loadHandler = require('./load')
-const leaveHandler = require('./leave')
-const movesHandler = require('./moves')
-const startHandler = require('./start')
-const actionsHandler = require('./actions')
-const messageHandler = require('./message')
-const optionsHandler = require('./options')
-const inlineJoinHandler = require('./inlineJoin')
-const inlineMoveHandler = require('./inlineMove')
-const inlineQueryHandler = require('./inlineQuery')
-
-module.exports = {
-  newHandler,
-  joinHandler,
-  loadHandler,
-  leaveHandler,
-  movesHandler,
-  startHandler,
-  actionsHandler,
-  messageHandler,
-  optionsHandler,
-  inlineJoinHandler,
-  inlineMoveHandler,
-  inlineQueryHandler,
-}
+export { default as newHandler } from './newHandler.js'
+export { default as joinHandler } from './joinHandler.js'
+export { default as startHandler } from './startHandler.js'
+export { default as movesHandler } from './movesHandler.js'
+export { default as actionsHandler } from './actionsHandler.js'
+export { default as messageHandler } from './messageHandler.js'
+export { default as optionsHandler } from './optionsHandler.js'
+export { default as enterGameHandler } from './enterGameHandler.js'
+export { default as leaveGameHandler } from './leaveGameHandler.js'
+export { default as enterLobbyHandler } from './enterLobbyHandler.js'
+export { default as leaveLobbyHandler } from './leaveLobbyHandler.js'

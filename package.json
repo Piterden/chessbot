@@ -8,6 +8,7 @@
     "lint:fix": "eslint --fix --ext .js src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -w src src/index.js",
+    "exp": "node --experimental-specifier-resolution=node src/index.js",
     "migrate:make": "knex migrate:make",
     "migrate": "npm run migrate:up",
     "migrate:up": "knex migrate:latest",
@@ -21,25 +22,21 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chess": "^0.4.9",
-    "dotenv": "^7.0.0",
-    "knex": "^2.5.1",
-    "module-alias": "^2.2.2",
-    "mysql2": "^2.2.5",
-    "pg": "^8.7.3",
-    "telegraf": "^3.37.0"
+    "chess": "^1.5.0",
+    "dotenv": "^17.2.3",
+    "knex": "^3.1.0",
+    "pg": "^8.16.3",
+    "telegraf": "^3.40.0"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.16.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^9.37.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "nodemon": "^1.18.11"
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-standard": "^4.1.0",
+    "nodemon": "^3.1.10"
   },
-  "_moduleAliases": {
-    "@": "./src"
-  }
+   "type": "module"
 }

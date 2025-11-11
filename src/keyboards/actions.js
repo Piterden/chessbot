@@ -1,8 +1,8 @@
-const Telegraf = require('telegraf')
+import Telegraf from 'telegraf'
 
 const { Markup } = Telegraf
 
-module.exports = (open = false) => Markup.inlineKeyboard([
+export default (open = false) => Markup.inlineKeyboard([
   [
     Markup.callbackButton('◀️ Back to Games List', 'back'),
     Markup.callbackButton('Game Options 🔽', 'options/show', open),

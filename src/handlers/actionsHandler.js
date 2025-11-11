@@ -1,9 +1,9 @@
-module.exports = () => [
+export default () => [
   /^back|reverse|index$/,
   async (ctx) => {
     switch (ctx.match[0]) {
       case 'back':
-        ctx.scene.leave()
+        ctx.scene.enter('lobby')
         break
 
       default:

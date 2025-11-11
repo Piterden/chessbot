@@ -20,7 +20,12 @@ rules:
     - error
   comma-dangle:
     - error
-    - always-multiline
+    -
+      functions: only-multiline
+      arrays: always-multiline
+      objects: always-multiline
+      imports: always-multiline
+      exports: always-multiline
   id-length:
     - error
     -
@@ -47,3 +52,5 @@ rules:
   semi:
     - error
     - never
+  camelcase:
+    - off

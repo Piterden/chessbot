@@ -1,7 +1,2 @@
-const board = require('./board')
-const actions = require('./actions')
-
-module.exports = {
-  board,
-  actions,
-}
+export { default as board } from './board.js'
+export { default as actions } from './actions.js'

@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
 
-exports.up = async (knex, Promise) => (await knex.schema.hasTable('games'))
-  ? null
-  : knex.schema.createTable('games', (table) => {
+export const up = async (knex, Promise) => {
+  if (await knex.schema.hasTable('games')) {
+    return null
+  }
+
+  await knex.schema.createTable('games', (table) => {
     table.increments('id')
     table.bigInteger('user_w').unsigned().nullable().index()
     table.bigInteger('user_b').unsigned().nullable().index()
@@ -11,12 +14,20 @@ exports.up = async (knex, Promise) => (await knex.schema.hasTable('games'))
     table.integer('actions_w').unsigned().nullable()
     table.integer('actions_b').unsigned().nullable()
     table.timestamp('created_at').defaultTo(knex.fn.now())
-    table.timestamp('updated_at').defaultTo(knex.fn.now())
+    table.timestamp('updated_at')
 
     table.foreign('user_w').references('id').on('users')
     table.foreign('user_b').references('id').on('users')
   })
 
-exports.down = async (knex, Promise) => (await knex.schema.hasTable('games'))
+  await knex.raw(`
+    CREATE TRIGGER games_updated_at
+    BEFORE UPDATE ON games
+    FOR EACH ROW
+    EXECUTE PROCEDURE on_update();
+  `)
+}
+
+export const down = async (knex, Promise) => (await knex.schema.hasTable('games'))
   ? knex.schema.dropTable('games')
   : null
