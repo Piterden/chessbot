@@ -141,7 +141,6 @@ export default () => [
           ).catch(debug)
         }
       }
-
     }
 
     return ctx.answerCbQuery().catch(debug)

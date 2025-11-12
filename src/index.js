@@ -26,7 +26,5 @@ bot.use((ctx, next) => {
 })
 
 bot.start(...startHandler())
-bot.action(...newHandler())
-bot.action(...joinHandler())
 
 bot.launch().catch(debug)

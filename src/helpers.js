@@ -1,13 +1,13 @@
 import { inspect } from 'util'
 import { getUser } from './database.js'
 
-const debug = (data) => console.log(inspect(data, {
+export const debug = (data) => console.log(inspect(data, {
   colors: true,
   showHidden: true,
   depth: 10,
 }))
 
-const emodji = {
+export const emodji = {
   white: {
     rook: '♜',
     knight: '♞',
@@ -26,20 +26,20 @@ const emodji = {
   },
 }
 
-const editUser = (method) => (user) => Object.keys(user).reduce((acc, key) => {
+export const editUser = (method) => (user) => Object.keys(user).reduce((acc, key) => {
   acc[key] = typeof user[key] === 'string' ? method(user[key]) : user[key]
   return acc
 }, {})
-const escapeUser = editUser(escape)
-const unescapeUser = editUser(unescape)
+export const escapeUser = editUser(escape)
+export const unescapeUser = editUser(unescape)
 
-const isWhiteTurn = (moves) => moves.length % 2 === 0
-const isBlackTurn = (moves) => moves.length % 2 === 1
+export const isWhiteTurn = (moves) => moves.length % 2 === 0
+export const isBlackTurn = (moves) => moves.length % 2 === 1
 
-const isWhitePlayer = (ctx, game) => ctx.from.id === Number(game.user_w)
-const isBlackPlayer = (ctx, game) => ctx.from.id === Number(game.user_b)
+export const isWhitePlayer = (ctx, game) => ctx.from.id === Number(game.user_w)
+export const isBlackPlayer = (ctx, game) => ctx.from.id === Number(game.user_b)
 
-const whiteUserName = async (ctx, game) => {
+export const whiteUserName = async (ctx, game) => {
   if (isWhitePlayer(ctx, game)) {
     return `${isWhiteTurn(game.moves) ? '!!! ' : ''}YOU`
   }
@@ -50,7 +50,7 @@ const whiteUserName = async (ctx, game) => {
   return 'No player'
 }
 
-const blackUserName = async (ctx, game) => {
+export const blackUserName = async (ctx, game) => {
   if (ctx.from.id === Number(game.user_b)) {
     return `YOU${isBlackTurn(game.moves) ? ' !!!' : ''}`
   }
@@ -61,28 +61,28 @@ const blackUserName = async (ctx, game) => {
   return 'Waiting...'
 }
 
-const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
+export const statusMessage = ({ isCheck, isCheckmate, isRepetition }) => `
 ${isCheck ? '|CHECK|' : ''}
 ${isCheckmate ? '|CHECKMATE|' : ''}
 ${isRepetition ? '|REPETITION|' : ''}`
 
-const topMessage = (moves, game, isWhiteSide) => isWhiteSide
+export const topMessage = (moves, game, isWhiteSide) => isWhiteSide
   ? `${isWhiteTurn(moves) ? '*' : ''} [BLACK] User ${game.user_b || 'waiting...'}`
   : `${isBlackTurn(moves) ? '*' : ''} [WHITE] ${game.user_w}`
 
-const bottomMessage = (moves, game, isWhiteSide) => isWhiteSide
+export const bottomMessage = (moves, game, isWhiteSide) => isWhiteSide
   ? `${isBlackTurn(moves) ? '*' : ''} [WHITE] YOU`
   : `${isWhiteTurn(moves) ? '*' : ''} [BLACK] YOU`
 
-const isReady = ({ board_w, board_b, actions_w, actions_b, user_w, user_b }) =>
+export const isReady = ({ board_w, board_b, actions_w, actions_b, user_w, user_b }) =>
   !!(board_w && board_b && actions_w && actions_b && user_w && user_b)
 
-const gameButton = async (ctx, game) => ({
+export const gameButton = async (ctx, game) => ({
   text: `${await whiteUserName(ctx, game)} / ${await blackUserName(ctx, game)} | ${game.moves.length} moves`,
   callback_data: `join/${game.id}`,
 })
 
-const deepDiff = (first, second) => {
+export const deepDiff = (first, second) => {
   if (first === second) return true
   if (first === null || second === null) return false
   if (typeof first !== 'object' || typeof second !== 'object') return false
@@ -96,23 +96,4 @@ const deepDiff = (first, second) => {
     if (deepDiff(first[key], second[key]) === false) return false
   }
   return true
-}
-
-export {
-  debug,
-  emodji,
-  isReady,
-  deepDiff,
-  escapeUser,
-  gameButton,
-  topMessage,
-  isBlackTurn,
-  isWhiteTurn,
-  unescapeUser,
-  isWhitePlayer,
-  isBlackPlayer,
-  bottomMessage,
-  statusMessage,
-  blackUserName,
-  whiteUserName,
 }

@@ -9,12 +9,13 @@ export default () => [
 
     const inline_keyboard = [
       ...(await Promise.all(games.map(async (game) => [await gameButton(ctx, game)]))),
-      [{ text: 'Create a new game', callback_data: 'new' }],
+      [{ text: 'New game with white', callback_data: 'neww' }],
+      [{ text: 'New game with black', callback_data: 'newb' }],
     ]
 
     ctx.session.listMessage = await ctx.reply(
-      `Hi ${ctx.from.first_name || 'stranger'}, I'm the Chess bot.
-${inline_keyboard.length > 1 ? '\nYour games:' : ''}`,
+      `Hi ${ctx.from.first_name || 'stranger'}.
+${inline_keyboard.length > 1 ? '\nAvailable games:' : ''}`,
       { reply_markup: { inline_keyboard } },
     ).catch(debug)
   },
