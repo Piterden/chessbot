@@ -52,7 +52,7 @@ export default () => [
 
     if (ctx.from.id === Number(game.user_b)) {
       const blackBoardMsg = await ctx.reply(
-        `${isWhiteTurn(moves) ? '*' : ''} (WHITE) User ${unescape(whiteUser.first_name)}`,
+        `${isWhiteTurn(moves) ? '*' : ''} (WHITE) User ${whiteUser ? unescape(whiteUser.first_name) : 'waiting...'}`,
         board(status.board.squares, false)
       ).catch(debug)
 

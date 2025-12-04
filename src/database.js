@@ -43,9 +43,10 @@ export const getGame = async (id) => {
 export const getGames = async (user_id) => {
   const games = await db('games')
     .select('*')
-    .whereNull('user_b')
-    .orWhere({ user_b: user_id })
-    .orWhere({ user_w: user_id })
+    .where((builder) => builder.whereNull('user_b').whereNot({ user_w: user_id }))
+    .orWhere((builder) => builder.whereNull('user_w').whereNot({ user_b: user_id }))
+    .orWhere((builder) => builder.whereNotNull('user_b').where({ user_w: user_id }))
+    .orWhere((builder) => builder.whereNotNull('user_w').where({ user_b: user_id }))
     .orderBy('created_at', 'asc')
     .catch(debug)
   return games

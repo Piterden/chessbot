@@ -45,9 +45,9 @@ export const whiteUserName = async (ctx, game) => {
   }
   if (game.user_w) {
     const user = await getUser(Number(game.user_w))
-    return user ? unescape(user.first_name) : 'No player'
+    return user ? unescape(user.first_name) : 'Waiting...'
   }
-  return 'No player'
+  return 'Waiting...'
 }
 
 export const blackUserName = async (ctx, game) => {
@@ -66,13 +66,18 @@ ${isCheck ? '|CHECK|' : ''}
 ${isCheckmate ? '|CHECKMATE|' : ''}
 ${isRepetition ? '|REPETITION|' : ''}`
 
-export const topMessage = (moves, game, isWhiteSide) => isWhiteSide
-  ? `${isWhiteTurn(moves) ? '*' : ''} [BLACK] User ${game.user_b || 'waiting...'}`
-  : `${isBlackTurn(moves) ? '*' : ''} [WHITE] ${game.user_w}`
+const getUserName = async (id) => {
+  const user = await getUser(id)
+  return user.first_name
+}
+
+export const topMessage = async (moves, game, isWhiteSide) => isWhiteSide
+  ? `${isWhiteTurn(moves) ? '' : '*'} [BLACK] User ${await getUserName(game.user_b) || 'waiting...'}`
+  : `${isBlackTurn(moves) ? '' : '*'} [WHITE] ${await getUserName(game.user_w) || 'waiting...'}`
 
 export const bottomMessage = (moves, game, isWhiteSide) => isWhiteSide
-  ? `${isBlackTurn(moves) ? '*' : ''} [WHITE] YOU`
-  : `${isWhiteTurn(moves) ? '*' : ''} [BLACK] YOU`
+  ? `${isWhiteTurn(moves) ? '*' : ''} [WHITE] YOU`
+  : `${isBlackTurn(moves) ? '*' : ''} [BLACK] YOU`
 
 export const isReady = ({ board_w, board_b, actions_w, actions_b, user_w, user_b }) =>
   !!(board_w && board_b && actions_w && actions_b && user_w && user_b)

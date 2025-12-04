@@ -46,44 +46,53 @@ export default () => [
     const square = status.board.squares
       .find(({ file, rank }) => file === letter && rank === Number(digit))
 
-    if (ctx.session.selected === null) {
-      if (
-        !square || !square.piece ||
-        (square.piece.side.name === 'black' && isWhiteTurn(game.moves)) ||
-        (square.piece.side.name === 'white' && isBlackTurn(game.moves))
-      ) {
-        return ctx.answerCbQuery('Please, move your pieces!').catch(debug)
-      }
+    if (
+      !square || !square.piece ||
+      (square.piece.side.name === 'black' && isWhiteTurn(game.moves)) ||
+      (square.piece.side.name === 'white' && isBlackTurn(game.moves))
+    ) {
+      return ctx.answerCbQuery('Please, move your pieces!').catch(debug)
+    }
 
+    if (ctx.session.selected === null) {
       const validMoves = Object.keys(status.notatedMoves)
         .filter((key) => status.notatedMoves[key].src === square)
         .map((key) => ({ ...status.notatedMoves[key], key }))
 
-      await ctx.editMessageReplyMarkup(board(
-        status.board.squares.map((sqr) => {
-          const move = validMoves
-            .find((({ file, rank }) => ({ dest }) => dest.file === file &&
-              dest.rank === rank)(sqr))
+      if (validMoves.length > 0) {
+        await ctx.editMessageReplyMarkup(board(
+          status.board.squares.map((sqr) => {
+            const move = validMoves
+              .find((({ file, rank }) => ({ dest }) => dest.file === file &&
+                dest.rank === rank)(sqr))
 
-          return move ? { ...sqr, destination: move } : sqr
-        }),
-        isWhiteTurn(game.moves),
-      ).reply_markup).catch(debug)
+            return move ? { ...sqr, destination: move } : sqr
+          }),
+          isWhiteTurn(game.moves),
+        ).reply_markup).catch(debug)
 
-      ctx.session.moves = validMoves
-      ctx.session.selected = square
+        ctx.session.moves = validMoves
+        ctx.session.selected = square
+      }
 
       return ctx.answerCbQuery(`${square.piece.type} ${square.file}${square.rank}`)
         .catch(debug)
     }
 
     if (ctx.session.selected) {
-      if (square === ctx.session.selected) {
+      if (square.rank === ctx.session.selected.rank && square.file === ctx.session.selected.file) {
+        await ctx.editMessageReplyMarkup(board(
+          status.board.squares,
+          isWhiteTurn(game.moves),
+        ).reply_markup).catch(debug)
+
+        ctx.session.moves = null
+        ctx.session.selected = null
         return ctx.answerCbQuery().catch(debug)
       }
+
       const moving = ctx.session.moves
         .find(({ dest: { file, rank } }) => file === square.file && rank === square.rank)
-
       if (moving) {
         try {
           gameClient.move(moving.key)
@@ -103,7 +112,7 @@ export default () => [
             game.user_w,
             game.board_w,
             undefined,
-            topMessage(game.moves, game, true) + statusMessage(status),
+            await topMessage(game.moves, game, true) + statusMessage(status),
             board(status.board.squares, true),
           ).catch(debug)
 
@@ -111,7 +120,7 @@ export default () => [
             game.user_b,
             game.board_b,
             undefined,
-            topMessage(game.moves, game, false) + statusMessage(status),
+            await topMessage(game.moves, game, false) + statusMessage(status),
             board(status.board.squares, false),
           ).catch(debug)
         }
