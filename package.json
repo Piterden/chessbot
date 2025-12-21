@@ -7,7 +7,6 @@
     "lint": "eslint --ext .js src",
     "lint:fix": "eslint --fix --ext .js src",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -w src src/index.js",
     "migrate:make": "knex migrate:make",
     "migrate": "npm run migrate:up",
     "migrate:up": "knex migrate:latest",
@@ -21,29 +20,19 @@
   },
   "license": "MIT",
   "dependencies": {
-    "chess": "^0.4.9",
-    "dotenv": "^7.0.0",
-    "knex": "^2.5.1",
-    "module-alias": "^2.2.2",
-    "pg": "^8.7.3",
+    "chess": "^1.5.1",
+    "dotenv": "^17.2.3",
+    "knex": "^3.1.0",
+    "module-alias": "^2.2.3",
+    "pg": "^8.16.3",
     "telegraf": "^3.37.0"
   },
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "eslint": "^9.39.1",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-standard": "^4.1.0",
-    "husky": "^8.0.3"
+    "@babel/eslint-parser": "^7.28.5",
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.1"
   },
   "_moduleAliases": {
     "@": "./src"
-  },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm run lint"
-    }
   }
 }
