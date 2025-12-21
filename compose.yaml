@@ -16,9 +16,6 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_MIGRATIONS_TABLE=${DB_MIGRATIONS_TABLE}
-    depends_on:
-      psql:
-        condition: service_healthy
     networks:
       inner-net:
         ipv4_address: 10.3.3.4
@@ -33,18 +30,20 @@ services:
             - node_modules/
         - action: rebuild
           path: package.json
+    depends_on:
+      psql:
+        condition: service_healthy
 
   psql:
-    image: postgres:17
+    image: postgres:16
     hostname: ${DB_HOST}
-    container_name: ${DB_HOST}
     restart: always
     user: postgres
     networks:
       inner-net:
         ipv4_address: 10.3.3.3
     volumes:
-      - pg-data-2:/var/lib/postgresql/data
+      - pg-data-chess:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     expose:
@@ -56,7 +55,7 @@ services:
       retries: 5
 
 volumes:
-  pg-data-2:
+  pg-data-chess:
 
 networks:
   inner-net:
