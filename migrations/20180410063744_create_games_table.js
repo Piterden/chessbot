@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars */
-
-export const up = async (knex, Promise) => {
+export const up = async (knex) => {
   if (await knex.schema.hasTable('games')) {
     return null
   }
@@ -28,6 +26,6 @@ export const up = async (knex, Promise) => {
   `)
 }
 
-export const down = async (knex, Promise) => (await knex.schema.hasTable('games'))
+export const down = async (knex) => (await knex.schema.hasTable('games'))
   ? knex.schema.dropTable('games')
   : null

@@ -1,4 +1,4 @@
-import { debug } from '../helpers.js'
+// import { debug } from '../helpers.js'
 import { addGame } from '../database.js'
 
 export default () => [

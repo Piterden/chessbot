@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars */
-
-export const up = async (knex, Promise) => (await knex.schema.hasTable('moves'))
+export const up = async (knex) => (await knex.schema.hasTable('moves'))
   ? null
   : knex.schema.createTable('moves', (table) => {
     table.increments('id')
@@ -11,6 +9,6 @@ export const up = async (knex, Promise) => (await knex.schema.hasTable('moves'))
     table.foreign('game_id').references('id').on('games')
   })
 
-export const down = async (knex, Promise) => (await knex.schema.hasTable('moves'))
+export const down = async (knex) => (await knex.schema.hasTable('moves'))
   ? knex.schema.dropTable('moves')
   : null

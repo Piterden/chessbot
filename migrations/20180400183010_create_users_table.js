@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 export const up = async (knex) => (await knex.schema.hasTable('users'))
   ? null
   : knex.schema.createTable('users', (table) => {

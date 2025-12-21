@@ -13,7 +13,7 @@ import {
   statusMessage,
 } from '../helpers.js'
 import { board, actions } from '../keyboards/index.js'
-import { getGame, addMove, getMoves, getGameWithMoves } from '../database.js'
+import { addMove, getGameWithMoves } from '../database.js'
 
 export default () => [
   /^([a-h])([1-8])$/,

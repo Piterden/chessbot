@@ -1,5 +1,3 @@
-import chess from 'chess'
-
 import { debug, gameButton } from '../helpers.js'
 import { getGamesWithMoves } from '../database.js'
 
