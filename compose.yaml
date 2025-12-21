@@ -1,5 +1,6 @@
 services:
   bot:
+    container_name: bot
     build:
       context: .
     environment:
@@ -19,7 +20,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgres:17
+    image: postgres:16
     hostname: ${DB_HOST}
     container_name: ${DB_HOST}
     restart: always
