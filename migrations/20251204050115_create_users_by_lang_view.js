@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function(knex) {
-  knex.createView('users_by_lang', (view) => {
+  return knex.createView('users_by_lang', (view) => {
     view.columns([
       'users',
       'language_code',
@@ -19,12 +19,12 @@ exports.up = function(knex) {
       `)
     )
   })
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-  knex.dropView('users_by_lang')
-};
+  return knex.dropView('users_by_lang')
+}

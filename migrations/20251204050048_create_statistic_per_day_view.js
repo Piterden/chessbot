@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function(knex) {
-  knex.createView('statistic_per_day', (view) => {
+  return knex.createView('statistic_per_day', (view) => {
     view.columns([
       'title',
       'average',
@@ -77,5 +77,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-  knex.dropView('statistic_per_day')
+  return knex.dropView('statistic_per_day')
 };

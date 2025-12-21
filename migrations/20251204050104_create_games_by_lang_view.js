@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function(knex) {
-  knex.createView('games_moves_by_day', (view) => {
+  return knex.createView('games_moves_by_day', (view) => {
     view.columns([
       'gamesum',
       'lang',
@@ -35,12 +35,12 @@ exports.up = function(knex) {
       `)
     )
   })
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-  knex.dropView('games_moves_by_day')
-};
+  return knex.dropView('games_moves_by_day')
+}
