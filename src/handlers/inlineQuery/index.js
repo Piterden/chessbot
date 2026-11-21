@@ -110,7 +110,7 @@ Waiting for a black side`,
       },
       ...board({
         board: status.board.squares,
-        isWhite: false,
+        isWhite: true,
         callbackOverride: `join::w::${user.id}`,
         actions: [{
           text: 'Join the game',
